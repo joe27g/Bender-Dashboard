@@ -500,7 +500,7 @@ a.discord img {
     vertical-align:  middle;
 }
 .remove {
-    background-image: url(/trash.png);
+    background-image: url(./trash.png);
     height: 20px;
     width: 20px;
     background-size: 20px;
