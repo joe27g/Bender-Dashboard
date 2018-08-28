@@ -16,8 +16,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.6.2/darkly/bulmaswatch.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
     <script src='https://www.paypalobjects.com/js/external/api.js'></script>
-    <script src="/timezoneData.js"></script>
-    <script src="/dropdowns.js"></script>
+    <script src="./timezoneData.js"></script>
+    <script src="./dropdowns.js"></script>
 </head>
 <body><div id="app">
 <transition name="fade">
@@ -68,7 +68,7 @@
     </div>
     <div id="navbar" class="level is-mobile">
         <a id="sidenav-toggle" @click="sidenavOpen = !sidenavOpen">
-            <img src="/menu.svg">
+            <img src="./menu.svg">
         </a>
         <div id="guild-picker">
             <span>Edit settings for:</span>
@@ -97,8 +97,8 @@
                     </div>
                 </div>
             </div>
-            <img id="refresh" :class="loading ? 'working' : ''" title="Refresh settings" src="/refresh.png" @click="reloadGSettings(selectedGuildID)">
-            <img id="save" title="Save settings" src="/floppy_disk.png" @click="saveGSettings(selectedGuildID)">
+            <img id="refresh" :class="loading ? 'working' : ''" title="Refresh settings" src="./refresh.png" @click="reloadGSettings(selectedGuildID)">
+            <img id="save" title="Save settings" src="./floppy_disk.png" @click="saveGSettings(selectedGuildID)">
         </div>
         <div id="integration">
             <img class="pfp" v-if="user && user.pfp" :src="user.pfp">
@@ -740,6 +740,6 @@
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>
 <div id="notif" class=""><span id="notif-text"></span></div>
 </div>
-<script src="/dashboard.js"></script>
+<script src="./dashboard.js"></script>
 </body>
 </html>
