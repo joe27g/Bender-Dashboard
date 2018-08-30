@@ -98,7 +98,7 @@
                 </div>
             </div>
             <img id="refresh" :class="loading ? 'working' : ''" title="Refresh settings" src="./refresh.png" @click="reloadGSettings(selectedGuildID)">
-            <img id="save" title="Save settings" src="./floppy_disk.png" @click="saveGSettings(selectedGuildID)">
+            <img id="save" title="Save settings" src="./floppy_disk.png" @click="saveGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID)">
         </div>
         <div id="integration">
             <img class="pfp" v-if="user && user.pfp" :src="user.pfp">

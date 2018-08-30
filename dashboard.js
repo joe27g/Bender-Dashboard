@@ -26,6 +26,9 @@ function makeRequest (opts) {
         if (opts.auth) {
 			xhr.setRequestHeader("Authorization", opts.auth);
 		}
+		if (opts.auth2) {
+			xhr.setRequestHeader("X-Discord-Authorization", opts.auth2);
+		}
 		xhr.send(opts.body ? JSON.stringify(opts.body) : undefined);
 	});
 }
@@ -280,29 +283,49 @@ async function saveGuildSettings(gID) {
 	/*if (!page.unsaved) {
 		showNotif('success', 'No changes needed.', 2000); return;
 	}*/
-	if (getCookie('token')) {
-		// TODO: actually do this shit
-		alert('Saving settings is not done yet! Come back soon™'); return;
+	if (!page.user || !getCookie('token'))
+		return showNotif('error', 'You are not logged in. Cannot save settings.', 4000);
 
-		let temp = Object.assign({}, page.gSettings);
-		delete temp.guildID;
-		page.loading = true;
-	    showNotif('pending', 'Saving guild settings...');
-	    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token'), data: temp}).catch(er => {
+	if (gID === 'PAYPAL') {
+		if (!page.paypalInfo || !getCookie('paypal_token'))
+			return showNotif('error', 'You are not logged in to PayPal. Cannot save Bender Pro settings.', 4000);
+		let temp = {
+			guilds: page.paypalInfo.guilds,
+			discordID: page.user.id
+		};
+		showNotif('pending', 'Saving Bender Pro settings...');
+	    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/paypal_info/', auth: getCookie('paypal_token'), auth2: getCookie('token'), data: temp}).catch(er => {
 			err = er;
 			console.error(er);
 		});
-
 		page.loading = false;
 	    if (err) {
-			showNotif('error', 'Failed to save guild settings.', 6000);
+			showNotif('error', 'Failed to save Bender Pro settings.', 6000);
 		} else {
-	        showNotif('success', 'Saved guild settings!', 4000);
+	        showNotif('success', 'Saved Bender Pro settings!', 4000);
 			//page.unsaved = false;
 	    }
-	} else {
-	    showNotif('pending', 'You are not logged in. Cannot save settings.', 4000);
 	}
+
+	// TODO: actually do this shit
+	alert('Saving settings is not done yet! Come back soon™'); return;
+
+	let temp = Object.assign({}, page.gSettings);
+	delete temp.guildID;
+	page.loading = true;
+    showNotif('pending', 'Saving guild settings...');
+    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token'), data: temp}).catch(er => {
+		err = er;
+		console.error(er);
+	});
+
+	page.loading = false;
+    if (err) {
+		showNotif('error', 'Failed to save guild settings.', 6000);
+	} else {
+        showNotif('success', 'Saved guild settings!', 4000);
+		//page.unsaved = false;
+    }
 }
 
 async function updatePaypalInfo() {
