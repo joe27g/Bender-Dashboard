@@ -73,8 +73,7 @@ window.nav = [
 		id: 'general'
 	}, {
 		name: 'Aliases',
-		id: 'aliases',
-		cs: true
+		id: 'aliases'
 	}, {
 		name: 'Welcome Messages',
 		id: 'welcome'
@@ -107,12 +106,10 @@ window.nav = [
 	}, {
 		name: 'Mod Log (cases)',
 		id: 'modlog',
-		cs: true,
 		ro: true
 	}, {
 		name: 'Mutes',
 		id: 'mutes',
-		cs: true,
 		ro: true
 	}, {
 		name: 'Name History',
