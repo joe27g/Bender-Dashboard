@@ -247,6 +247,9 @@ async function loadGuildSettings(gID) {
 			return;
 		}
 	}*/
+	if (gID === 'PAYPAL') {
+		return updatePaypalInfo();
+	}
 	if (getCookie('token')) {
 		page.loading = true;
 	    showNotif('pending', 'Fetching guild settings...');
@@ -294,8 +297,9 @@ async function saveGuildSettings(gID) {
 			guilds: page.paypalInfo.guilds,
 			discordID: page.user.id
 		};
+		console.log(temp);
 		showNotif('pending', 'Saving Bender Pro settings...');
-	    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token'), auth2: getCookie('token'), data: temp}).catch(er => {
+	    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token'), auth2: getCookie('token'), body: temp}).catch(er => {
 			err = er;
 			console.error(er);
 		});
@@ -306,6 +310,7 @@ async function saveGuildSettings(gID) {
 	        showNotif('success', 'Saved Bender Pro settings!', 4000);
 			//page.unsaved = false;
 	    }
+		return;
 	}
 
 	// TODO: actually do this shit
@@ -315,7 +320,7 @@ async function saveGuildSettings(gID) {
 	delete temp.guildID;
 	page.loading = true;
     showNotif('pending', 'Saving guild settings...');
-    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token'), data: temp}).catch(er => {
+    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token'), body: temp}).catch(er => {
 		err = er;
 		console.error(er);
 	});
@@ -329,20 +334,26 @@ async function saveGuildSettings(gID) {
     }
 }
 
+let firstPP = true;
 async function updatePaypalInfo() {
     if (getCookie('paypal_token')) {
 		page.loading = true;
-        //showNotif('pending', 'Fetching PayPal info...');
+		if (!firstPP)
+			showNotif('pending', 'Fetching PayPal info...');
         let data = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token')}).catch(console.error);
 		page.loading = false;
         if (data) {
-            //showNotif('success', 'Loaded PayPal info!', 4000);
+			if (!firstPP)
+				showNotif('success', 'Loaded PayPal info!', 4000);
             page.paypalInfo = JSON.parse(data);
+			firstPP = false;
         } else {
-            //showNotif('error', 'Failed to load PayPal info.', 6000);
+			if (!firstPP)
+				showNotif('error', 'Failed to load PayPal info.', 6000);
         }
     } else {
-        //showNotif('pending', 'Log in to PayPal already u heckin nerd', 4000);
+		if (!firstPP)
+			showNotif('pending', 'Log in to PayPal already u heckin nerd', 4000);
     }
 }
 
