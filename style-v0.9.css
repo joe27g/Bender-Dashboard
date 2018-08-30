@@ -338,13 +338,26 @@ span.code {
 
 #sidenav {
     width: 250px;
-    padding: 10px;
     position:  absolute;
     background: #2f3434;
     overflow-y: auto;
     z-index: 11;
     top: 0;
     height: 100%;
+}
+
+#sidenav .menu-label {
+    box-shadow: 1px 1px 5px 2px black;
+    padding: 10px;
+    width: 100%;
+    background: rgba(255, 0, 0, 0.5);
+}
+
+#sidenav .menu-list {
+    padding: 10px;
+}
+#sidenav p.menu-label:first-of-type {
+    margin-top: 2.5em;
 }
 
 #backdrop {
