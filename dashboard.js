@@ -218,7 +218,8 @@ async function loadUserInfo() {
 		page.loading = true;
 	    showNotif('pending', 'Fetching user info...');
 	    let userinfo = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/userinfo', auth: getCookie('token')}).catch(console.error);
-		userinfo = JSON.parse(userinfo);
+		if (userinfo)
+			userinfo = JSON.parse(userinfo);
 		//console.log(userinfo);
 		page.loading = false;
 	    if (userinfo && userinfo.guilds && userinfo.user) {
@@ -294,7 +295,7 @@ async function saveGuildSettings(gID) {
 			discordID: page.user.id
 		};
 		showNotif('pending', 'Saving Bender Pro settings...');
-	    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/paypal_info/', auth: getCookie('paypal_token'), auth2: getCookie('token'), data: temp}).catch(er => {
+	    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token'), auth2: getCookie('token'), data: temp}).catch(er => {
 			err = er;
 			console.error(er);
 		});
