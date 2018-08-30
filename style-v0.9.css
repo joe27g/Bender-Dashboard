@@ -512,7 +512,7 @@ a.discord img {
     opacity: 0.9;
 }
 
-#tag_list {
+#tag_list, #modlog_list, #mutes_list {
     min-width: 70%;
     margin-top: 20px;
 }
@@ -526,4 +526,14 @@ textarea#new-tag {
 }
 img.add {
     height: 16px;
+}
+#modlog .setting {
+    margin-top: 10px;
+}
+#aliases_list{
+    min-width: 40%;
+    margin-top: 20px;
+}
+#new-alias-name {
+    margin: 0 10px;
 }

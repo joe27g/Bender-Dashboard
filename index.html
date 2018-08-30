@@ -736,7 +736,81 @@
         </button>
     </div>
     <span v-else class="gray">Max number of tags reached; Cannot add more.</span>
-</div></section>
+</div><div id="modlog" v-show="selectedGuildID && column === 'modlog'">
+    <div class="header"><span class="bold">Mod log</span></div>
+    <div class="setting" v-if="Object.keys(gSettings.modlog).length > 0">
+        <!-- TODO: Search onchange (or a button press) ¯\_(ツ)_/¯ -->
+        <span class="key">Search case:</span> <input id="search-input" type="text" placeholder="Case" v-model="caseTemp.name">
+    </div>
+    <div class="setting" v-else><span class="gray">No mod logs yet.</span></div>
+    <table id="modlog_list" class="table"><tbody>
+        <tr>
+            <th>Case #</th>
+            <th>User</th>
+            <th>Issuer</th>
+            <th>Reason</th>
+        </tr>
+        <tr v-for="(caseNumb, user, issuer, reason) in gSettings.modlog">
+            <td>{{ caseNumb }}</td>
+            <td>{{ user }}</td>
+            <td>{{ issuer }}</td>
+            <td>{{ reason }}</td>
+        </tr>
+    </tbody></table>
+</div><div id="aliases" v-show="selectedGuildID && column === 'aliases'">
+    <div class="header"><span class="bold">Aliases</span></div>
+    <span class="info">Aliases are used to give commands an alternative name.</span>
+    <table id="aliases_list" class="table"><tbody>
+        <tr>
+            <th>Command</th>
+            <th>Alias</th>
+        </tr>
+        <tr v-for="(command, name) in gSettings.aliases">
+            <td>{{ command }}</td>
+            <td><input type="text" placeholder="New tag content">{{ name }}</td> <!-- v-model -->
+            <td><a @click="deleteAlias(name)" class="remove"></a></td>
+        </tr>
+        <tr v-if="Object.keys(gSettings.aliases).length === 0">
+            <td><span class="gray">No aliases added.</span></td>
+        </tr>
+    </tbody></table>
+    <div class="setting" v-if="Object.keys(gSettings.aliases).length < 50">
+        <span class="key">Add a new alias:</span>
+        <!-- TODO: Dropdown of all available commands (or just input) -->
+            <select>
+                <option selected hidden>Command</option>
+                <option value="ban">gibemotes</option>
+                <option value="role">promote</option>
+                <option value="mute">shutup</option>
+            </select>
+        <input id="new-alias-name" type="text" placeholder="New alias">
+        <button class="button" @click="addAlias()">
+            <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+        </button>
+    </div>
+    <span v-else class="gray">Max number of aliases reached; Cannot add more.</span>
+</div><div id="mutes" v-show="selectedGuildID && column === 'mutes'">
+        <div class="header"><span class="bold">Mod log</span></div>
+        <div class="setting" v-if="Object.keys(gSettings.mutes).length > 0">
+            <span class="key">{{ Object.keys(gSettings.modlog).length }} active mute(s) currently</span>
+        </div>
+        <div class="setting" v-else><span class="gray">No active mutes currently.</span></div>
+        <table id="mutes_list" class="table"><tbody>
+            <tr>
+                <th>User</th>
+                <th>Issuer</th>
+                <th>Duration</th>
+                <th>Reason</th>
+            </tr>
+            <tr v-for="(user, issuer, duration, reason) in gSettings.mutes">
+                <td>{{ user }}</td>
+                <td>{{ issuer }}</td>
+                <td>{{ duration }}</td>
+                <td>{{ reason }}</td>
+                <td><a @click="removeMute(user)" class="remove"></a></td>
+            </tr>
+        </tbody></table>
+    </div></section>
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>
 <div id="notif" class=""><span id="notif-text"></span></div>
 </div>
