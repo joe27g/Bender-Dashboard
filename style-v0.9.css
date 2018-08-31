@@ -337,10 +337,10 @@ span.code {
 }
 
 a {
-    color: #faa61a;
+    color: #faa61a !important;
 }
 a:hover {
-    color: #fad61a;
+    color: #fad61a !important;
 }
 
 #sidenav {
@@ -365,7 +365,10 @@ a:hover {
     margin-top: 2.5em;
 }
 .menu-list a.is-active {
-    background-color: #f50;
+    background-color: #f50 !important;
+}
+.menu-list a.is-active:hover {
+    background-color: #f60 !important;
 }
 
 #backdrop {
