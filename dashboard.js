@@ -66,8 +66,7 @@ paypal.use( ['login'], function (login) {
 window.nav = [
 	[{
 		name: 'Bender Pro',
-		id: 'pro',
-		ro: true
+		id: 'pro'
 	}, {
 		name: 'General Settings',
 		id: 'general'
