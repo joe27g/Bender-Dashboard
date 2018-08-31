@@ -537,3 +537,18 @@ img.add {
 #new-alias-name {
     margin: 0 10px;
 }
+td {
+    max-width: 400px;
+    word-wrap: break-word;
+}
+.modlog-action {
+    text-transform: capitalize;
+}
+.mention {
+    background-color: rgba(114,137,218,.1);
+    color: #7289da;
+}
+.mention:hover {
+    background-color: rgba(114,137,218,.7);
+    color: #fff;
+}

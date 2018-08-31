@@ -164,12 +164,18 @@ var page = new Vue({
 		tzRegions: window.tzRegions,
 		tzs: window.tzs,
 		navSections: window.nav,
+		moment: window.moment,
 		paypalInfo: null,
 		loading: false,
 		tagTemp: {
 			name: '',
 			content: ''
-		}
+		},
+		aliasTemp: {
+			name: '',
+			content: ''
+		},
+		searchValue: null
 	},
 	watch: {
 		selectedGuildID: function (newID, oldID) {
@@ -196,11 +202,46 @@ var page = new Vue({
 				name: '',
 				content: ''
 			};
-			this.dummyProp = 1;
 		},
 		deleteTag: function(name) {
 			delete this.gSettings.tags[name];
 			page.$forceUpdate();
+		},
+		addAlias: function() {
+			if (!this.aliasTemp.name || !this.aliasTemp.content) {
+				showNotif('error', 'Needs a name and command!', 3000); return;
+			}
+			this.gSettings.aliases[this.aliasTemp.name] = this.aliasTemp.content;
+			this.aliasTemp = {
+				name: '',
+				content: ''
+			};
+		},
+		deleteAlias: function(name) {
+			delete this.gSettings.aliases[name];
+			page.$forceUpdate();
+		},
+		parseMD: function(str) {
+			// sanitize first
+			str = str.replace(/&/g, "&amp;").replace(/<([^:@#])/g, "&lt;$1").replace(/([^\d])>/g, "$1&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+
+			str = str.replace(/<(a?):([a-zA-Z_0-9]{2,32}):(\d{17,20})>/, (match, p1, p2, p3) => {
+				return `<img alt="${p2}" src="https://cdn.discordapp.com/emojis/${p3}.${p1 ? 'gif' : 'png'}?v=1" style="height:24px!important;vertical-align:middle;">`
+			});
+			let gc = this.gChannels, g = this.selectedGuildID;
+			str = str.replace(/<#(\d{17,20})>/g, (match, p1) => {
+				for (let i in gc) {
+					if (gc[i].id === p1) {
+						return `<a href="https://discordapp.com/channels/${g}/${p1}" target="_blank" class="mention">#${gc[i].name}</a>`;
+					}
+				}
+				return '<span class="mention">#deleted-channel</span>';
+			});
+			// TODO: Role mentions (easy)
+			// TODO: User mentions (hard)
+			// TODO: Links (somewhat hard)
+			// TODO: Markdown (i.e. underline, bold)
+			return str;
 		}
 	}
 });
