@@ -336,6 +336,13 @@ span.code {
     color: rgba(255, 255, 255, 0.5);
 }
 
+a {
+    color: #faa61a;
+}
+a:hover {
+    color: #fad61a;
+}
+
 #sidenav {
     width: 250px;
     position:  absolute;
@@ -345,19 +352,20 @@ span.code {
     top: 0;
     height: 100%;
 }
-
 #sidenav .menu-label {
-    box-shadow: 1px 1px 5px 2px black;
+    box-shadow: 0 0 19px -3px black;
     padding: 10px;
     width: 100%;
     background: rgba(255, 0, 0, 0.5);
 }
-
 #sidenav .menu-list {
-    padding: 10px;
+    padding: 0 10px;
 }
 #sidenav p.menu-label:first-of-type {
     margin-top: 2.5em;
+}
+.menu-list a.is-active {
+    background-color: #f50;
 }
 
 #backdrop {
@@ -549,4 +557,31 @@ img.add {
 }
 #new-alias-name {
     margin: 0 10px;
+}
+td {
+    max-width: 400px;
+    word-wrap: break-word;
+}
+.modlog-action {
+    text-transform: capitalize;
+}
+.mention {
+    background-color: rgba(114,137,218,.1);
+    color: #7289da;
+}
+.mention:hover {
+    background-color: rgba(114,137,218,.7);
+    color: #fff;
+}
+
+pre {
+    padding: 2px 7px !important;
+    border: 3px solid rgba(0, 0, 0, 0.15);
+    border-radius: 7px;
+    background: rgba(0, 0, 0, 0.15);
+}
+code.hljs {
+    color: #fff;
+    background: transparent;
+    padding: 0;
 }

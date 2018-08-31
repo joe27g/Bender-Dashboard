@@ -66,8 +66,7 @@ paypal.use( ['login'], function (login) {
 window.nav = [
 	[{
 		name: 'Bender Pro',
-		id: 'pro',
-		ro: true
+		id: 'pro'
 	}, {
 		name: 'General Settings',
 		id: 'general'
@@ -164,12 +163,19 @@ var page = new Vue({
 		tzRegions: window.tzRegions,
 		tzs: window.tzs,
 		navSections: window.nav,
+		moment: window.moment,
 		paypalInfo: null,
 		loading: false,
 		tagTemp: {
 			name: '',
 			content: ''
-		}
+		},
+		aliasTemp: {
+			name: '',
+			content: ''
+		},
+		searchValue: null,
+		previewEnabled: false
 	},
 	watch: {
 		selectedGuildID: function (newID, oldID) {
@@ -181,8 +187,12 @@ var page = new Vue({
 		},
 		column: function () {
 			this.sidenavOpen = false;
+			window.autoExpandAll();
+			this.searchValue = null;
+			this.previewEnabled = false;
 		},
-		openDropdown: calcDropdowns
+		openDropdown: calcDropdowns,
+		previewEnabled: window.highlightAll
 	},
 	methods: {
 		reloadGSettings: window.loadGuildSettings,
@@ -196,11 +206,71 @@ var page = new Vue({
 				name: '',
 				content: ''
 			};
-			this.dummyProp = 1;
 		},
 		deleteTag: function(name) {
 			delete this.gSettings.tags[name];
 			page.$forceUpdate();
+		},
+		addAlias: function() {
+			if (!this.aliasTemp.name || !this.aliasTemp.content) {
+				showNotif('error', 'Needs a name and command!', 3000); return;
+			}
+			this.gSettings.aliases[this.aliasTemp.name] = this.aliasTemp.content;
+			this.aliasTemp = {
+				name: '',
+				content: ''
+			};
+		},
+		deleteAlias: function(name) {
+			delete this.gSettings.aliases[name];
+			page.$forceUpdate();
+		},
+		parseMD: function(str) {
+			// sanitize first
+			str = str.replace(/([^@])&([^\d])/g, "$1&amp;$2").replace(/<([^a:@#])/g, "&lt;$1").replace(/<(a[^:])/g, "&lt;$1").replace(/([^\d])>/g, "$1&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+
+			str = str.replace(/<(a?):([a-zA-Z_0-9]{2,32}):(\d{17,20})>/, (match, p1, p2, p3) => {
+				return `<img title=":${p2}:" alt=":${p2}:" src="https://cdn.discordapp.com/emojis/${p3}.${p1 ? 'gif' : 'png'}?v=1" style="height:24px!important;vertical-align:middle;">`
+			});
+			let gc = this.gChannels, g = this.selectedGuildID;
+			str = str.replace(/<#(\d{17,20})>/g, (match, p1) => {
+				for (let i in gc) {
+					if (gc[i].id === p1) {
+						return `<a href="https://discordapp.com/channels/${g}/${p1}" target="_blank" class="mention">#${gc[i].name}</a>`;
+					}
+				}
+				return '<span class="mention">#deleted-channel</span>';
+			});
+			let gr = this.gRoles;
+			str = str.replace(/<@&(\d{17,20})>/g, (match, p1) => {
+				console.log('???');
+				for (let i in gr) {
+					if (gr[i].id === p1) {
+						return `<span class="mention" style="${gr[i].cssColor}">@${gr[i].name}</span>`;
+					}
+				}
+				return '<span class="mention">@deleted-role</span>';
+			});
+			// TODO: User mentions (hard)
+			// Make links clickable
+		    str = str.replace(/(^|[\s\n]|<[A-Za-z]*\/?>)(?:&lt;)?((?:https?|ftp):\/\/[\-A-Z0-9+\u0026\u2019@#\/%?=()~_|!:,.;]*[\-A-Z0-9+\u0026@#\/%=~()_|])(?:&gt;|>)?/gi, '$1<a target="_blank" href="$2">$2</a>');
+			// Parse markdown (bold, underline, etc.)
+			str = str.replace(/__([^_][\s\S]*)__/g, '<u>$1</u>');
+			str = str.replace(/\*\*([^\*][\s\S]*)\*\*/g, '<b>$1</b>');
+			str = str.replace(/\*([^\*][\s\S]*)\*/g, '<i>$1</i>');
+			str = str.replace(/~~([^~][\s\S]*)~~/g, '<strike>$1</strike>');
+			str = str.replace(/(```) *(\S+)? *\n([\s\S]+?)\s*\1/, '<pre><code class="hljs $2">$3</code></pre>');
+			str = str.replace(/\`([^\s]([^\`]*[^\s])?)\`/g, '<span class="code">$1</span>');
+
+			return str;
+		},
+		getLen(obj, ignore = []) {
+			let count = 0;
+			for (let key in obj) {
+				if (ignore.indexOf(key) === -1)
+					count++;
+			}
+			return count;
 		}
 	}
 });
@@ -268,15 +338,9 @@ async function loadGuildSettings(gID) {
 	    showNotif('pending', 'You are not logged in. Cannot fetch settings.', 4000);
 	}
 	// trigger auto-expand of textareas
-	setTimeout(() => {
-		let ta = document.querySelectorAll('textarea');
-		ta.forEach(el => {
-		    if (!el.value) return;
-		    setTimeout(() => autoExpand(el), 5);
-			setTimeout(() => autoExpand(el), 50);
-			setTimeout(() => autoExpand(el), 500);
-		});
-	}, 5);
+	setTimeout(autoExpandAll, 5);
+	// apply syntax highlighting to codeblocks
+	setTimeout(highlightAll, 5);
 }
 
 async function saveGuildSettings(gID) {
