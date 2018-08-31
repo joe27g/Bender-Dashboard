@@ -17,6 +17,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone-with-data.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <script src='https://www.paypalobjects.com/js/external/api.js'></script>
     <script src="./timezoneData.js"></script>
     <script src="./dropdowns.js"></script>
@@ -716,6 +718,14 @@
 </div><div id="tags" v-show="selectedGuildID && column === 'tags'">
     <div class="header"><span class="bold">Tags</span></div>
     <span class="info">Tags are used like simple commands; if you use Bender's prefix + the tag name, you get a response.<br>For example, you could make a tag "hello" with the response "world." Details about variables you can use, i.e. <span class="code">{args}</span>, can be found <a href="https://benderbot.co/commands#tag" target="_blank">here.</a></span>
+    <div>
+        <span class="key">Raw</span>
+        <label class="switch small">
+            <input type="checkbox" v-model="previewEnabled">
+            <span class="slider round"></span>
+        </label>
+        <span class="key">&nbsp;&nbsp;Preview</span>
+    </div>
     <table id="tag_list" class="table"><tbody>
         <tr>
             <th>Tag Name</th>
@@ -723,14 +733,17 @@
         </tr>
         <tr v-for="(content, name) in gSettings.tags">
             <td>{{ name }}</td>
-            <td><textarea v-model="gSettings.tags[name]">{{ content }}</textarea></td>
+            <td>
+                <textarea v-show="!previewEnabled" v-model="gSettings.tags[name]">{{ content }}</textarea>
+                <div v-show="previewEnabled" v-html="parseMD(content)"></textarea>
+            </td>
             <td><a @click="deleteTag(name)" class="remove"></a></td>
         </tr>
-        <tr v-if="Object.keys(gSettings.tags).length === 0">
+        <tr v-if="getLen(gSettings.tags) === 0">
             <td><span class="gray">No tags added.</span></td>
         </tr>
     </tbody></table>
-    <div class="setting" v-if="Object.keys(gSettings.tags).length < 50">
+    <div class="setting" v-if="getLen(gSettings.tags) < 50">
         <span class="key">Add a new tag:</span> <input id="new-tag-name" type="text" placeholder="New tag name" v-model="tagTemp.name">
         <textarea id="new-tag" placeholder="New tag content" v-model="tagTemp.content">{{ tagTemp.content }}</textarea>
         <button class="button" @click="addTag()">
@@ -740,8 +753,8 @@
     <span v-else class="gray">Max number of tags reached; Cannot add more.</span>
 </div><div id="modlog" v-show="selectedGuildID && column === 'modlog'">
     <div class="header"><span class="bold">Mod Log</span></div>
-    <div class="setting" v-if="Object.keys(gSettings.modlog).length > 0">
-        <span class="gray">{{ Object.keys(gSettings.modlog).length }} case{{ Object.keys(gSettings.modlog).length > 1 ? 's' : '' }} on record.</span>
+    <div class="setting" v-if="getLen(gSettings.modlog) > 0">
+        <span class="gray">{{ getLen(gSettings.modlog) }} case{{ getLen(gSettings.modlog) > 1 ? 's' : '' }} on record.</span>
         <!-- TODO: Search onchange (or a button press) ¯\_(ツ)_/¯ -->
         <span class="key">Search case:</span> <input id="search-input" type="text" placeholder="Case" v-model="searchValue">
     </div>
@@ -777,11 +790,11 @@
             <td><span class="code">{{ gSettings.prefix || ';' }}{{ command }}</span></td>
             <td><a @click="deleteAlias(name)" class="remove"></a></td>
         </tr>
-        <tr v-if="Object.keys(gSettings.aliases).length === 0">
+        <tr v-if="getLen(gSettings.aliases) === 0">
             <td><span class="gray">No aliases added.</span></td>
         </tr>
     </tbody></table>
-    <div class="setting" v-if="Object.keys(gSettings.aliases).length < 50">
+    <div class="setting" v-if="getLen(gSettings.aliases) < 50">
         <span class="key">Add a new alias:</span>
         <!-- TODO: Dropdown of all available commands (or just input) -->
             <select v-model="aliasTemp.value">
@@ -798,8 +811,8 @@
     <span v-else class="gray">Max number of aliases reached; Cannot add more.</span>
 </div><div id="mutes" v-show="selectedGuildID && column === 'mutes'">
         <div class="header"><span class="bold">Mutes</span></div>
-        <div class="setting" v-if="Object.keys(gSettings.mutes).length > 0">
-            <span class="key">There {{ Object.keys(gSettings.mutes).length > 1 ? 'are' : 'is' }} currently {{ Object.keys(gSettings.mutes).length }} active mute{{ Object.keys(gSettings.mutes).length > 1 ? 's' : '' }}.</span>
+        <div class="setting" v-if="getLen(gSettings.mutes, ['role', 'default']) > 0">
+            <span class="key">There {{ getLen(gSettings.mutes, ['role', 'default']) > 1 ? 'are' : 'is' }} currently {{ getLen(gSettings.mutes, ['role', 'default']) }} active mute{{ getLen(gSettings.mutes, ['role', 'default']) > 1 ? 's' : '' }}.</span>
         </div>
         <div class="setting" v-else><span class="gray">No active mutes currently.</span></div>
         <table id="mutes_list" class="table"><tbody>

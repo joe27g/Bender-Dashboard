@@ -44,7 +44,6 @@ window.addEventListener('click', function(e) {
     }
 });
 
-// not actually related to dropdowns but...
 // auto-expand textareas
 function autoExpand(field) {
 	field.style.height = 'inherit';
@@ -54,7 +53,7 @@ function autoExpand(field) {
 	             + field.scrollHeight
 	             + parseInt(computed.getPropertyValue('padding-bottom'), 10)
 	             + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
-
+    if (height < 42) return; // don't make it unreadable
 	field.style.height = height + 'px';
 };
 
@@ -66,3 +65,20 @@ document.addEventListener('change', function (event) {
 	if (event.target.tagName.toLowerCase() !== 'textarea') return;
 	autoExpand(event.target);
 }, false);
+
+function autoExpandAll() {
+    let ta = document.querySelectorAll('textarea');
+    ta.forEach(el => {
+        if (!el.value) return;
+        setTimeout(() => autoExpand(el), 5);
+        setTimeout(() => autoExpand(el), 50);
+        setTimeout(() => autoExpand(el), 500);
+    });
+}
+// apply syntax highlighting to all codeblocks.
+function highlightAll() {
+    let cb = document.querySelectorAll('pre > code.hljs');
+    cb.forEach(el => {
+        hljs.highlightBlock(el);
+    });
+}

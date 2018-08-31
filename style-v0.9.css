@@ -552,3 +552,15 @@ td {
     background-color: rgba(114,137,218,.7);
     color: #fff;
 }
+
+pre {
+    padding: 2px 7px !important;
+    border: 3px solid rgba(0, 0, 0, 0.15);
+    border-radius: 7px;
+    background: rgba(0, 0, 0, 0.15);
+}
+code.hljs {
+    color: #fff;
+    background: transparent;
+    padding: 0;
+}
