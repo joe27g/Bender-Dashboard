@@ -336,15 +336,36 @@ span.code {
     color: rgba(255, 255, 255, 0.5);
 }
 
+a {
+    color: #faa61a;
+}
+a:hover {
+    color: #fad61a;
+}
+
 #sidenav {
     width: 250px;
-    padding: 10px;
     position:  absolute;
     background: #2f3434;
     overflow-y: auto;
     z-index: 11;
     top: 0;
     height: 100%;
+}
+#sidenav .menu-label {
+    box-shadow: 0 0 19px -3px black;
+    padding: 10px;
+    width: 100%;
+    background: rgba(255, 0, 0, 0.5);
+}
+#sidenav .menu-list {
+    padding: 0 10px;
+}
+#sidenav p.menu-label:first-of-type {
+    margin-top: 2.5em;
+}
+.menu-list a.is-active {
+    background-color: #f50;
 }
 
 #backdrop {
