@@ -797,7 +797,7 @@
     </div>
     <span v-else class="gray">Max number of aliases reached; Cannot add more.</span>
 </div><div id="mutes" v-show="selectedGuildID && column === 'mutes'">
-        <div class="header"><span class="bold">Mod log</span></div>
+        <div class="header"><span class="bold">Mutes</span></div>
         <div class="setting" v-if="Object.keys(gSettings.mutes).length > 0">
             <span class="key">There {{ Object.keys(gSettings.mutes).length > 1 ? 'are' : 'is' }} currently {{ Object.keys(gSettings.mutes).length }} active mute{{ Object.keys(gSettings.mutes).length > 1 ? 's' : '' }}.</span>
         </div>
