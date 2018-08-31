@@ -336,10 +336,10 @@ span.code {
     color: rgba(255, 255, 255, 0.5);
 }
 
-a {
+a:not([class]) {
     color: #faa61a !important;
 }
-a:hover {
+a:not([class]):hover {
     color: #fad61a !important;
 }
 
