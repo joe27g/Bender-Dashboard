@@ -338,41 +338,6 @@
         <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog['join-dm'] || '')"></div>
         <span class="info">Message sent to a user's DM when they join the server.</span>
     </div>
-    <!--<div class="setting">
-        <span class="key">Channel:</span>
-        <div class="dd">
-            <div class="dd-trigger">
-                <button class="button" @click="openDropdown = openDropdown === 'welcome-chan' ? null : 'welcome-chan'">
-                    <span v-if="!gSettings.memberLog.channel" class="channel-icon">#</span>
-                    <span v-if="!gSettings.memberLog.channel">Choose a channel...</span>
-                    <div v-if="gSettings.memberLog.channel">
-                        <span class="channel-icon">#</span>
-                        <span>{{ getChannel(gSettings.memberLog.channel).name }}</span>
-                    </div>
-                </button>
-            </div>
-            <div v-show="openDropdown === 'welcome-chan'" class="dd-content">
-                <div><label for="WC-none">
-                    <input type="radio" id="WC-none" value="" v-model="gSettings.memberLog.channel" class="hidden">
-                    <span class="channel-icon">❓</span>
-                    <span class="channel-name">None</span>
-                </label><br></div>
-                <div v-for="chan in gChannels">
-                    <label :for="'WC-' + chan.id">
-                        <input type="radio" :id="'WC-' + chan.id" :value="chan.id" v-model="gSettings.memberLog.channel" class="hidden">
-                        <span class="channel-icon">#</span>
-                        <span>{{ chan.name }}</span>
-                    </label>
-                    <br>
-                </div>
-                <div v-if="gChannels.length === 0">
-                    <span class="gray">No eligible channels.</span>
-                </div>
-            </div>
-        </div>
-        <span class="info">The channel where all of the following messages will be sent. Unset to disable all of these messages.</span>
-    </div>
-    <br>-->
     <div class="text-setting">
         <span class="key">Welcome message:</span>
         <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.join" placeholder="Welcome to {server}, {member}!">{{ gSettings.memberLog.join }}</textarea>
