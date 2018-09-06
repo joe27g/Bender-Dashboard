@@ -127,7 +127,7 @@ window.nav = [
 		name: 'Selfroles',
 		id: 'selfroles'
 	}, {
-		name: 'Disabled Commands & Groups ',
+		name: 'Disabled Commands & Groups',
 		id: 'cmdstatus',
 		cs: true
 	}]
@@ -226,24 +226,30 @@ var page = new Vue({
 			page.$forceUpdate();
 		},
 		parseMD: function(str) {
-			// sanitize first
-			str = str.replace(/([^@])&([^\d])/g, "$1&amp;$2").replace(/<([^a:@#])/g, "&lt;$1").replace(/<(a[^:])/g, "&lt;$1").replace(/([^\d])>/g, "$1&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+			// parse markdown (i.e. underlining) and syntax highlighting
+			let mdParse = SimpleMarkdown.defaultBlockParse;
+		    let htmlOutput = SimpleMarkdown.reactFor(SimpleMarkdown.ruleOutput(SimpleMarkdown.defaultRules, 'html'));
+			str = htmlOutput(mdParse(str))[0];
+			str = str.replace(/markdown-code-/g, 'hljs '); // fix code highlighting bullshit
+			str = str.replace(/<a href="/g, '<a target="_blank" href="'); // make links open in new tab
 
-			str = str.replace(/<(a?):([a-zA-Z_0-9]{2,32}):(\d{17,20})>/, (match, p1, p2, p3) => {
+			// parse emojis
+			str = str.replace(/&lt;(a?):([a-zA-Z_0-9]{2,32}):(\d{17,20})&gt;/g, (match, p1, p2, p3) => {
 				return `<img title=":${p2}:" alt=":${p2}:" src="https://cdn.discordapp.com/emojis/${p3}.${p1 ? 'gif' : 'png'}?v=1" style="height:24px!important;vertical-align:middle;">`
 			});
+			// parse channel mentions
 			let gc = this.gChannels, g = this.selectedGuildID;
-			str = str.replace(/<#(\d{17,20})>/g, (match, p1) => {
+			str = str.replace(/&lt;#(\d{17,20})&gt;/g, (match, p1) => {
 				for (let i in gc) {
 					if (gc[i].id === p1) {
-						return `<a href="https://discordapp.com/channels/${g}/${p1}" target="_blank" class="mention">#${gc[i].name}</a>`;
+						return `<a target="_blank" href="https://discordapp.com/channels/${g}/${p1}" class="mention">#${gc[i].name}</a>`;
 					}
 				}
 				return '<span class="mention">#deleted-channel</span>';
 			});
+			// parse role mentions
 			let gr = this.gRoles;
-			str = str.replace(/<@&(\d{17,20})>/g, (match, p1) => {
-				console.log('???');
+			str = str.replace(/&lt;@&amp;(\d{17,20})&gt;/g, (match, p1) => {
 				for (let i in gr) {
 					if (gr[i].id === p1) {
 						return `<span class="mention" style="${gr[i].cssColor}">@${gr[i].name}</span>`;
@@ -252,15 +258,8 @@ var page = new Vue({
 				return '<span class="mention">@deleted-role</span>';
 			});
 			// TODO: User mentions (hard)
-			// Make links clickable
-		    str = str.replace(/(^|[\s\n]|<[A-Za-z]*\/?>)(?:&lt;)?((?:https?|ftp):\/\/[\-A-Z0-9+\u0026\u2019@#\/%?=()~_|!:,.;]*[\-A-Z0-9+\u0026@#\/%=~()_|])(?:&gt;|>)?/gi, '$1<a target="_blank" href="$2">$2</a>');
-			// Parse markdown (bold, underline, etc.)
-			str = str.replace(/__([^_][\s\S]*)__/g, '<u>$1</u>');
-			str = str.replace(/\*\*([^\*][\s\S]*)\*\*/g, '<b>$1</b>');
-			str = str.replace(/\*([^\*][\s\S]*)\*/g, '<i>$1</i>');
-			str = str.replace(/~~([^~][\s\S]*)~~/g, '<strike>$1</strike>');
-			str = str.replace(/(```) *(\S+)? *\n([\s\S]+?)\s*\1/, '<pre><code class="hljs $2">$3</code></pre>');
-			str = str.replace(/\`([^\s]([^\`]*[^\s])?)\`/g, '<span class="code">$1</span>');
+
+			str = str.replace(/\n/g, '<br>');
 
 			return str;
 		},
@@ -271,6 +270,13 @@ var page = new Vue({
 					count++;
 			}
 			return count;
+		}
+	},
+	computed: {
+		maxPremiumGuilds: function() {
+			if (!this.paypalInfo || !this.paypalInfo.plan || typeof this.paypalInfo.plan.description !== 'string') return 0;
+			let num = parseInt(this.paypalInfo.plan.description.substr(0, 1));
+			return isNaN(num) ? 0 : (num > 5 ? 5 : num);
 		}
 	}
 });
