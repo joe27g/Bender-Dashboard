@@ -279,20 +279,66 @@
         <span class="bold">Welcome messages</span>
     </div>
     <div class="setting">
-        <span class="key">Variables</span>
-        <br>
-        <span class="info">
-            You can use variables such as <span class="code">{user}</span>, <span class="code">{member}</span>, and <span class="code">{server}</span> in the following messages.
-            <br>
-            More details about the variables can be found on <a href="https://benderbot.co/commands#welcome" target="_blank">the commands website</a>.
-        </span>
+        <div class="columns">
+            <div class="column">
+                <span class="key">Variables</span>
+                <span class="info">
+                    You can use variables such as <span class="code">{user}</span>, <span class="code">{member}</span>, and <span class="code">{server}</span> in the following messages.
+                    <br>
+                    More details about the variables can be found on <a href="https://benderbot.co/commands#welcome" target="_blank">the commands website</a>.
+                </span>
+            </div>
+            <div class="column">
+                <span class="key">Channel:</span>
+                <div class="dd">
+                    <div class="dd-trigger">
+                        <button class="button" @click="openDropdown = openDropdown === 'welcome-chan' ? null : 'welcome-chan'">
+                            <span v-if="!gSettings.memberLog.channel" class="channel-icon">#</span>
+                            <span v-if="!gSettings.memberLog.channel">Choose a channel...</span>
+                            <div v-if="gSettings.memberLog.channel">
+                                <span class="channel-icon">#</span>
+                                <span>{{ getChannel(gSettings.memberLog.channel).name }}</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div v-show="openDropdown === 'welcome-chan'" class="dd-content">
+                        <div><label for="WC-none">
+                            <input type="radio" id="WC-none" value="" v-model="gSettings.memberLog.channel" class="hidden">
+                            <span class="channel-icon">❓</span>
+                            <span class="channel-name">None</span>
+                        </label><br></div>
+                        <div v-for="chan in gChannels">
+                            <label :for="'WC-' + chan.id">
+                                <input type="radio" :id="'WC-' + chan.id" :value="chan.id" v-model="gSettings.memberLog.channel" class="hidden">
+                                <span class="channel-icon">#</span>
+                                <span>{{ chan.name }}</span>
+                            </label>
+                            <br>
+                        </div>
+                        <div v-if="gChannels.length === 0">
+                            <span class="gray">No eligible channels.</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="info">The channel where all of the following messages will be sent (except welcome DM.) Unset to disable all of these messages.</span>
+            </div>
+        </div>
+        <div class="smallToggle">
+            <span class="key">Raw</span>
+            <label class="switch small">
+                <input type="checkbox" v-model="previewEnabled">
+                <span class="slider round"></span>
+            </label>
+            <span class="key">&nbsp;&nbsp;Preview</span>
+        </div>
     </div>
     <div class="text-setting">
         <span class="key">Welcome DM:</span>
-        <textarea placeholder="Welcome to {server}, please read the rules and enjoy!">{{ gSettings.memberLog['join-dm'] }}</textarea>
+        <textarea v-show="!previewEnabled" placeholder="Welcome to {server}, please read the rules and enjoy!" v-model="gSettings.memberLog['join-dm']">{{ gSettings.memberLog['join-dm'] }}</textarea>
+        <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog['join-dm'] || '')"></div>
         <span class="info">Message sent to a user's DM when they join the server.</span>
     </div>
-    <div class="setting">
+    <!--<div class="setting">
         <span class="key">Channel:</span>
         <div class="dd">
             <div class="dd-trigger">
@@ -326,19 +372,23 @@
         </div>
         <span class="info">The channel where all of the following messages will be sent. Unset to disable all of these messages.</span>
     </div>
+    <br>-->
     <div class="text-setting">
         <span class="key">Welcome message:</span>
-        <textarea placeholder="Welcome to {server}, {member}!">{{ gSettings.memberLog.join }}</textarea>
+        <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.join" placeholder="Welcome to {server}, {member}!">{{ gSettings.memberLog.join }}</textarea>
+        <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.join || '')"></div>
         <span class="info">Message sent when someone joins the server.</span>
     </div>
     <div class="text-setting">
         <span class="key">Leave message:</span>
-        <textarea placeholder="Goodbye {user}, we won't miss you!">{{ gSettings.memberLog.leave }}</textarea>
+        <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.leave" placeholder="Goodbye {user}, we won't miss you!">{{ gSettings.memberLog.leave }}</textarea>
+        <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.leave || '')"></div>
         <span class="info">Message sent when someone leaves the server.</span>
     </div>
     <div class="text-setting">
         <span class="key">Ban message:</span>
-        <textarea placeholder="{user} was unable to follow the rules and has been banned!">{{ gSettings.memberLog.ban }}</textarea>
+        <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.ban" placeholder="{user} was unable to follow the rules and has been banned!">{{ gSettings.memberLog.ban }}</textarea>
+        <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.ban || '')"></div>
         <span class="info">Message sent when someone is banned from the server.</span>
     </div>
 </div><div id="selfroles" v-show="selectedGuildID && column === 'selfroles'">
@@ -456,7 +506,16 @@
     </div>
     <div class="text-setting">
         <span class="key">Message:</span>
-        <textarea placeholder="Message for new users">{{ gSettings.agreement.message }}</textarea>
+        <div class="smallToggle">
+            <span class="key">Raw</span>
+            <label class="switch small">
+                <input type="checkbox" v-model="previewEnabled">
+                <span class="slider round"></span>
+            </label>
+            <span class="key">&nbsp;&nbsp;Preview</span>
+        </div>
+        <textarea v-show="!previewEnabled" placeholder="Message for new users" v-model="gSettings.agreement.message">{{ gSettings.agreement.message }}</textarea>
+        <div v-show="previewEnabled" v-html="parseMD(gSettings.agreement.message || '')"></div>
         <span class="info">If specified, this message will be sent as a DM when a new user joins. It should contain server info, how to agree to the server rules, etc.</span>
     </div>
     <div class="time-setting">
@@ -736,7 +795,7 @@
             <td>{{ name }}</td>
             <td>
                 <textarea v-show="!previewEnabled" v-model="gSettings.tags[name]">{{ content }}</textarea>
-                <div v-show="previewEnabled" v-html="parseMD(content)"></textarea>
+                <div v-show="previewEnabled" v-html="parseMD(content)"></div>
             </td>
             <td><a @click="deleteTag(name)" class="remove"></a></td>
         </tr>

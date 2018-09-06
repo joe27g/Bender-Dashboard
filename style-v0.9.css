@@ -588,3 +588,9 @@ code.hljs {
     background: transparent;
     padding: 0;
 }
+.paragraph {
+    margin-bottom:  10px;
+}
+.smallToggle {
+    margin-bottom:  7px;
+}
