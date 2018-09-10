@@ -93,8 +93,7 @@ window.nav = [
 		cs: true
 	}], [{
 		name: 'Filter',
-		id: 'filter',
-		cs: true
+		id: 'filter'
 	}, {
 		name: 'Name Filter',
 		id: 'namefilter',
@@ -174,6 +173,7 @@ var page = new Vue({
 			name: '',
 			content: ''
 		},
+		filterTemp: '',
 		searchValue: null,
 		previewEnabled: false
 	},
@@ -225,6 +225,18 @@ var page = new Vue({
 			delete this.gSettings.aliases[name];
 			page.$forceUpdate();
 		},
+		addPattern: function() {
+			if (!this.filterTemp) {
+				// TODO: check for errors in regex (invalid sequences)
+				showNotif('error', 'Invalid regex content.', 3000); return;
+			}
+			this.gSettings.filter.patterns.push(this.filterTemp);
+			this.filterTemp = '';
+		},
+		deletePattern: function(index) {
+			delete this.gSettings.filter.patterns[index];
+			page.$forceUpdate();
+		},
 		parseMD: function(str) {
 			// parse markdown (i.e. underlining) and syntax highlighting
 			let mdParse = SimpleMarkdown.defaultBlockParse;
@@ -257,12 +269,22 @@ var page = new Vue({
 				}
 				return '<span class="mention">@deleted-role</span>';
 			});
-			// TODO: User mentions (hard)
+			// resolve user mentions
+			let m = this.gMembers;
+			str = str.replace(/(?:<|&lt;)@(\d{17,20})(?:>|&gt;)/g, (match, p1) => {
+				for (let i in m) {
+					if (m[i].user.id === p1) {
+						return `<span class="mention">@${m[i].user.username}</span>`;
+					}
+				}
+				return `<span class="mention">${match}</span>`;
+			});
 
 			str = str.replace(/\n/g, '<br>');
 
 			return str;
 		},
+		hlRegex: RegexColorizer.colorizeText, // highlight regex
 		getLen(obj, ignore = []) {
 			let count = 0;
 			for (let key in obj) {
@@ -270,6 +292,23 @@ var page = new Vue({
 					count++;
 			}
 			return count;
+		},
+		escapeHTML(text) {
+			return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+		},
+		resolveUser(userID) {
+			if (userID === this.user.id) {
+				return (this.user.pfp ? `<img class="pfp mid" src="${this.user.pfp}">` : '') +
+				`<span class="mid">${this.escapeHTML(this.user.username)}<span class="gray">#${this.user.discriminator}</span></span>`;
+			}
+			let m = this.gMembers;
+			for (let i in m) {
+				if (m[i].user.id === userID) {
+					return (m[i].user.avatar ? `<img class="pfp mid" src="https://cdn.discordapp.com/avatars/${m[i].user.id}/${m[i].user.avatar}.${m[i].user.avatar.startsWith('a_') ? 'gif' : 'png'}">` : '') +
+					`<span class="mid">${this.escapeHTML(m[i].user.username)}<span class="gray">#${m[i].user.discriminator}</span></span>`;
+				}
+			}
+			return userID;
 		}
 	},
 	computed: {
@@ -337,6 +376,7 @@ async function loadGuildSettings(gID) {
 			//page.unsaved = false;
 			page.gRoles = gData.roles;
 			page.gChannels = gData.channels;
+			page.gMembers = gData.members || [];
 	    } else {
 	        showNotif('error', 'Failed to load guild settings.', 6000);
 	    }

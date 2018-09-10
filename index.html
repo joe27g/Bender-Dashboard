@@ -14,12 +14,13 @@
     <meta name="og:url" content="https://dashboard.benderbot.co">
     <link rel="stylesheet" href="./style-v0.9.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.6.2/darkly/bulmaswatch.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone-with-data.min.js"></script>
-    <script src="https://unpkg.com/simple-markdown"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.13/builds/moment-timezone-with-data.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-markdown@0.4.2/simple-markdown.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlightjs@9.10.0/styles/monokai-sublime.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlightjs@9.10.0/highlight.pack.min.js"></script>
+    <script src="./regex-colorizer.js"></script>
     <script src='https://www.paypalobjects.com/js/external/api.js'></script>
     <script src="./timezoneData.js"></script>
     <script src="./dropdowns.js"></script>
@@ -249,7 +250,7 @@
                 </div>
             </div>
         </div>
-        <span class="key">Timezone:</span>
+        <span class="key">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Timezone:</span>
         <div class="dd">
             <div class="dd-trigger">
                 <button class="button" @click="openDropdown = openDropdown === 'tz' ? null : 'tz'">
@@ -324,7 +325,7 @@
             </div>
         </div>
         <div class="smallToggle">
-            <span class="key">Raw</span>
+            <span class="key">Edit</span>
             <label class="switch small">
                 <input type="checkbox" v-model="previewEnabled">
                 <span class="slider round"></span>
@@ -472,7 +473,7 @@
     <div class="text-setting">
         <span class="key">Message:</span>
         <div class="smallToggle">
-            <span class="key">Raw</span>
+            <span class="key">Edit</span>
             <label class="switch small">
                 <input type="checkbox" v-model="previewEnabled">
                 <span class="slider round"></span>
@@ -744,14 +745,14 @@
     <div class="header"><span class="bold">Tags</span></div>
     <span class="info">Tags are used like simple commands; if you use Bender's prefix + the tag name, you get a response.<br>For example, you could make a tag "hello" with the response "world." Details about variables you can use, i.e. <span class="code">{args}</span>, can be found <a href="https://benderbot.co/commands#tag" target="_blank">here.</a></span>
     <div>
-        <span class="key">Raw</span>
+        <span class="key">Edit</span>
         <label class="switch small">
             <input type="checkbox" v-model="previewEnabled">
             <span class="slider round"></span>
         </label>
         <span class="key">&nbsp;&nbsp;Preview</span>
     </div>
-    <table id="tag_list" class="table"><tbody>
+    <table id="tag_list" class="table wide-table"><tbody>
         <tr>
             <th>Tag Name</th>
             <th>Tag Content</th>
@@ -784,7 +785,7 @@
         <span class="key">Search case:</span> <input id="search-input" type="text" placeholder="Case" v-model="searchValue">
     </div>
     <div class="setting" v-else><span class="gray">No mod logs yet.</span></div>
-    <table id="modlog_list" class="table"><tbody>
+    <table id="modlog_list" class="table wide-table"><tbody>
         <tr>
             <th>Case #</th>
             <th>Type</th>
@@ -796,8 +797,8 @@
         <tr v-for="(data, key, index) in gSettings.modlog">
             <td>{{ index+1 }}</td>
             <td class="modlog-action">{{ data.action.replace('cmd-', '') }}</td>
-            <td>{{ data.target }}</td>
-            <td>{{ data.moderator }}</td>
+            <td v-html="resolveUser(data.target)"></td>
+            <td v-html="resolveUser(data.moderator)"></td>
             <td v-html="data.extras ? data.extras.reason ? parseMD(data.extras.reason) : '&amp;lt;not provided&amp;gt;' : '&amp;lt;not provided&amp;gt;'"></td>
             <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
         </tr>
@@ -805,7 +806,7 @@
 </div><div id="aliases" v-show="selectedGuildID && column === 'aliases'">
     <div class="header"><span class="bold">Aliases</span></div>
     <span class="info">Aliases are used to give commands an alternative name.</span>
-    <table id="aliases_list" class="table"><tbody>
+    <table id="aliases_list" class="table wide-table"><tbody>
         <tr>
             <th>Alias</th>
             <th>Command</th>
@@ -835,26 +836,73 @@
     </div>
     <span v-else class="gray">Max number of aliases reached; Cannot add more.</span>
 </div><div id="mutes" v-show="selectedGuildID && column === 'mutes'">
-        <div class="header"><span class="bold">Mutes</span></div>
-        <div class="setting" v-if="getLen(gSettings.mutes, ['role', 'default']) > 0">
-            <span class="key">There {{ getLen(gSettings.mutes, ['role', 'default']) > 1 ? 'are' : 'is' }} currently {{ getLen(gSettings.mutes, ['role', 'default']) }} active mute{{ getLen(gSettings.mutes, ['role', 'default']) > 1 ? 's' : '' }}.</span>
-        </div>
-        <div class="setting" v-else><span class="gray">No active mutes currently.</span></div>
-        <table id="mutes_list" class="table"><tbody>
-            <tr>
-                <th>User ID</th>
-                <th>Issuer ID</th>
-                <th>Ends at</th>
-                <th>Reason</th>
-            </tr>
-            <tr v-for="(data, userID) in gSettings.mutes" v-if="userID !== 'role' && userID !== 'default'">
-                <td>{{ userID }}</td>
-                <td>{{ data.issuer }}</td>
-                <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
-                <td>{{ data.reason }}</td>
-            </tr>
-        </tbody></table>
-    </div></section>
+    <div class="header">
+        <span class="bold">Mutes</span>
+    </div>
+    <div class="setting" v-if="getLen(gSettings.mutes, ['role', 'default']) > 0">
+        <span class="key">There {{ getLen(gSettings.mutes, ['role', 'default']) > 1 ? 'are' : 'is' }} currently {{ getLen(gSettings.mutes, ['role', 'default']) }} active mute{{ getLen(gSettings.mutes, ['role', 'default']) > 1 ? 's' : '' }}.</span>
+    </div>
+    <div class="setting" v-else>
+        <span class="gray">No active mutes currently.</span>
+    </div>
+    <table id="mutes_list" class="table wide-table"><tbody>
+        <tr>
+            <th>User ID</th>
+            <th>Issuer ID</th>
+            <th>Ends at</th>
+            <th>Reason</th>
+        </tr>
+        <tr v-for="(data, userID) in gSettings.mutes" v-if="userID !== 'role' && userID !== 'default'">
+            <td v-html="resolveUser(userID)"></td>
+            <td v-html="resolveUser(data.issuer)"></td>
+            <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
+            <td>{{ data.reason }}</td>
+        </tr>
+    </tbody></table>
+</div><div id="filter" v-show="selectedGuildID && column === 'filter'">
+    <div class="header">
+        <span class="bold">Filter</span>
+        <label class="switch">
+            <input type="checkbox" v-model="gSettings.filter.enabled">
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <span class="info">The filter is used to prevent members from typing certain words/phrases in chat.<br>It works using standard JavaScript regex syntax. For more info, see <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions" target="_blank">this page.</a></span>
+    <!-- TODO: other filter settings like actions and message -->
+    <div>
+        <span class="key">Edit</span>
+        <label class="switch small">
+            <input type="checkbox" v-model="previewEnabled">
+            <span class="slider round"></span>
+        </label>
+        <span class="key">&nbsp;&nbsp;Preview</span>
+    </div>
+    <table id="filter_list" class="table wide-table"><tbody>
+        <tr>
+            <th>#</th>
+            <th>Pattern</th>
+        </tr>
+        <tr v-for="(pattern, index) in gSettings.filter.patterns">
+            <td>{{ index+1 }}</td>
+            <td>
+                <textarea v-show="!previewEnabled" v-model="gSettings.filter.patterns[index]">{{ pattern }}</textarea>
+                <div v-show="previewEnabled" class="regex" v-html="hlRegex(pattern)"></div>
+            </td>
+            <td><a @click="deletePattern(name)" class="remove"></a></td>
+        </tr>
+        <tr v-if="getLen(gSettings.filter.patterns) === 0">
+            <td><span class="gray">No filter patterns added.</span></td>
+        </tr>
+    </tbody></table>
+    <div class="setting" v-if="getLen(gSettings.filter.patterns) < 20">
+        <span class="key">Add a new pattern:</span>
+        <textarea id="new-pattern" placeholder="New filter item" v-model="filterTemp">{{ filterTemp }}</textarea>
+        <button class="button" @click="addPattern()">
+            <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+        </button>
+    </div>
+    <span v-else class="gray">Max number of items reached (20); Cannot add more.</span>
+</div></section>
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>
 <div id="notif" class=""><span id="notif-text"></span></div>
 </div>
