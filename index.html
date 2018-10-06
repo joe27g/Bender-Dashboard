@@ -143,6 +143,9 @@
             <br>
             <a v-show="selectedGuildID" @click="paypalInfo.guilds.push(selectedGuildID)" :style="paypalInfo.guilds.length < maxPremiumGuilds && paypalInfo.guilds.indexOf(selectedGuildID) === -1 ? '' : 'pointer-events:none;opacity:.5;'">Add selected server ({{ getGuild(selectedGuildID).name }})</a>
             <span v-show="!selectedGuildID" class="gray">Select a server at the top to add it to Bender Pro.</span>
+            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=PJZ5K5YLMQDJU">
+                <img src="https://www.paypalobjects.com/en_US/i/btn/btn_unsubscribe_LG.gif" border="0">
+            </a>
         </div>
         <span v-else>Plan: <span class="gray">No subscription to Bender Pro.</span></span>
     </div>
