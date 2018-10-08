@@ -23,6 +23,7 @@
     <script src="./regex-colorizer.js"></script>
     <script src='https://www.paypalobjects.com/js/external/api.js'></script>
     <script src="./timezoneData.js"></script>
+    <script src="./commandList.js"></script>
     <script src="./dropdowns.js"></script>
 </head>
 <body><div id="app">
@@ -90,14 +91,11 @@
                     </div>
                 </div>
                 <div id="guilds-dropdown" class="dd-content" v-show="openDropdown === 'guild'">
-                    <div v-for="guild in guilds" v-show="selectedGuildID !== guild.id">
-                        <label :for="'G-' + guild.id">
-                            <input type="radio" :id="'G-' + guild.id" :value="guild.id" v-model="selectedGuildID" class="hidden">
-                            <img v-if="!!guild.iconSrc" class="guild-icon" :src="guild.iconSrc">
-                            <span class="guild-name">{{ guild.name }}</span>
-                        </label>
-                        <br>
-                    </div>
+                    <label v-for="guild in guilds" v-show="selectedGuildID !== guild.id" :for="'G-' + guild.id">
+                        <input type="radio" :id="'G-' + guild.id" :value="guild.id" v-model="selectedGuildID" class="hidden">
+                        <img v-if="!!guild.iconSrc" class="guild-icon" :src="guild.iconSrc">
+                        <span class="guild-name">{{ guild.name }}</span>
+                    </label>
                     <div v-if="guilds.length === 0">
                         <span class="gray">No servers with "Manage Server" permission.</span>
                     </div>
@@ -338,25 +336,25 @@
     </div>
     <div class="text-setting">
         <span class="key">Welcome DM:</span>
-        <textarea v-show="!previewEnabled" placeholder="Welcome to {server}, please read the rules and enjoy!" v-model="gSettings.memberLog['join-dm']">{{ gSettings.memberLog['join-dm'] }}</textarea>
+        <textarea v-show="!previewEnabled" placeholder="Example: Welcome to {server}, please read the rules and enjoy!" v-model="gSettings.memberLog['join-dm']">{{ gSettings.memberLog['join-dm'] }}</textarea>
         <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog['join-dm'] || '')"></div>
         <span class="info">Message sent to a user's DM when they join the server.</span>
     </div>
     <div class="text-setting">
         <span class="key">Welcome message:</span>
-        <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.join" placeholder="Welcome to {server}, {member}!">{{ gSettings.memberLog.join }}</textarea>
+        <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.join" placeholder="Example: Welcome to {server}, {member}!">{{ gSettings.memberLog.join }}</textarea>
         <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.join || '')"></div>
         <span class="info">Message sent when someone joins the server.</span>
     </div>
     <div class="text-setting">
         <span class="key">Leave message:</span>
-        <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.leave" placeholder="Goodbye {user}, we won't miss you!">{{ gSettings.memberLog.leave }}</textarea>
+        <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.leave" placeholder="Example: Goodbye {user}, we won't miss you!">{{ gSettings.memberLog.leave }}</textarea>
         <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.leave || '')"></div>
         <span class="info">Message sent when someone leaves the server.</span>
     </div>
     <div class="text-setting">
         <span class="key">Ban message:</span>
-        <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.ban" placeholder="{user} was unable to follow the rules and has been banned!">{{ gSettings.memberLog.ban }}</textarea>
+        <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.ban" placeholder="Example: {user} was unable to follow the rules and has been banned!">{{ gSettings.memberLog.ban }}</textarea>
         <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.ban || '')"></div>
         <span class="info">Message sent when someone is banned from the server.</span>
     </div>
@@ -761,21 +759,26 @@
             <th>Tag Content</th>
         </tr>
         <tr v-for="(content, name) in gSettings.tags">
-            <td>{{ name }}</td>
+            <td><span class="csfont">{{ (gSettings.prefix || ';') + name }}</span></td>
             <td>
                 <textarea v-show="!previewEnabled" v-model="gSettings.tags[name]">{{ content }}</textarea>
                 <div v-show="previewEnabled" v-html="parseMD(content)"></div>
             </td>
-            <td><a @click="deleteTag(name)" class="remove"></a></td>
+            <td><a @click="delete('tag', name)" class="remove"></a></td>
         </tr>
         <tr v-if="getLen(gSettings.tags) === 0">
             <td><span class="gray">No tags added.</span></td>
         </tr>
     </tbody></table>
     <div class="setting" v-if="getLen(gSettings.tags) < 50">
-        <span class="key">Add a new tag:</span> <input id="new-tag-name" type="text" placeholder="New tag name" v-model="tagTemp.name">
-        <textarea id="new-tag" placeholder="New tag content" v-model="tagTemp.content">{{ tagTemp.content }}</textarea>
-        <button class="button" @click="addTag()">
+        <div class="group">
+            <div>
+                <span class="key">Add a new tag:</span> <input :class="temp.tag_name && aliasMap[temp.tag_name.toLowerCase()] ? 'error' : ''" type="text" placeholder="New tag name" v-model="temp.tag_name">
+            </div>
+            <span v-if="temp.tag_name && aliasMap[temp.tag_name.toLowerCase()]" class="error">Tags cannot have the same name as commands.</span>
+        </div>
+        <textarea placeholder="New tag content" v-model="temp.tag_content">{{ temp.tag_content }}</textarea>
+        <button class="button add" @click="add('tag')" :disabled="!temp.tag_name || !temp.tag_content || aliasMap[temp.tag_name.toLowerCase()]">
             <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
         </button>
     </div>
@@ -815,9 +818,9 @@
             <th>Command</th>
         </tr>
         <tr v-for="(command, name) in gSettings.aliases">
-            <td>{{ name }}</td>
-            <td><span class="code">{{ gSettings.prefix || ';' }}{{ command }}</span></td>
-            <td><a @click="deleteAlias(name)" class="remove"></a></td>
+            <td><span class="csfont">{{ (gSettings.prefix || ';') + name }}</span></td>
+            <td><span class="code">{{ (gSettings.prefix || ';') + command }}</span></td>
+            <td><a @click="delete('alias', name)" class="remove"></a></td>
         </tr>
         <tr v-if="getLen(gSettings.aliases) === 0">
             <td><span class="gray">No aliases added.</span></td>
@@ -825,15 +828,32 @@
     </tbody></table>
     <div class="setting" v-if="getLen(gSettings.aliases) < 50">
         <span class="key">Add a new alias:</span>
-        <!-- TODO: Dropdown of all available commands (or just input) -->
-            <select v-model="aliasTemp.value">
-                <option selected hidden>Command</option>
-                <option value="ban">gibemotes</option>
-                <option value="role">promote</option>
-                <option value="mute">shutup</option>
-            </select>
-        <input id="new-alias-name" type="text" placeholder="New alias" v-model="aliasTemp.name">
-        <button class="button" @click="addAlias()">
+        <div class="dd">
+            <div class="dd-trigger">
+                <div class="button" @click="openDropdown = openDropdown === 'alias' ? null : 'alias'">
+                    <span v-if="!temp.alias_content">Choose a command...</span>
+                    <div v-if="temp.alias_content">
+                        <span class="csfont">{{ (gSettings.prefix || ';') + temp.alias_content }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dd-content" v-show="openDropdown === 'alias'">
+                <div v-for="(data, group) in commandList">
+                    <span class="gray">{{ groupNames[group] }}</span>
+                    <label v-for="(aliases, command) in data" :for="'AL-' + command">
+                        <input type="radio" :id="'AL-' + command" :value="command" v-model="temp.alias_content" class="hidden">
+                        <span class="csfont">{{ (gSettings.prefix || ';')+command }}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="group">
+            <div>
+                <input :class="temp.alias_name && aliasMap[temp.alias_name.toLowerCase()] ? 'error' : ''" type="text" placeholder="New alias name" v-model="temp.alias_name">
+            </div>
+            <span v-if="temp.alias_name && aliasMap[temp.alias_name.toLowerCase()]" class="error">Aliases cannot have the same name<br>as other commands.</span>
+        </div>
+        <button class="button add" @click="add('alias')">
             <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
         </button>
     </div>
@@ -871,7 +891,51 @@
         </label>
     </div>
     <span class="info">The filter is used to prevent members from typing certain words/phrases in chat.<br>It works using standard JavaScript regex syntax. For more info, see <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions" target="_blank">this page.</a></span>
-    <!-- TODO: other filter settings like actions and message -->
+    <br>
+    <br>
+    <div class="columns">
+        <div class="column">
+            <span class="key">Actions:</span>
+            <span v-for="num in [1,2,3]">
+                <div class="dd">
+                    <div class="dd-trigger">
+                        <button class="button" @click="openDropdown = openDropdown === 'faction'+num ? null : 'faction'+num">
+                            <span v-if="!gSettings.filter['action'+num]">Warn</span>
+                            <div v-if="gSettings.filter['action'+num]">
+                                <span>{{ gSettings.filter['action'+num].substr(0,1).toUpperCase() + gSettings.filter['action'+num].substr(1) }}</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div v-show="openDropdown === 'faction'+num" class="dd-content">
+                        <div><label :for="'faction'+num+'-warn'">
+                            <input type="radio" :id="'faction'+num+'-warn'" value="warn" v-model="gSettings.filter['action'+num]" class="hidden">
+                            <span>Warn</span>
+                        </label><br></div>
+                        <div><label :for="'faction'+num+'-mute'">
+                            <input type="radio" :id="'faction'+num+'-mute'" value="mute" v-model="gSettings.filter['action'+num]" class="hidden">
+                            <span>Mute</span>
+                        </label><br></div>
+                        <div><label :for="'faction'+num+'-kick'">
+                            <input type="radio" :id="'faction'+num+'-kick'" value="kick" v-model="gSettings.filter['action'+num]" class="hidden">
+                            <span>Kick</span>
+                        </label><br></div>
+                        <div><label :for="'faction'+num+'-ban'">
+                            <input type="radio" :id="'faction'+num+'-ban'" value="ban" v-model="gSettings.filter['action'+num]" class="hidden">
+                            <span>Ban</span>
+                        </label><br></div>
+                    </div>
+                </div>
+                <span v-if="num !== 3" class="key">&nbsp;&gt;&gt;</span>
+            </span>
+        </div>
+        <div class="column">
+            <span class="key">Message:</span>
+            <textarea v-show="!previewEnabled" placeholder="Blacklisted phrase" v-model="gSettings.filter.message">{{ gSettings.filter.message }}</textarea>
+            <div v-show="previewEnabled" v-html="parseMD(gSettings.filter.message || '')"></div>
+            <span class="info">This message will be shown whenever a user violates the filter and a message is removed.</span>
+        </div>
+    </div>
+    <br>
     <div>
         <span class="key">Edit</span>
         <label class="switch small">
@@ -891,7 +955,7 @@
                 <textarea v-show="!previewEnabled" v-model="gSettings.filter.patterns[index]">{{ pattern }}</textarea>
                 <div v-show="previewEnabled" class="regex" v-html="hlRegex(pattern)"></div>
             </td>
-            <td><a @click="deletePattern(name)" class="remove"></a></td>
+            <td><a @click="delete('filter', name)" class="remove"></a></td>
         </tr>
         <tr v-if="getLen(gSettings.filter.patterns) === 0">
             <td><span class="gray">No filter patterns added.</span></td>
@@ -899,12 +963,124 @@
     </tbody></table>
     <div class="setting" v-if="getLen(gSettings.filter.patterns) < 20">
         <span class="key">Add a new pattern:</span>
-        <textarea id="new-pattern" placeholder="New filter item" v-model="filterTemp">{{ filterTemp }}</textarea>
-        <button class="button" @click="addPattern()">
+        <textarea id="new-pattern" placeholder="New filter item" v-model="temp.filter">{{ temp.filter }}</textarea>
+        <button class="button add" @click="add('filter')">
             <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
         </button>
     </div>
     <span v-else class="gray">Max number of items reached (20); Cannot add more.</span>
+</div><div id="namefilter" v-show="selectedGuildID && column === 'namefilter'">
+    <div class="header">
+        <span class="bold">Name Filter</span>
+        <label class="switch">
+            <input type="checkbox" v-model="gSettings.namefilter.enabled">
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <span class="info">Automatically bans any members with names that match the patterns you add below. Uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions" target="_blank">JavaScript regex syntax</a>.</span>
+    <br>
+    <br>
+    <div>
+        <span class="key">Edit</span>
+        <label class="switch small">
+            <input type="checkbox" v-model="previewEnabled">
+            <span class="slider round"></span>
+        </label>
+        <span class="key">&nbsp;&nbsp;Preview</span>
+    </div>
+    <table id="namefilter_list" class="table wide-table"><tbody>
+        <tr>
+            <th>#</th>
+            <th>Pattern</th>
+        </tr>
+        <tr v-for="(pattern, index) in gSettings.namefilter.patterns">
+            <td>{{ index+1 }}</td>
+            <td>
+                <textarea v-show="!previewEnabled" v-model="gSettings.namefilter.patterns[index]">{{ pattern }}</textarea>
+                <div v-show="previewEnabled" class="regex" v-html="hlRegex(pattern)"></div>
+            </td>
+            <td><a @click="delete('namefilter', name)" class="remove"></a></td>
+        </tr>
+        <tr v-if="getLen(gSettings.namefilter.patterns) === 0">
+            <td><span class="gray">No name filter patterns added.</span></td>
+        </tr>
+    </tbody></table>
+    <div class="setting" v-if="getLen(gSettings.namefilter.patterns) < 20">
+        <span class="key">Add a new pattern:</span>
+        <textarea id="new-pattern" placeholder="New filter item" v-model="temp.namefilter">{{ temp.namefilter }}</textarea>
+        <button class="button add" @click="add('namefilter')">
+            <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+        </button>
+    </div>
+    <span v-else class="gray">Max number of items reached (20); Cannot add more.</span>
+</div><div id="names" v-show="selectedGuildID && column === 'names'">
+    <div class="header">
+        <span class="bold">Name History</span>
+    </div>
+    <div class="setting" v-if="getLen(gSettings.nicknames) > 0">
+        <span class="info">There {{ getLen(gSettings.nicknames) > 1 ? 'are' : 'is' }} currently {{ getLen(gSettings.nicknames) }} member{{ getLen(gSettings.nicknames) > 1 ? 's' : '' }} with name changes recorded.</span>
+    </div>
+    <div class="setting" v-else>
+        <span class="gray">No members with name changes recorded.</span>
+    </div>
+    <table id="name_history" class="table wide-table"><tbody>
+        <tr>
+            <th>User</th>
+            <th>Nicknames</th>
+            <th>Usernames</th>
+        </tr>
+        <tr v-for="(data, userID) in gSettings.nicknames">
+            <td v-html="resolveUser(userID)"></td>
+            <td>{{ data.join(', ') }}</td>
+            <td>usernames go here???</td>
+        </tr>
+    </tbody></table>
+</div><div id="giveaways" v-show="selectedGuildID && column === 'giveaways'">
+    <div class="header">
+        <span class="bold">Giveaways</span>
+    </div>
+    <div class="setting" v-if="getLen(gSettings.giveaways) > 0">
+        <span class="info">There {{ getLen(gSettings.giveaways) > 1 ? 'are' : 'is' }} {{ getLen(gSettings.giveaways) }} active giveaway{{ getLen(gSettings.giveaways) > 1 ? 's' : '' }}.</span>
+    </div>
+    <div class="setting" v-else>
+        <span class="gray">No active giveaways.</span>
+    </div>
+    <table id="giveaways" class="table wide-table"><tbody>
+        <tr>
+            <th>ID</th>
+            <th>Created by</th>
+            <th>Prize</th>
+            <th>In channel</th>
+            <th>Num. of winners</th>
+        </tr>
+        <tr v-for="(data, id) in gSettings.giveaways">
+            <td>{{ id }}</td>
+            <td v-html="resolveUser(data.creator)"></td>
+            <td>{{ data.prize }}</td>
+            <td v-html="parseMD('<#'+data.channel+'>')"></td>
+            <td>{{ data.winners || 1 }}</td>
+        </tr>
+    </tbody></table>
+</div><div id="cmdstatus" v-show="selectedGuildID && column === 'cmdstatus'">
+    <div class="header">
+        <span class="bold">Disabled Commands & Groups</span>
+    </div>
+    <table v-for="(data, group) in commandList" class="table"><tbody>
+        <tr>
+            <th>{{ groupNames[group] }}</th>
+            <th><label class="switch small">
+                <input type="checkbox" v-model="gSettings.groupStatus[group]">
+                <span class="slider round"></span>
+            </label></th>
+        </tr>
+        <tr v-for="(aliases, command) in data" v-show="gSettings.groupStatus[group]">
+            <td><span class="code">{{ (gSettings.prefix || ';')+command }}</span></td>
+            <td><label class="switch small">
+                <input type="checkbox" v-model="gSettings.commandStatus[command]">
+                <span class="slider round"></span>
+            </label></td>
+        </tr>
+    </tbody></table>
 </div></section>
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>
 <div id="notif" class=""><span id="notif-text"></span></div>

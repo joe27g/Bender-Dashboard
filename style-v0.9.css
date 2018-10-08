@@ -153,6 +153,18 @@ input, textarea {
 .text-setting > input {
     width: 80%;
 }
+input.error {
+    color: #fff;
+    background-color: rgba(255, 0, 0, 0.6);
+}
+.error {
+    color: #d11;
+}
+.group {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0 10px;
+}
 
 #agr-wait+span {
     margin-left: 10px;
@@ -332,14 +344,17 @@ span.code {
     padding: 2px 4px 3px;
     border-radius: 3px;
 }
+.csfont {
+    font-family: Consolas;
+}
 .gray {
     color: rgba(255, 255, 255, 0.5);
 }
 
-a:not([class]) {
+a:not([class]):not(#sidenav-close) {
     color: #faa61a !important;
 }
-a:not([class]):hover {
+a:not([class]):not(#sidenav-close):hover {
     color: #fad61a !important;
 }
 
@@ -395,13 +410,14 @@ a:not([class]):hover {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 15px;
 }
-.dd-content > * {
+.dd-content label {
     max-width: 300px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     padding: 5px 10px;
     cursor: pointer;
+    display: block;
 }
 table {
     margin: 0 auto;
@@ -547,6 +563,9 @@ textarea#new-tag {
 }
 #tag_list textarea {
     width: 100%;
+}
+.button.add {
+    vertical-align: middle;
 }
 img.add {
     height: 16px;

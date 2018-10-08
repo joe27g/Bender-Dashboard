@@ -55,8 +55,8 @@ function getCookie(name) {
 
 paypal.use( ['login'], function (login) {
   login.render ({
-	"appid":"AWH-Iqw8uRLsMZH4j_XI59OrCy2As3ueNRTD-ReaeCKc7ZSJGU9MMQkxHKYvjSMSTMKi2mE4fjHBG9m8",
-	"scopes":"openid profile email",
+	"appid":"ASalasGVCX8iXiOGrGrm9PqGuTW-4fbaPikTmZN4mWzLvhFwsA2N5rFok2FcwVLbT0GHGZQAIWeWwg-k",
+	"scopes":"openid profile",
 	"containerid":"paypalLogin",
 	"locale":"en-us",
 	"returnurl":"https://api.benderbot.co/paypal_login"
@@ -79,7 +79,6 @@ window.nav = [
 	}, {
 		name: 'Giveaways',
 		id: 'giveaways',
-		cs: true,
 		ro: true
 	}, {
 		name: 'Tags',
@@ -96,8 +95,7 @@ window.nav = [
 		id: 'filter'
 	}, {
 		name: 'Name Filter',
-		id: 'namefilter',
-		cs: true
+		id: 'namefilter'
 	}], [{
 		name: 'Logging Settings',
 		id: 'logging'
@@ -112,7 +110,6 @@ window.nav = [
 	}, {
 		name: 'Name History',
 		id: 'names',
-		cs: true,
 		ro: true
 	}], [{
 		name: 'Permissions',
@@ -127,8 +124,7 @@ window.nav = [
 		id: 'selfroles'
 	}, {
 		name: 'Disabled Commands & Groups',
-		id: 'cmdstatus',
-		cs: true
+		id: 'cmdstatus'
 	}]
 ];
 
@@ -162,18 +158,13 @@ var page = new Vue({
 		tzRegions: window.tzRegions,
 		tzs: window.tzs,
 		navSections: window.nav,
+		commandList: window.commandList || {},
+		aliasMap: window.aliasMap || {},
+		groupNames: window.groupNames || {},
 		moment: window.moment,
 		paypalInfo: null,
 		loading: false,
-		tagTemp: {
-			name: '',
-			content: ''
-		},
-		aliasTemp: {
-			name: '',
-			content: ''
-		},
-		filterTemp: '',
+		temp: {},
 		searchValue: null,
 		previewEnabled: false
 	},
@@ -197,45 +188,63 @@ var page = new Vue({
 	methods: {
 		reloadGSettings: window.loadGuildSettings,
 		saveGSettings: window.saveGuildSettings,
-		addTag: function() {
-			if (!this.tagTemp.name || !this.tagTemp.content) {
-				showNotif('error', 'Needs a name and content!', 3000); return;
+		add: function(type) {
+			switch (type) {
+				case 'tag':
+					if (!this.temp.tag_name || !this.temp.tag_content) {
+						showNotif('error', 'Tag needs a name and content!', 3000); return;
+					}
+					this.gSettings.tags[this.temp.tag_name] = this.temp.tag_content;
+					this.temp.tag_name = null;
+					this.temp.tag_content = null;
+					break;
+				case 'alias':
+					if (!this.temp.alias_name || !this.temp.alias_content) {
+						showNotif('error', 'Alias needs a name and command!', 3000); return;
+					}
+					this.gSettings.aliases[this.temp.alias_name] = this.temp.alias_content;
+					this.temp.alias_name = null;
+					this.temp.alias_content = null;
+					break;
+				case 'filter':
+					// TODO: check for errors in regex (invalid sequences)
+					if (!this.temp.filter) {
+						showNotif('error', 'Invalid regex content in filter.', 3000); return;
+					}
+					this.gSettings.filter.patterns.push(this.temp.filter);
+					this.temp.filter = null;
+					break;
+				case 'namefilter':
+					// TODO: check for errors in regex (invalid sequences)
+					if (!this.temp.namefilter) {
+						showNotif('error', 'Invalid regex content in name filter.', 3000); return;
+					}
+					this.gSettings.namefilter.patterns.push(this.temp.namefilter);
+					this.temp.namefilter = null;
+					break;
 			}
-			this.gSettings.tags[this.tagTemp.name] = this.tagTemp.content;
-			this.tagTemp = {
-				name: '',
-				content: ''
-			};
+			//this.$forceUpdate();
 		},
-		deleteTag: function(name) {
-			delete this.gSettings.tags[name];
-			page.$forceUpdate();
-		},
-		addAlias: function() {
-			if (!this.aliasTemp.name || !this.aliasTemp.content) {
-				showNotif('error', 'Needs a name and command!', 3000); return;
+		// TODO: this function doesn't work/ isn't being called properly
+		delete: function(type, index) {
+			console.log(`deleting ${index} of type ${type}`);
+			switch (type) {
+				case 'tag':
+					delete this.gSettings.tags[index];
+					break;
+				case 'alias':
+					delete this.gSettings.aliases[index];
+					break;
+				case 'filter':
+					this.gSettings.filter.patterns.splice(index, 1);
+					break;
+				case 'namefilter':
+					this.gSettings.namefilter.patterns.splice(index, 1);
+					break;
 			}
-			this.gSettings.aliases[this.aliasTemp.name] = this.aliasTemp.content;
-			this.aliasTemp = {
-				name: '',
-				content: ''
-			};
-		},
-		deleteAlias: function(name) {
-			delete this.gSettings.aliases[name];
-			page.$forceUpdate();
-		},
-		addPattern: function() {
-			if (!this.filterTemp) {
-				// TODO: check for errors in regex (invalid sequences)
-				showNotif('error', 'Invalid regex content.', 3000); return;
-			}
-			this.gSettings.filter.patterns.push(this.filterTemp);
-			this.filterTemp = '';
-		},
-		deletePattern: function(index) {
-			delete this.gSettings.filter.patterns[index];
-			page.$forceUpdate();
+			//this.$forceUpdate();
+			setTimeout( this.$forceUpdate, 69);
+			setTimeout( this.$forceUpdate, 690);
 		},
 		parseMD: function(str) {
 			// parse markdown (i.e. underlining) and syntax highlighting
