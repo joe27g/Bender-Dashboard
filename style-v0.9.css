@@ -556,6 +556,11 @@ a.discord img {
     min-width: 70%;
     margin-top: 20px;
 }
+.skinny-table {
+    display: inline-block;
+    margin: 10px;
+    vertical-align: top;
+}
 textarea#new-tag {
     min-width: unset;
     vertical-align: top;

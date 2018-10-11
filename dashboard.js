@@ -381,6 +381,14 @@ async function loadGuildSettings(gID) {
 	    if (gData) {
 	        showNotif('success', 'Loaded guild settings!', 4000);
 			gData.settings.guildID = gID;
+			for (let group in commandList) {
+				if (gData.settings.groupStatus[group] === undefined)
+					gData.settings.groupStatus[group] = true;
+				for (let command in commandList[group]) {
+					if (gData.settings.commandStatus[command] === undefined)
+						gData.settings.commandStatus[command] = true;
+				}
+			}
 	        page.gSettings = gData.settings;
 			//page.unsaved = false;
 			page.gRoles = gData.roles;
