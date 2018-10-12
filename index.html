@@ -1032,7 +1032,7 @@
         <tr v-for="(data, userID) in gSettings.nicknames">
             <td v-html="resolveUser(userID)"></td>
             <td>{{ data.join(', ') }}</td>
-            <td>usernames go here???</td>
+            <td>{{ gNames[userID] ?  gNames[userID].join(', ') : 'N/A' }}</td>
         </tr>
     </tbody></table>
 </div><div id="giveaways" v-show="selectedGuildID && column === 'giveaways'">

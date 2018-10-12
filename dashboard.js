@@ -390,6 +390,7 @@ async function loadGuildSettings(gID) {
 				}
 			}
 	        page.gSettings = gData.settings;
+			page.gNames = gData.usernames;
 			//page.unsaved = false;
 			page.gRoles = gData.roles;
 			page.gChannels = gData.channels;
