@@ -126,7 +126,7 @@
         <span class="gray" v-if="paypalInfo.email">{{ paypalInfo.email }}</span>
         <br><br>
         <div v-if="paypalInfo.plan">
-            <span>Plan: {{ paypalInfo.plan.description }}</span> | <span class="gray">${{ paypalInfo.plan.amount }} {{ paypalInfo.plan.currency }} per {{ paypalInfo.plan.freq }}</span> | <span>State: {{ paypalInfo.plan.state }}</span>
+            <span>Plan: {{ paypalInfo.plan.description }}</span> | <span class="gray">${{ paypalInfo.plan.amount }} {{ paypalInfo.plan.currency }} per {{ paypalInfo.plan.freq }}</span> | <span>State: {{ paypalInfo.plan.state }}</span> <span v-if="paypalInfo.plan.state === 'Active'">| Valid until: {{ moment(paypalInfo.plan.valid_until).format('MMM Do YYYY, h:mma') }} UTC</span> <span v-if="paypalInfo.plan.state === 'Expired'">| Expired on: {{ moment(paypalInfo.plan.valid_until).format('MMM Do YYYY, h:mma') }} UTC</span>
             <br><br>
             <span>Use Bender Pro in servers:</span>
             <br>
