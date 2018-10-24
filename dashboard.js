@@ -4,7 +4,7 @@ function makeRequest (opts) {
 		xhr.open(opts.method, opts.url);
 		xhr.onload = function () {
 			if (this.status >= 200 && this.status < 300) {
-				resolve(xhr.response);
+				resolve(xhr.response || null);
 			} else {
 				reject({
 					status: this.status,
@@ -48,9 +48,12 @@ function showNotif (type, text, time) {
 
 // lazily copied from StackOverflow tbh
 function getCookie(name) {
-    function escape(s) { return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1'); };
-    var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
+    let match = document.cookie.match(RegExp('(?:^|;\\s*)' + (name).replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1') + '=([^;]*)'));
     return match ? match[1] : null;
+}
+// not from StackOverflow :poggers:
+function setCookie(name, value, expiry) {
+	return document.cookie = `${name}=${value}; domain=.benderbot.co; path=/; expires=${new Date(Date.now() + (expiry || 1000*60*60*24*365))}`;
 }
 
 paypal.use( ['login'], function (login) {
@@ -350,6 +353,22 @@ async function loadUserInfo() {
 	    } else {
 	        showNotif('error', 'Failed to load user info + guilds.', 6000);
 	    }
+	} else if (getCookie('refresh_token')) {
+		page.loading = true;
+	    let data = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/refresh', auth: getCookie('refresh_token')}).catch(console.error);
+		if (typeof data === 'string') {
+			try {
+				data = JSON.parse(data);
+			} catch(err) {
+				console.error(err);
+				return;
+			}
+		}
+        if (data) {
+			setCookie('token', data.access_token, (parseInt(data.expires_in) * 1000));
+			setCookie('refresh_token', data.refresh_token);
+	        return loadUserInfo();
+	    }
 	} else {
 	    showNotif('pending', 'Log in already u heckin nerd', 4000);
 	}
@@ -476,7 +495,23 @@ async function updatePaypalInfo() {
 			if (!firstPP)
 				showNotif('error', 'Failed to load PayPal info.', 6000);
         }
-    } else {
+    } else if (getCookie('pp_refresh_token')) {
+		page.loading = true;
+        let data = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/refresh_paypal', auth: getCookie('pp_refresh_token')}).catch(console.error);
+		if (typeof data === 'string') {
+			try {
+				data = JSON.parse(data);
+			} catch(err) {
+				console.error(err);
+				return;
+			}
+		}
+        if (data) {
+			setCookie('paypal_token', data.access_token, (parseInt(data.expires_in) * 1000));
+			setCookie('pp_refresh_token', data.refresh_token);
+			return updatePaypalInfo();
+        }
+	} else {
 		if (!firstPP)
 			showNotif('pending', 'Log in to PayPal already u heckin nerd', 4000);
     }
