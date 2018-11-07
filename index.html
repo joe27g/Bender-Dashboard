@@ -22,7 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/highlightjs@9.10.0/highlight.pack.min.js"></script>
     <script src="./regex-colorizer.js"></script>
     <script src='https://www.paypalobjects.com/js/external/api.js'></script>
-    <script src="./timezoneData.js"></script>
+    <script src="./constants.js"></script>
     <script src="./commandList.js"></script>
     <script src="./dropdowns.js"></script>
 </head>
@@ -890,6 +890,9 @@
             <span class="slider round"></span>
         </label>
     </div>
+    <div class="box is-warning" v-if="gSettings.filter.enabled && !gSettings.automod.enabled">
+        <span class="gray">Filter is not currently enabled because <a href="#automod">automod</a> is disabled.</span>
+    </div>
     <span class="info">The filter is used to prevent members from typing certain words/phrases in chat.<br>It works using standard JavaScript regex syntax. For more info, see <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions" target="_blank">this page.</a></span>
     <br>
     <br>
@@ -1081,6 +1084,257 @@
             </label></td>
         </tr>
     </tbody></table>
+</div><div id="automod" v-show="selectedGuildID && column === 'automod'">
+    <div class="header">
+        <span class="bold">Automod</span>
+        <label class="switch">
+            <input type="checkbox" v-model="gSettings.automod.enabled">
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <div class="setting">
+        <span class="key">Ignore members by </span>
+        <div class="dd">
+            <div class="dd-trigger">
+                <button class="button" @click="openDropdown = openDropdown === 'automod-ign' ? null : 'automod-ign'">
+                    <div v-if="gSettings.automod.ignore.type">
+                        <span>{{ ignorePermsTypes[gSettings.automod.ignore.type] }}</span>
+                    </div>
+                    <span v-else>None</span>
+                </button>
+            </div>
+            <div v-show="openDropdown === 'automod-ign'" class="dd-content">
+                <div><label for="automod-ign-0">
+                    <input type="radio" id="automod-ign-0" value="none" v-model="gSettings.automod.ignore.type" class="hidden">
+                    <span>None</span>
+                </label><br></div>
+                <div><label for="automod-ign-1">
+                    <input type="radio" id="automod-ign-1" value="role_hier" v-model="gSettings.automod.ignore.type" class="hidden">
+                    <span>{{ ignorePermsTypes.role_hier }}</span>
+                </label><br></div>
+                <div><label for="automod-ign-2">
+                    <input type="radio" id="automod-ign-2" value="role_list" v-model="gSettings.automod.ignore.type" class="hidden">
+                    <span>{{ ignorePermsTypes.role_list }}</span>
+                </label><br></div>
+                <div><label for="automod-ign-3">
+                    <input type="radio" id="automod-ign-3" value="discord_perm" v-model="gSettings.automod.ignore.type" class="hidden">
+                    <span>{{ ignorePermsTypes.discord_perm }}</span>
+                </label><br></div>
+            </div>
+        </div>
+        <span class="key">: </span>
+        <div class="dd" v-if="gSettings.automod.ignore.type === 'role_hier'">
+            <div class="dd-trigger">
+                <button class="button" @click="openDropdown = openDropdown === 'automod-ign-roleh' ? null : 'automod-ign-roleh'">
+                    <span v-if="!gSettings.automod.ignore.data" class="role-icon">@</span>
+                    <span v-if="!gSettings.automod.ignore.data">Choose a role...</span>
+                    <div v-if="gSettings.automod.ignore.data">
+                        <span class="role-icon">@</span>
+                        <span :style="getRole(gSettings.automod.ignore.data).cssColor">{{ getRole(gSettings.automod.ignore.data).name }}</span>
+                    </div>
+                </button>
+            </div>
+            <div v-show="openDropdown === 'automod-ign-roleh'" class="dd-content">
+                <div v-for="role in gRoles">
+                    <label :for="'AMIH-' + role.id">
+                        <input type="radio" :id="'AMIH-' + role.id" :value="role.id" v-model="gSettings.automod.ignore.data" class="hidden">
+                        <span :style="role.cssColor" class="role-icon">@</span>
+                        <span :style="role.cssColor">{{ role.name }}</span>
+                    </label>
+                    <br>
+                </div>
+                <div v-if="gRoles.length === 0">
+                    <span class="gray">No eligible roles.</span>
+                </div>
+            </div>
+        </div>
+        <div v-else-if="gSettings.automod.ignore.type === 'discord_perm'">
+            <div class="dd">
+                <div class="dd-trigger">
+                    <button class="button" @click="openDropdown = openDropdown === 'automod-ign-dis' ? null : 'automod-ign-dis'">
+                        <span v-if="!gSettings.automod.ignore.data">Choose a Discord permission...</span>
+                        <div v-if="gSettings.automod.ignore.data">{{ discordPermissionNames[gSettings.automod.ignore.data] }}</div>
+                    </button>
+                </div>
+                <div v-show="openDropdown === 'automod-ign-dis'" class="dd-content">
+                    <div v-for="(permName, permID) in discordPermissionNames">
+                        <label :for="'AMID-' + permID">
+                            <input type="radio" :id="'AMID-' + permID" :value="permID" v-model="gSettings.automod.ignore.data" class="hidden">
+                            <span>{{ permName }}</span>
+                        </label>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-else>
+            <div class="guild box" v-for="(roleID, index) in gSettings.automod.ignore.data">
+                <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
+                <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
+                <a @click="delete('amil', index)" class="remove"></a>
+            </div>
+            <div v-if="!gSettings.automod.ignore.data || gSettings.automod.ignore.data.length === 0">
+                <span class="gray">No roles selected.</span>
+            </div>
+            <br>
+            <span class="key">Add a role:</span>
+            <div class="dd">
+                <div class="dd-trigger">
+                    <button class="button" @click="openDropdown = openDropdown === 'automod-ign-rolel' ? null : 'automod-ign-rolel'">
+                        <span v-if="!temp.amil" class="role-icon">@</span>
+                        <span v-if="!temp.amil">Choose a role...</span>
+                        <div v-if="temp.amil">
+                            <span class="role-icon">@</span>
+                            <span :style="getRole(temp.amil).cssColor">{{ getRole(temp.amil).name }}</span>
+                        </div>
+                    </button>
+                </div>
+                <div v-show="openDropdown === 'automod-ign-rolel'" class="dd-content">
+                    <div v-for="role in gRoles">
+                        <label :for="'AMIL-' + role.id">
+                            <input type="radio" :id="'AMIL-' + role.id" :value="role.id" v-model="temp.amil" class="hidden">
+                            <span :style="role.cssColor" class="role-icon">@</span>
+                            <span :style="role.cssColor">{{ role.name }}</span>
+                        </label>
+                        <br>
+                    </div>
+                    <div v-if="gRoles.length === 0">
+                        <span class="gray">No eligible roles.</span>
+                    </div>
+                </div>
+            </div>
+            <button class="button add" @click="add('amil')" :disabled="!temp.amil">
+                <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+            </button>
+        </div>
+    </div>
+    <div class="columns">
+        <div class="setting column">
+            <span class="key">Allow invites:</span>
+            <label class="switch small">
+                <input type="checkbox" v-model="gSettings.automod.allow_invites">
+                <span class="slider round"></span>
+            </label>
+            <span class="info">When a user posts an invite to another Discord server, i.e. <a href="https://discord.gg/99xaeGn">https://discord.gg/99xaeGn</a>, the message will be removed and an automod violation will be issued.</span>
+        </div>
+        <div class="setting column">
+            <span class="key">Ignore invites from members by </span>
+            <div class="dd">
+                <div class="dd-trigger">
+                    <button class="button" @click="openDropdown = openDropdown === 'ign-inv' ? null : 'ign-inv'">
+                        <div v-if="gSettings.ignore.invites.type">
+                            <span>{{ ignorePermsTypes[gSettings.ignore.invites.type] }}</span>
+                        </div>
+                        <span v-else>None</span>
+                    </button>
+                </div>
+                <div v-show="openDropdown === 'ign-inv'" class="dd-content">
+                    <label for="ign-inv-0">
+                        <input type="radio" id="ign-inv-0" value="none" v-model="gSettings.ignore.invites.type" class="hidden">
+                        <span>None</span>
+                    </label><br>
+                    <label for="ign-inv-1">
+                        <input type="radio" id="ign-inv-1" value="role_hier" v-model="gSettings.ignore.invites.type" class="hidden">
+                        <span>{{ ignorePermsTypes.role_hier }}</span>
+                    </label><br>
+                    <label for="ign-inv-2">
+                        <input type="radio" id="ign-inv-2" value="role_list" v-model="gSettings.ignore.invites.type" class="hidden">
+                        <span>{{ ignorePermsTypes.role_list }}</span>
+                    </label><br>
+                    <label for="ign-inv-3">
+                        <input type="radio" id="ign-inv-3" value="discord_perm" v-model="gSettings.ignore.invites.type" class="hidden">
+                        <span>{{ ignorePermsTypes.discord_perm }}</span>
+                    </label><br>
+                </div>
+            </div>
+            <span class="key">: </span>
+            <div class="dd" v-if="gSettings.ignore.invites.type === 'role_hier'">
+                <div class="dd-trigger">
+                    <button class="button" @click="openDropdown = openDropdown === 'ign-inv-roleh' ? null : 'ign-inv-roleh'">
+                        <span v-if="!gSettings.ignore.invites.data" class="role-icon">@</span>
+                        <span v-if="!gSettings.ignore.invites.data">Choose a role...</span>
+                        <div v-if="gSettings.ignore.invites.data">
+                            <span class="role-icon">@</span>
+                            <span :style="getRole(gSettings.ignore.invites.data).cssColor">{{ getRole(gSettings.ignore.invites.data).name }}</span>
+                        </div>
+                    </button>
+                </div>
+                <div v-show="openDropdown === 'ign-inv-roleh'" class="dd-content">
+                    <div v-for="role in gRoles">
+                        <label :for="'AMIH-' + role.id">
+                            <input type="radio" :id="'AMIH-' + role.id" :value="role.id" v-model="gSettings.ignore.invites.data" class="hidden">
+                            <span :style="role.cssColor" class="role-icon">@</span>
+                            <span :style="role.cssColor">{{ role.name }}</span>
+                        </label>
+                        <br>
+                    </div>
+                    <div v-if="gRoles.length === 0">
+                        <span class="gray">No eligible roles.</span>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="gSettings.ignore.invites.type === 'discord_perm'">
+                <div class="dd">
+                    <div class="dd-trigger">
+                        <button class="button" @click="openDropdown = openDropdown === 'ign-inv-dis' ? null : 'ign-inv-dis'">
+                            <span v-if="!gSettings.ignore.invites.data">Choose a Discord permission...</span>
+                            <div v-if="gSettings.ignore.invites.data">{{ discordPermissionNames[gSettings.ignore.invites.data] }}</div>
+                        </button>
+                    </div>
+                    <div v-show="openDropdown === 'ign-inv-dis'" class="dd-content">
+                        <div v-for="(permName, permID) in discordPermissionNames">
+                            <label :for="'AMID-' + permID">
+                                <input type="radio" :id="'AMID-' + permID" :value="permID" v-model="gSettings.ignore.invites.data" class="hidden">
+                                <span>{{ permName }}</span>
+                            </label>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else>
+                <div class="guild box" v-for="(roleID, index) in gSettings.ignore.invites.data">
+                    <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
+                    <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
+                    <a @click="delete('iil', index)" class="remove"></a>
+                </div>
+                <div v-if="!gSettings.ignore.invites.data || gSettings.ignore.invites.data.length === 0">
+                    <span class="gray">No roles selected.</span>
+                </div>
+                <br>
+                <span class="key">Add a role:</span>
+                <div class="dd">
+                    <div class="dd-trigger">
+                        <button class="button" @click="openDropdown = openDropdown === 'ign-inv-rolel' ? null : 'ign-inv-rolel'">
+                            <span v-if="!temp.iil" class="role-icon">@</span>
+                            <span v-if="!temp.iil">Choose a role...</span>
+                            <div v-if="temp.iil">
+                                <span class="role-icon">@</span>
+                                <span :style="getRole(temp.iil).cssColor">{{ getRole(temp.iil).name }}</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div v-show="openDropdown === 'ign-inv-rolel'" class="dd-content">
+                        <div v-for="role in gRoles">
+                            <label :for="'IIL-' + role.id">
+                                <input type="radio" :id="'IIL-' + role.id" :value="role.id" v-model="temp.iil" class="hidden">
+                                <span :style="role.cssColor" class="role-icon">@</span>
+                                <span :style="role.cssColor">{{ role.name }}</span>
+                            </label>
+                            <br>
+                        </div>
+                        <div v-if="gRoles.length === 0">
+                            <span class="gray">No eligible roles.</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="button add" @click="add('iil')" :disabled="!temp.iil">
+                    <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- TODO: do the rest of the automod/ignore settings -->
 </div></section>
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>
 <div id="notif" class=""><span id="notif-text"></span></div>

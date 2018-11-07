@@ -66,71 +66,6 @@ paypal.use( ['login'], function (login) {
   });
 });
 
-window.nav = [
-	[{
-		name: 'Bender Pro',
-		id: 'pro'
-	}, {
-		name: 'General Settings',
-		id: 'general'
-	}, {
-		name: 'Aliases',
-		id: 'aliases'
-	}, {
-		name: 'Welcome Messages',
-		id: 'welcome'
-	}, {
-		name: 'Giveaways',
-		id: 'giveaways',
-		ro: true
-	}, {
-		name: 'Tags',
-		id: 'tags'
-	}, {
-		name: 'Agreement',
-		id: 'agreement'
-	}], [{
-		name: 'Automod',
-		id: 'automod',
-		cs: true
-	}], [{
-		name: 'Filter',
-		id: 'filter'
-	}, {
-		name: 'Name Filter',
-		id: 'namefilter'
-	}], [{
-		name: 'Logging Settings',
-		id: 'logging'
-	}, {
-		name: 'Mod Log (cases)',
-		id: 'modlog',
-		ro: true
-	}, {
-		name: 'Mutes',
-		id: 'mutes',
-		ro: true
-	}, {
-		name: 'Name History',
-		id: 'names',
-		ro: true
-	}], [{
-		name: 'Permissions',
-		id: 'perms',
-		cs: true
-	}], [{
-		name: 'Channel Permissions',
-		id: 'cperms',
-		cs: true
-	}], [{
-		name: 'Selfroles',
-		id: 'selfroles'
-	}, {
-		name: 'Disabled Commands & Groups',
-		id: 'cmdstatus'
-	}]
-];
-
 var page = new Vue({
 	el: '#app',
 	data: {
@@ -146,7 +81,7 @@ var page = new Vue({
 		},
 		user: null,
 		gSettings: {
-	    	"agreement": {}, "aliases": {}, "automod": {}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": {}, "groupStatus": {}, "ignore": {}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": {}, "tags": {}, "temproles": {}
+	    	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": {}, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": {}, "tags": {}, "temproles": {}
 	    },
 		gRoles: [],
 		getRole: function (id) {
@@ -160,7 +95,9 @@ var page = new Vue({
 		},
 		tzRegions: window.tzRegions,
 		tzs: window.tzs,
-		navSections: window.nav,
+		navSections: window.navSections,
+		ignorePermsTypes: window.permTypes,
+		discordPermissionNames: window.discordPermissionNames,
 		commandList: window.commandList || {},
 		aliasMap: window.aliasMap || {},
 		groupNames: window.groupNames || {},
@@ -225,6 +162,18 @@ var page = new Vue({
 					this.gSettings.namefilter.patterns.push(this.temp.namefilter);
 					this.temp.namefilter = null;
 					break;
+				case 'amil':
+					if (!Array.isArray(this.gSettings.automod.ignore.data))
+						this.gSettings.automod.ignore.data = [];
+					this.gSettings.automod.ignore.data.push(this.temp.amil);
+					this.temp.amil = null;
+					break;
+				case 'iil':
+					if (!Array.isArray(this.gSettings.ignore.invites.data))
+						this.gSettings.ignore.invites.data = [];
+					this.gSettings.ignore.invites.data.push(this.temp.iil);
+					this.temp.iil = null;
+					break;
 			}
 			//this.$forceUpdate();
 		},
@@ -243,6 +192,12 @@ var page = new Vue({
 					break;
 				case 'namefilter':
 					this.gSettings.namefilter.patterns.splice(index, 1);
+					break;
+				case 'amil':
+					this.gSettings.automod.ignore.data.splice(index, 1);
+					break;
+				case 'iil':
+					this.gSettings.ignore.invites.data.splice(index, 1);
 					break;
 			}
 			//this.$forceUpdate();
