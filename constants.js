@@ -58,8 +58,7 @@ window.navSections = [
 		ro: true
 	}], [{
 		name: 'Permissions',
-		id: 'perms',
-		cs: true
+		id: 'perms'
 	}], [{
 		name: 'Channel Permissions',
 		id: 'cperms',

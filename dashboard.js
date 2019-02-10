@@ -57,14 +57,24 @@ function setCookie(name, value, expiry) {
 }
 
 paypal.use( ['login'], function (login) {
-  login.render ({
-	"appid":"ASalasGVCX8iXiOGrGrm9PqGuTW-4fbaPikTmZN4mWzLvhFwsA2N5rFok2FcwVLbT0GHGZQAIWeWwg-k",
-	"scopes":"openid profile",
-	"containerid":"paypalLogin",
-	"locale":"en-us",
-	"returnurl":"https://api.benderbot.co/paypal_login"
-  });
+    login.render ({
+		appid:       "ASalasGVCX8iXiOGrGrm9PqGuTW-4fbaPikTmZN4mWzLvhFwsA2N5rFok2FcwVLbT0GHGZQAIWeWwg-k",
+		scopes:      "openid profile email https://uri.paypal.com/services/paypalattributes",
+		containerid: "paypalLogin",
+		locale:      "en-us",
+		buttonType:  "CWP",
+		buttonSize:  "sm",
+		returnurl:   "https://api.benderbot.co/paypal_login"
+    });
 });
+
+const gpTemplate = {}, pTemplate = {};
+for (const group in window.commandList) {
+	gpTemplate[group] = {};
+	for (const command in window.commandList[group]) {
+		pTemplate[command] = {};
+	}
+}
 
 var page = new Vue({
 	el: '#app',
@@ -81,7 +91,7 @@ var page = new Vue({
 		},
 		user: null,
 		gSettings: {
-	    	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": {}, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": {}, "tags": {}, "temproles": {}
+	    	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "tags": {}, "temproles": {}
 	    },
 		gRoles: [],
 		getRole: function (id) {
