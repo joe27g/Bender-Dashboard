@@ -105,5 +105,6 @@ window.discordPermissionNames = {
 	MANAGE_NICKNAMES: 'Manage Nicknames',
 	MANAGE_ROLES: 'Manage Roles',
 	MANAGE_WEBHOOKS: 'Manage Webhooks',
-	MANAGE_EMOJIS: 'Manage Emojis'
+	MANAGE_EMOJIS: 'Manage Emojis',
+	DJ: 'Having a role named "DJ"' // not actually a discord perm, but same usage
 };

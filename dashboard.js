@@ -96,12 +96,12 @@ var page = new Vue({
 		gRoles: [],
 		getRole: function (id) {
 			let role = this.gRoles.filter(r => r.id === id)[0];
-			return role || {};
+			return role || { name: `<deleted role | ID: ${id}>` };
 		},
 		gChannels: [],
 		getChannel: function (id) {
 			let chan = this.gChannels.filter(c => c.id === id)[0];
-			return chan || {};
+			return chan || { name: `<deleted channel | ID: ${id}>` };
 		},
 		tzRegions: window.tzRegions,
 		tzs: window.tzs,
@@ -111,6 +111,7 @@ var page = new Vue({
 		commandList: window.commandList || {},
 		aliasMap: window.aliasMap || {},
 		groupNames: window.groupNames || {},
+		defaultPerms: window.defaultPerms || {},
 		moment: window.moment,
 		paypalInfo: null,
 		loading: false,

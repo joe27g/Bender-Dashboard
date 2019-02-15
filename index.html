@@ -1698,9 +1698,9 @@
     <table v-for="(data, group) in commandList" class="table skinny-table"><tbody>
         <tr>
             <th>{{ groupNames[group] }}</th>
-            <th><span class="gray" v-if="gSettings.groupStatus[group] !== false">
+            <th><span class="gray" v-if="gSettings.groupStatus[group] === false">
                 Group is disabled.
-            </span><div v-else-if="gSettings.gperms[group].type">
+            </span><div v-else>
                 <div class="dd">
                     <div class="dd-trigger">
                         <button class="button" @click="openDropdown = openDropdown === group + '-perms' ? null : group + '-perms'">
@@ -1764,15 +1764,15 @@
                     </div>
                     <div v-show="openDropdown === group + '-perms-dis'" class="dd-content">
                         <div v-for="(permName, permID) in discordPermissionNames">
-                            <label :for="group + '-PD-' + role.id">
-                                <input type="radio" :id="group + '-PD-' + role.id" :value="permID" v-model="gSettings.gperms[group].data" class="hidden">
+                            <label :for="group + '-PD-' + permID">
+                                <input type="radio" :id="group + '-PD-' + permID" :value="permID" v-model="gSettings.gperms[group].data" class="hidden">
                                 <span>{{ permName }}</span>
                             </label>
                             <br>
                         </div>
                     </div>
                 </div>
-                <span v-else>
+                <span v-else-if="gSettings.gperms[group].type">
                     <div class="guild box" v-for="(roleID, index) in gSettings.gperms[group].data">
                         <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                         <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
@@ -1815,9 +1815,9 @@
         </tr>
         <tr v-for="(aliases, command) in data" v-show="gSettings.groupStatus[group]">
             <td><span class="code">{{ (gSettings.prefix || ';')+command }}</span></td>
-            <td><span class="gray" v-if="gSettings.commandStatus[command] !== false">
+            <td><span class="gray" v-if="gSettings.commandStatus[command] === false">
                 Command is disabled.
-            </span><div v-else-if="gSettings.perms[command].type">
+            </span><div v-else>
                 <div class="dd">
                     <div class="dd-trigger">
                         <button class="button" @click="openDropdown = openDropdown === command + '-perms' ? null : command + '-perms'">
@@ -1881,15 +1881,15 @@
                     </div>
                     <div v-show="openDropdown === command + '-perms-dis'" class="dd-content">
                         <div v-for="(permName, permID) in discordPermissionNames">
-                            <label :for="command + '-PD-' + role.id">
-                                <input type="radio" :id="command + '-PD-' + role.id" :value="permID" v-model="gSettings.perms[command].data" class="hidden">
+                            <label :for="command + '-PD-' + permID">
+                                <input type="radio" :id="command + '-PD-' + permID" :value="permID" v-model="gSettings.perms[command].data" class="hidden">
                                 <span>{{ permName }}</span>
                             </label>
                             <br>
                         </div>
                     </div>
                 </div>
-                <span v-else>
+                <span v-else-if="gSettings.perms[command].type">
                     <div class="guild box" v-for="(roleID, index) in gSettings.perms[command].data">
                         <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                         <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
@@ -1928,6 +1928,8 @@
                         <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
                     </button>
                 </span>
+                <span class="gray" v-else-if="gSettings.gperms[group].type">Inherit from group</span>
+                <span class="gray" v-else>Default: {{ defaultPerms[command] ? discordPermissionNames[defaultPerms[command]] : 'open to everyone' }}</span>
             </div></td>
         </tr>
     </tbody></table>
