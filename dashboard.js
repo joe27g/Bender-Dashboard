@@ -401,7 +401,7 @@ async function saveGuildSettings(gID) {
 		return showNotif('error', 'You are not logged in. Cannot save settings.', 4000);
 
 	if (gID === 'PAYPAL') {
-		if (!page.paypalInfo || !getCookie('paypal_token'))
+		if (!page.paypalInfo || (!getCookie('paypal_token') && !getCookie('token')))
 			return showNotif('error', 'You are not logged in to PayPal. Cannot save Bender Pro settings.', 4000);
 		let temp = {
 			guilds: page.paypalInfo.guilds,
@@ -477,7 +477,22 @@ async function updatePaypalInfo() {
 			setCookie('pp_refresh_token', data.refresh_token);
 			return updatePaypalInfo();
         }
-	} else {
+	} else if (getCookie('token')) {
+		page.loading = true;
+		if (!firstPP)
+			showNotif('pending', 'Attempting to fetch PayPal info via Discord info (for gifted subs)...');
+        let data = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('token')}).catch(console.error);
+		page.loading = false;
+        if (data) {
+			if (!firstPP)
+				showNotif('success', 'Loaded PayPal info!', 4000);
+            page.paypalInfo = JSON.parse(data);
+			firstPP = false;
+        } else {
+			if (!firstPP)
+				showNotif('error', 'Failed to load PayPal info.', 6000);
+        }
+    } else {
 		if (!firstPP)
 			showNotif('pending', 'Log in to PayPal already u heckin nerd', 4000);
     }

@@ -149,9 +149,9 @@
         <span v-else>Plan: <span class="gray">No subscription to Bender Pro.</span></span>
         <span v-if="!paypalInfo.plan || paypalInfo.plan.state === 'Expired'">{{ paypalInfo.plan ? 'Renew' : 'Purchase' }} Bender Pro <a href="https://benderbot.co/pro" target="_blank">here</a>.</span>
     </div>
-    <div id="paypalLogin" v-show="!paypalInfo"></div>
+    <div id="paypalLogin" v-show="!paypalInfo || !paypalInfo.id"></div>
     <br>
-    <a v-show="!!paypalInfo" href="https://api.benderbot.co/paypal_logout">Logout of PayPal</a>
+    <a v-show="paypalInfo && paypalInfo.id" href="https://api.benderbot.co/paypal_logout">Logout of PayPal</a>
 </div><div id="general" v-show="selectedGuildID && column === 'general'">
     <div class="header">
         <span class="bold">General Settings</span>
