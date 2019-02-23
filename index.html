@@ -126,7 +126,9 @@
         <span class="gray" v-if="paypalInfo.email">{{ paypalInfo.email }}</span>
         <br><br>
         <div v-if="paypalInfo.plan">
-            <span>Plan: {{ paypalInfo.plan.description }}</span> | <span class="gray">${{ paypalInfo.plan.amount }} {{ paypalInfo.plan.currency }} per {{ paypalInfo.plan.freq }}</span> | <span>State: {{ paypalInfo.plan.state }}</span> <span v-if="paypalInfo.plan.state === 'Active'">| Valid until: {{ moment(paypalInfo.plan.valid_until).format('MMM Do YYYY, h:mma') }} UTC</span> <span v-if="paypalInfo.plan.state === 'Expired'">| Expired on: {{ moment(paypalInfo.plan.valid_until).format('MMM Do YYYY, h:mma') }} UTC</span>
+            <span>Plan: {{ paypalInfo.plan.description }}</span> | <span class="gray">${{ paypalInfo.plan.amount }} {{ paypalInfo.plan.currency }} per {{ paypalInfo.plan.freq }}</span> | <span>State: {{ paypalInfo.plan.valid_until >= Date.now() ? 'Active' : 'Expired' }}</span> <span v-if="paypalInfo.plan.valid_until >= Date.now()">| Valid until: {{ moment(paypalInfo.plan.valid_until).format('MMM Do YYYY, h:mma') }} UTC</span> <span v-if="paypalInfo.plan.valid_until < Date.now()">| Expired on: {{ moment(paypalInfo.plan.valid_until).format('MMM Do YYYY, h:mma') }} UTC</span>
+            <br>
+            <span v-if="paypalInfo.plan.valid_until >= Date.now()">Subscribed since: {{ moment(paypalInfo.first_txn).format('MMM Do YYYY, h:mma') }} | </span><span>Last payment: {{ moment(paypalInfo.txn_timestamp).format('MMM Do YYYY, h:mma') }}</span>
             <br><br>
             <span>Use Bender Pro in servers:</span>
             <br>
