@@ -14,7 +14,7 @@
     <meta name="og:url" content="https://dashboard.benderbot.co">
     <link rel="stylesheet" href="./style-v0.9.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.6.2/darkly/bulmaswatch.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.8/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.13/builds/moment-timezone-with-data.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-markdown@0.4.2/simple-markdown.min.js"></script>
@@ -154,7 +154,7 @@
     <div id="paypalLogin" v-show="!paypalInfo || !paypalInfo.id"></div>
     <br>
     <a v-show="paypalInfo && paypalInfo.id" href="https://api.benderbot.co/paypal_logout">Logout of PayPal</a>
-</div><div id="general" v-show="selectedGuildID && column === 'general'">
+</div><div id="general" v-if="selectedGuildID && column === 'general'">
     <div class="header">
         <span class="bold">General Settings</span>
     </div>
@@ -280,7 +280,7 @@
         </div>
         <span class="info">The timezone used for formatting dates in mod logs and other commands.</span>
     </div>
-</div><div id="welcome" v-show="selectedGuildID && column === 'welcome'">
+</div><div id="welcome" v-if="selectedGuildID && column === 'welcome'">
     <div class="header">
         <span class="bold">Welcome messages</span>
     </div>
@@ -362,7 +362,7 @@
         <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.ban || '')"></div>
         <span class="info">Message sent when someone is banned from the server.</span>
     </div>
-</div><div id="selfroles" v-show="selectedGuildID && column === 'selfroles'">
+</div><div id="selfroles" v-if="selectedGuildID && column === 'selfroles'">
     <div class="header">
         <span class="bold">Selfroles</span>
     </div>
@@ -397,7 +397,7 @@
             </tr>
         </tbody></table>
     </div>
-</div><div id="agreement" v-show="selectedGuildID && column === 'agreement'">
+</div><div id="agreement" v-if="selectedGuildID && column === 'agreement'">
     <div class="header">
         <span class="bold">Agreement</span>
         <label class="switch">
@@ -522,7 +522,7 @@
         <span>hours</span>
         <span class="info">When a user will be kicked from the server, if they have not yet agreed. Default is 2 hours. Set to 0 to disable.</span>
     </div>
-</div><div id="logging" v-show="selectedGuildID && column === 'logging'">
+</div><div id="logging" v-if="selectedGuildID && column === 'logging'">
     <div class="header">
         <span class="bold">Logging Settings</span>
     </div>
@@ -746,7 +746,7 @@
             </div>
         </div>
     </div>
-</div><div id="tags" v-show="selectedGuildID && column === 'tags'">
+</div><div id="tags" v-if="selectedGuildID && column === 'tags'">
     <div class="header"><span class="bold">Tags</span></div>
     <span class="info">Tags are used like simple commands; if you use Bender's prefix + the tag name, you get a response.<br>For example, you could make a tag "hello" with the response "world." Details about variables you can use, i.e. <span class="code">{args}</span>, can be found <a href="https://benderbot.co/commands#tag" target="_blank">here.</a></span>
     <div>
@@ -787,7 +787,7 @@
         </button>
     </div>
     <span v-else class="gray">Max number of tags reached; Cannot add more.</span>
-</div><div id="modlog" v-show="selectedGuildID && column === 'modlog'">
+</div><div id="modlog" v-if="selectedGuildID && column === 'modlog'">
     <div class="header"><span class="bold">Mod Log</span></div>
     <div class="setting" v-if="getLen(gSettings.modlog) > 0">
         <span class="gray">{{ getLen(gSettings.modlog) }} case{{ getLen(gSettings.modlog) > 1 ? 's' : '' }} on record.</span>
@@ -816,7 +816,7 @@
             <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
         </tr>
     </tbody></table>
-</div><div id="aliases" v-show="selectedGuildID && column === 'aliases'">
+</div><div id="aliases" v-if="selectedGuildID && column === 'aliases'">
     <div class="header"><span class="bold">Aliases</span></div>
     <span class="info">Aliases are used to give commands an alternative name.</span>
     <table id="aliases_list" class="table wide-table"><tbody>
@@ -865,7 +865,7 @@
         </button>
     </div>
     <span v-else class="gray">Max number of aliases reached; Cannot add more.</span>
-</div><div id="mutes" v-show="selectedGuildID && column === 'mutes'">
+</div><div id="mutes" v-if="selectedGuildID && column === 'mutes'">
     <div class="header">
         <span class="bold">Mutes</span>
     </div>
@@ -889,7 +889,7 @@
             <td>{{ data.reason }}</td>
         </tr>
     </tbody></table>
-</div><div id="filter" v-show="selectedGuildID && column === 'filter'">
+</div><div id="filter" v-if="selectedGuildID && column === 'filter'">
     <div class="header">
         <span class="bold">Filter</span>
         <label class="switch">
@@ -1093,7 +1093,7 @@
         </button>
     </div>
     <span v-else class="gray">Max number of items reached (20); Cannot add more.</span>
-</div><div id="namefilter" v-show="selectedGuildID && column === 'namefilter'">
+</div><div id="namefilter" v-if="selectedGuildID && column === 'namefilter'">
     <div class="header">
         <span class="bold">Name Filter</span>
         <label class="switch">
@@ -1245,13 +1245,13 @@
     </tbody></table>
     <div class="setting" v-if="getLen(gSettings.namefilter.patterns) < 20">
         <span class="key">Add a new pattern:</span>
-        <textarea id="new-pattern" placeholder="New filter item" v-model="temp.namefilter">{{ temp.namefilter }}</textarea>
+        <textarea id="new-namepattern" placeholder="New filter item" v-model="temp.namefilter">{{ temp.namefilter }}</textarea>
         <button class="button add" @click="add('namefilter')">
             <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
         </button>
     </div>
     <span v-else class="gray">Max number of items reached (20); Cannot add more.</span>
-</div><div id="names" v-show="selectedGuildID && column === 'names'">
+</div><div id="names" v-if="selectedGuildID && column === 'names'">
     <div class="header">
         <span class="bold">Name History</span>
     </div>
@@ -1273,7 +1273,7 @@
             <td>{{ gNames[userID] ?  gNames[userID].join(', ') : 'N/A' }}</td>
         </tr>
     </tbody></table>
-</div><div id="giveaways" v-show="selectedGuildID && column === 'giveaways'">
+</div><div id="giveaways" v-if="selectedGuildID && column === 'giveaways'">
     <div class="header">
         <span class="bold">Giveaways</span>
     </div>
@@ -1283,7 +1283,7 @@
     <div class="setting" v-else>
         <span class="gray">No active giveaways.</span>
     </div>
-    <table id="giveaways" class="table wide-table"><tbody>
+    <table id="giveaway_table" class="table wide-table"><tbody>
         <tr>
             <th>ID</th>
             <th>Created by</th>
@@ -1299,7 +1299,7 @@
             <td>{{ data.winners || 1 }}</td>
         </tr>
     </tbody></table>
-</div><div id="cmdstatus" v-show="selectedGuildID && column === 'cmdstatus'">
+</div><div id="cmdstatus" v-if="selectedGuildID && column === 'cmdstatus'">
     <div class="header">
         <span class="bold">Disabled Commands & Groups</span>
     </div>
@@ -1319,7 +1319,7 @@
             </label></td>
         </tr>
     </tbody></table>
-</div><div id="automod" v-show="selectedGuildID && column === 'automod'">
+</div><div id="automod" v-if="selectedGuildID && column === 'automod'">
     <div class="header">
         <span class="bold">Automod</span>
         <label class="switch">
@@ -1693,11 +1693,30 @@
         </div>
     </div>
     <!-- TODO: do the rest of the automod/ignore settings -->
-</div><div id="perms" v-show="selectedGuildID && column === 'perms'">
+</div><div id="perms" v-if="selectedGuildID && column === 'perms'">
     <div class="header">
         <span class="bold">Permissions</span>
     </div>
-    <table v-for="(data, group) in commandList" class="table skinny-table"><tbody>
+    <div class="setting">
+        <span class="key">Edit permissions for command group: </span>
+        <div class="dd">
+            <div class="dd-trigger">
+                <button class="button" @click="openDropdown = openDropdown === 'perms-group-temp' ? null : 'perms-group-temp'">
+                    <div v-if="temp.perms_group">
+                        <span>{{ groupNames[temp.perms_group] }}</span>
+                    </div>
+                    <span v-else>None</span>
+                </button>
+            </div>
+            <div v-show="openDropdown === 'perms-group-temp'" class="dd-content">
+                <div v-for="(data, group) in commandList"><label :for="'perms-group-temp-' + group">
+                    <input type="radio" :id="'perms-group-temp-' + group" :value="group" v-model="temp.perms_group" class="hidden">
+                    <span>{{ groupNames[group] }}</span>
+                </label><br></div>
+            </div>
+        </div>
+    </div>
+    <table v-for="(data, group) in commandList" class="table skinny-table" v-if="group === temp.perms_group"><tbody>
         <tr>
             <th>{{ groupNames[group] }}</th>
             <th><span class="gray" v-if="gSettings.groupStatus[group] === false">

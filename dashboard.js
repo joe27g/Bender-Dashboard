@@ -185,6 +185,12 @@ var page = new Vue({
 					this.gSettings.ignore.invites.data.push(this.temp.iil);
 					this.temp.iil = null;
 					break;
+				case 'fil':
+					if (!Array.isArray(this.gSettings.ignore.filter.data))
+						this.gSettings.ignore.filter.data = [];
+					this.gSettings.ignore.filter.data.push(this.temp.fil);
+					this.temp.fil = null;
+					break;
 			}
 			//this.$forceUpdate();
 		},
