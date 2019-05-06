@@ -328,11 +328,13 @@ async function loadUserInfo() {
 	} else if (getCookie('refresh_token')) {
 		page.loading = true;
 	    let data = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/refresh', auth: getCookie('refresh_token')}).catch(console.error);
+		page.loading = false;
 		if (typeof data === 'string') {
 			try {
 				data = JSON.parse(data);
 			} catch(err) {
 				console.error(err);
+				showNotif('error', 'Failed to refresh token. Please log out and back in.', 6000);
 				return;
 			}
 		}
@@ -366,7 +368,9 @@ async function loadGuildSettings(gID) {
 		page.loading = true;
 	    showNotif('pending', 'Fetching guild settings...');
 	    let gData = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token')}).catch(console.error);
-		gData = JSON.parse(gData);
+		try {
+			gData = JSON.parse(gData);
+		} catch(err) {}
 		//console.log(gSet);
 		page.loading = false;
 	    if (gData) {
@@ -421,7 +425,7 @@ async function saveGuildSettings(gID) {
 		});
 		page.loading = false;
 	    if (err) {
-			showNotif('error', 'Failed to save Bender Pro settings.', 6000);
+			showNotif('error', 'Failed to save Bender Pro settings.\n'+err, 6000);
 		} else {
 	        showNotif('success', 'Saved Bender Pro settings!', 4000);
 			//page.unsaved = false;
@@ -443,7 +447,7 @@ async function saveGuildSettings(gID) {
 
 	page.loading = false;
     if (err) {
-		showNotif('error', 'Failed to save guild settings.', 6000);
+		showNotif('error', 'Failed to save guild settings.\n'+err, 6000);
 	} else {
         showNotif('success', 'Saved guild settings!', 4000);
 		//page.unsaved = false;
