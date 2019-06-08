@@ -61,8 +61,7 @@ window.navSections = [
 		id: 'perms'
 	}], [{
 		name: 'Channel Permissions',
-		id: 'cperms',
-		cs: true
+		id: 'cperms'
 	}], [{
 		name: 'Selfroles',
 		id: 'selfroles'

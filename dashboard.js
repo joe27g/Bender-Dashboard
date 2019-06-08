@@ -117,7 +117,13 @@ var page = new Vue({
 		loading: false,
 		temp: {},
 		searchValue: null,
-		previewEnabled: false
+		previewEnabled: false,
+		ignoreAbbrs: {
+			iil: 'invites',
+			fil: 'filter',
+			nfil: 'names',
+			sbil: 'selfbots'
+		}
 	},
 	watch: {
 		selectedGuildID: function (newID, oldID) {
@@ -139,39 +145,26 @@ var page = new Vue({
 	methods: {
 		reloadGSettings: window.loadGuildSettings,
 		saveGSettings: window.saveGuildSettings,
-		add: function(type) {
+		add: function(type, cg, com) {
+			this.openDropdown = null;
 			switch (type) {
 				case 'tag':
-					if (!this.temp.tag_name || !this.temp.tag_content) {
-						showNotif('error', 'Tag needs a name and content!', 3000); return;
-					}
-					this.gSettings.tags[this.temp.tag_name] = this.temp.tag_content;
-					this.temp.tag_name = null;
-					this.temp.tag_content = null;
-					break;
 				case 'alias':
-					if (!this.temp.alias_name || !this.temp.alias_content) {
-						showNotif('error', 'Alias needs a name and command!', 3000); return;
+					if (!this.temp[type+'_name'] || !this.temp[type+'_content']) {
+						showNotif('error', `${type[0].toUpperCase()}${type.substr(1)} needs a name and content!`, 3000); return;
 					}
-					this.gSettings.aliases[this.temp.alias_name] = this.temp.alias_content;
-					this.temp.alias_name = null;
-					this.temp.alias_content = null;
+					this.gSettings[type === 'tag' ? 'tags' : 'aliases'][this.temp[type+'_name']] = this.temp[type+'_content'];
+					this.temp[type+'_name'] = null;
+					this.temp[type+'_content'] = null;
 					break;
 				case 'filter':
-					// TODO: check for errors in regex (invalid sequences)
-					if (!this.temp.filter) {
-						showNotif('error', 'Invalid regex content in filter.', 3000); return;
-					}
-					this.gSettings.filter.patterns.push(this.temp.filter);
-					this.temp.filter = null;
-					break;
 				case 'namefilter':
 					// TODO: check for errors in regex (invalid sequences)
-					if (!this.temp.namefilter) {
-						showNotif('error', 'Invalid regex content in name filter.', 3000); return;
+					if (!this.temp[type]) {
+						showNotif('error', `Invalid regex content in ${type}.`, 3000); return;
 					}
-					this.gSettings.namefilter.patterns.push(this.temp.namefilter);
-					this.temp.namefilter = null;
+					this.gSettings[type].patterns.push(this.temp[type]);
+					this.temp[type] = null;
 					break;
 				case 'amil':
 					if (!Array.isArray(this.gSettings.automod.ignore.data))
@@ -180,46 +173,69 @@ var page = new Vue({
 					this.temp.amil = null;
 					break;
 				case 'iil':
-					if (!Array.isArray(this.gSettings.ignore.invites.data))
-						this.gSettings.ignore.invites.data = [];
-					this.gSettings.ignore.invites.data.push(this.temp.iil);
-					this.temp.iil = null;
-					break;
 				case 'fil':
-					if (!Array.isArray(this.gSettings.ignore.filter.data))
-						this.gSettings.ignore.filter.data = [];
-					this.gSettings.ignore.filter.data.push(this.temp.fil);
-					this.temp.fil = null;
+				case 'nfil':
+				case 'sbil':
+					const x = this.ignoreAbbrs[type];
+					this.gSettings.ignore[x] = {
+						data: Array.isArray(this.gSettings.ignore[x].data) ? this.gSettings.ignore[x].data : [],
+						type: 'role_list'
+					}
+					this.gSettings.ignore[x].data.push(this.temp[type]);
+					this.temp[type] = null;
 					break;
+				case 'perms':
+					if (typeof this.gSettings[com ? 'perms' : 'gperms'][cg] !== 'object')
+						this.gSettings[com ? 'perms' : 'gperms'][cg] = {};
+					if (!Array.isArray(this.gSettings[com ? 'perms' : 'gperms'][cg].data))
+						this.gSettings[com ? 'perms' : 'gperms'][cg].data = [];
+					this.gSettings[com ? 'perms' : 'gperms'][cg].data.push(this.temp['pl-'+cg]);
+					this.temp['pl-'+cg] = null;
+					break;
+				case 'cperms':
+					if (typeof this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan] !== 'object')
+						this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan] = {};
+					if (typeof this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg] !== 'object')
+						this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg] = {};
+					if (!Array.isArray(this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data))
+						this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data = [];
+					this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data.push(this.temp['cp-'+cg]);
+					this.temp['cp-'+cg] = null;
+					break;
+
 			}
 			//this.$forceUpdate();
 		},
-		// TODO: this function doesn't work/ isn't being called properly
-		delete: function(type, index) {
+		del: function(type, index, cg, com) {
 			console.log(`deleting ${index} of type ${type}`);
 			switch (type) {
 				case 'tag':
-					delete this.gSettings.tags[index];
-					break;
 				case 'alias':
-					delete this.gSettings.aliases[index];
+					this.$delete(this.gSettings[type === 'tag' ? 'tags' : 'aliases'], index);
 					break;
 				case 'filter':
-					this.gSettings.filter.patterns.splice(index, 1);
-					break;
 				case 'namefilter':
-					this.gSettings.namefilter.patterns.splice(index, 1);
+					this.gSettings[type].patterns.splice(index, 1);
 					break;
 				case 'amil':
 					this.gSettings.automod.ignore.data.splice(index, 1);
 					break;
 				case 'iil':
-					this.gSettings.ignore.invites.data.splice(index, 1);
+				case 'fil':
+				case 'nfil':
+				case 'sbil':
+					this.gSettings.ignore[this.ignoreAbbrs[type]].data.splice(index, 1);
+					break;
+				case 'perms':
+					this.gSettings[com ? 'perms' : 'gperms'][cg].data.splice(index, 1);
+					break;
+				case 'cperms':
+					this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data.splice(index, 1);
 					break;
 			}
 			//this.$forceUpdate();
-			setTimeout( this.$forceUpdate, 69);
-			setTimeout( this.$forceUpdate, 690);
+			//setTimeout( this.$forceUpdate, 69);
+			//setTimeout( this.$forceUpdate, 690);
 		},
 		parseMD: function(str) {
 			// parse markdown (i.e. underlining) and syntax highlighting
@@ -390,6 +406,7 @@ async function loadGuildSettings(gID) {
 			page.gRoles = gData.roles;
 			page.gChannels = gData.channels;
 			page.gMembers = gData.members || [];
+			page.memberRank = gData.highestRolePosition;
 	    } else {
 	        showNotif('error', 'Failed to load guild settings.', 6000);
 	    }
