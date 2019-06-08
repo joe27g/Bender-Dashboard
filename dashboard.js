@@ -76,6 +76,10 @@ for (const group in window.commandList) {
 	}
 }
 
+const defaultGuildSettings = {
+	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "tags": {}, "temproles": {}
+};
+
 var page = new Vue({
 	el: '#app',
 	data: {
@@ -90,9 +94,7 @@ var page = new Vue({
 			return guild || {};
 		},
 		user: null,
-		gSettings: {
-	    	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "tags": {}, "temproles": {}
-	    },
+		gSettings: defaultGuildSettings,
 		gRoles: [],
 		getRole: function (id) {
 			let role = this.gRoles.filter(r => r.id === id)[0];
@@ -123,12 +125,14 @@ var page = new Vue({
 			fil: 'filter',
 			nfil: 'names',
 			sbil: 'selfbots'
-		}
+		},
+		botNotPresent: false
 	},
 	watch: {
 		selectedGuildID: function (newID, oldID) {
 			/*console.log(oldID, newID);
 			this.prevGuildID = oldID;*/
+			this.botNotPresent = false;
 			this.openDropdown = null;
 			if (!this.column) this.column = 'general';
 			loadGuildSettings(newID);
@@ -383,23 +387,36 @@ async function loadGuildSettings(gID) {
 	if (getCookie('token')) {
 		page.loading = true;
 	    showNotif('pending', 'Fetching guild settings...');
-	    let gData = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token')}).catch(console.error);
-		try {
-			gData = JSON.parse(gData);
-		} catch(err) {}
-		//console.log(gSet);
+		let err;
+	    let gData = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token')}).catch(e => err = e);
+		if (err && err.responseText === "Bender is not in this guild.") {
+			console.error(err);
+			page.loading = false;
+			page.column = null;
+			page.botNotPresent = true;
+
+			page.gSettings = defaultGuildSettings;
+			page.gNames = {};
+			//page.unsaved = false;
+			page.gRoles = [];
+			page.gChannels = [];
+			page.gMembers = {};
+			page.memberRank = 0;
+
+			//showNotif('pending', 'Bender is not in this server.', 3000);
+			return;
+		} else if (err) {
+			console.error(err);
+		} else {
+			try {
+				gData = JSON.parse(gData);
+			} catch(err) {}
+		}
+
 		page.loading = false;
 	    if (gData) {
 	        showNotif('success', 'Loaded guild settings!', 4000);
 			gData.settings.guildID = gID;
-			for (let group in commandList) {
-				if (gData.settings.groupStatus[group] === undefined)
-					gData.settings.groupStatus[group] = true;
-				for (let command in commandList[group]) {
-					if (gData.settings.commandStatus[command] === undefined)
-						gData.settings.commandStatus[command] = true;
-				}
-			}
 	        page.gSettings = gData.settings;
 			page.gNames = gData.usernames;
 			//page.unsaved = false;

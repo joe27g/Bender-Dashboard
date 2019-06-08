@@ -350,6 +350,12 @@ span.code {
 .gray {
     color: rgba(255, 255, 255, 0.5);
 }
+.red {
+    color: #f00;
+}
+.green {
+    color: #0f0;
+}
 
 a:not([class]):not(#sidenav-close) {
     color: #faa61a !important;

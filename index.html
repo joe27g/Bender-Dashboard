@@ -117,9 +117,13 @@
         </div>
     </div>
 </section>
-<section id="settings-wrapper"><div id="content-placeholder" v-show="(!selectedGuildID && column !== 'pro') || !column">
+<section id="settings-wrapper"><div id="content-placeholder" v-show="!loading && !botNotPresent && ((!selectedGuildID && column !== 'pro') || !column)">
     <span>Nothing to see here...</span> <span class="gray">Choose a server to start changing settings.</span>
-</div><div id="pro" v-show="column === 'pro'">
+</div><div id="bot-not-present" v-show="botNotPresent">
+    <span>Bender isn't in this server!</span> <span class="gray">To invite it, use this link:</span> <a href="https://benderbot.co/invite" target="_blank">https://benderbot.co/invite</a>
+</div><div id="loading" v-show="loading">
+    <img src="https://cdn.discordapp.com/emojis/461731014646169601.gif?v=1"><br><span>Loading...</span>
+</div><div id="pro" v-show="column === 'pro' && !loading">
     <div class="header">
         <span class="bold">Bender Pro Settings <img id="pp_logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/2000px-PayPal.svg.png"></span>
     </div>
@@ -157,7 +161,7 @@
     <div id="paypalLogin" v-show="!paypalInfo || !paypalInfo.id"></div>
     <br>
     <a v-show="paypalInfo && paypalInfo.id" href="https://api.benderbot.co/paypal_logout">Logout of PayPal</a>
-</div><div id="general" v-if="selectedGuildID && column === 'general'">
+</div><div id="general" v-if="selectedGuildID && column === 'general' && !loading">
     <div class="header">
         <span class="bold">General Settings</span>
     </div>
@@ -283,7 +287,7 @@
         </div>
         <span class="info">The timezone used for formatting dates in mod logs and other commands.</span>
     </div>
-</div><div id="welcome" v-if="selectedGuildID && column === 'welcome'">
+</div><div id="welcome" v-if="selectedGuildID && column === 'welcome' && !loading">
     <div class="header">
         <span class="bold">Welcome messages</span>
     </div>
@@ -365,12 +369,12 @@
         <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.ban || '')"></div>
         <span class="info">Message sent when someone is banned from the server.</span>
     </div>
-</div><div id="selfroles" v-if="selectedGuildID && column === 'selfroles'">
+</div><div id="selfroles" v-if="selectedGuildID && column === 'selfroles' && !loading">
     <div class="header">
         <span class="bold">Selfroles</span>
     </div>
     <div class="setting">
-        <span class="info">Mark roles as joinable, so members can use <span class="code">;roleme</span> to add that role to themselves.</span>
+        <span class="info">Mark roles as joinable, so members can use <span class="code">{{ gSettings.prefix || ';' }}roleme</span> to add that role to themselves.</span>
         <table class="table is-narrow" id="joinables"><tbody>
             <tr>
                 <th>Role</th>
@@ -400,7 +404,7 @@
             </tr>
         </tbody></table>
     </div>
-</div><div id="agreement" v-if="selectedGuildID && column === 'agreement'">
+</div><div id="agreement" v-if="selectedGuildID && column === 'agreement' && !loading">
     <div class="header">
         <span class="bold">Agreement</span>
         <label class="switch">
@@ -443,7 +447,7 @@
                 </div>
             </div>
         </div>
-        <span class="info">This is the channel where members should be able to type ;agree here to agree to the terms. Any messages not pinned and newer than 2 weeks will be automatically purged.</span>
+        <span class="info">This is the channel where members should be able to type {{ gSettings.prefix || ';' }}agree here to agree to the terms. Any messages not pinned and newer than 2 weeks will be automatically purged.</span>
     </div>
     <div class="setting column">
         <span class="key">Probationary Role:</span>
@@ -503,7 +507,7 @@
             <span class="slider round"></span>
         </label>
         <span>hours</span>
-        <span class="info">How long someone must be a member of the server to be able to use ;agree. Default is 5 minutes. Settings to 0 means they do not have to wait.</span>
+        <span class="info">How long someone must be a member of the server to be able to use {{ gSettings.prefix || ';' }}agree. Default is 5 minutes. Settings to 0 means they do not have to wait.</span>
     </div>
     <div class="time-setting">
         <span class="key">Warn time:</span>
@@ -527,7 +531,7 @@
         <span>hours</span>
         <span class="info">When a user will be kicked from the server, if they have not yet agreed. Default is 2 hours. Set to 0 to disable.</span>
     </div>
-</div><div id="logging" v-if="selectedGuildID && column === 'logging'">
+</div><div id="logging" v-if="selectedGuildID && column === 'logging' && !loading">
     <div class="header">
         <span class="bold">Logging Settings</span>
     </div>
@@ -574,7 +578,7 @@
                 <span class="slider round"></span>
             </label>
             <span class="key">Enable mod-logging cases</span>
-            <span class="info">Whether to save moderation logs in the database, with each one assigned a case number. Also allows the use of <span class="code">;reason</span> and viewing all mod logs for a user.</span>
+            <span class="info">Whether to save moderation logs in the database, with each one assigned a case number. Also allows the use of <span class="code">{{ gSettings.prefix || ';' }}reason</span> and viewing all mod logs for a user.</span>
         </div>
     </div>
     <div class="setting">
@@ -585,63 +589,63 @@
                 <input type="checkbox" v-model="gSettings.logging['cmd-ban']">
                 <span class="slider round"></span>
             </label>
-            <span class="code">;ban</span> + automatic bans
+            <span class="code">{{ gSettings.prefix || ';' }}ban</span> + automatic bans
         </div>
         <div class="log-cmd">
             <label class="switch small">
                 <input type="checkbox" v-model="gSettings.logging['cmd-unban']">
                 <span class="slider round"></span>
             </label>
-            <span class="code">;unban</span>
+            <span class="code">{{ gSettings.prefix || ';' }}unban</span>
         </div>
         <div class="log-cmd">
             <label class="switch small">
                 <input type="checkbox" v-model="gSettings.logging['cmd-mute']">
                 <span class="slider round"></span>
             </label>
-            <span class="code">;mute</span> + automatic mutes
+            <span class="code">{{ gSettings.prefix || ';' }}mute</span> + automatic mutes
         </div>
         <div class="log-cmd">
             <label class="switch small">
                 <input type="checkbox" v-model="gSettings.logging['cmd-unmute']">
                 <span class="slider round"></span>
             </label>
-            <span class="code">;unmute</span> + automatic unmutes
+            <span class="code">{{ gSettings.prefix || ';' }}unmute</span> + automatic unmutes
         </div>
         <div class="log-cmd">
             <label class="switch small">
                 <input type="checkbox" v-model="gSettings.logging['cmd-kick']">
                 <span class="slider round"></span>
             </label>
-            <span class="code">;kick</span> + automatic kicks
+            <span class="code">{{ gSettings.prefix || ';' }}kick</span> + automatic kicks
         </div>
         <div class="log-cmd">
             <label class="switch small">
                 <input type="checkbox" v-model="gSettings.logging['cmd-role']">
                 <span class="slider round"></span>
             </label>
-            <span class="code">;role</span>
+            <span class="code">{{ gSettings.prefix || ';' }}role</span>
         </div>
         <div class="log-cmd">
             <label class="switch small">
                 <input type="checkbox" v-model="gSettings.logging['cmd-purge']">
                 <span class="slider round"></span>
             </label>
-            <span class="code">;purge</span>
+            <span class="code">{{ gSettings.prefix || ';' }}purge</span>
         </div>
         <div class="log-cmd">
             <label class="switch small">
                 <input type="checkbox" v-model="gSettings.logging['cmd-warn']">
                 <span class="slider round"></span>
             </label>
-            <span class="code">;warn</span>
+            <span class="code">{{ gSettings.prefix || ';' }}warn</span>
         </div>
         <div class="log-cmd">
             <label class="switch small">
                 <input type="checkbox" v-model="gSettings.logging['cmd-clonerole']">
                 <span class="slider round"></span>
             </label>
-            <span class="code">;clonerole</span>
+            <span class="code">{{ gSettings.prefix || ';' }}clonerole</span>
         </div>
     </div>
     <div class="time-setting">
@@ -771,7 +775,7 @@
             </div>
         </div>
     </div>
-</div><div id="tags" v-if="selectedGuildID && column === 'tags'">
+</div><div id="tags" v-if="selectedGuildID && column === 'tags' && !loading">
     <div class="header"><span class="bold">Tags</span></div>
     <span class="info">Tags are used like simple commands; if you use Bender's prefix + the tag name, you get a response.<br>For example, you could make a tag "hello" with the response "world." Details about variables you can use, i.e. <span class="code">{args}</span>, can be found <a href="https://benderbot.co/commands#tag" target="_blank">here.</a></span>
     <div>
@@ -812,7 +816,7 @@
         </button>
     </div>
     <span v-else class="gray">Max number of tags reached; Cannot add more.</span>
-</div><div id="modlog" v-if="selectedGuildID && column === 'modlog'">
+</div><div id="modlog" v-if="selectedGuildID && column === 'modlog' && !loading">
     <div class="header"><span class="bold">Mod Log</span></div>
     <div class="setting" v-if="getLen(gSettings.modlog) > 0">
         <span class="gray">{{ getLen(gSettings.modlog) }} case{{ getLen(gSettings.modlog) > 1 ? 's' : '' }} on record.</span>
@@ -841,7 +845,7 @@
             <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
         </tr>
     </tbody></table>
-</div><div id="aliases" v-if="selectedGuildID && column === 'aliases'">
+</div><div id="aliases" v-if="selectedGuildID && column === 'aliases' && !loading">
     <div class="header"><span class="bold">Aliases</span></div>
     <span class="info">Aliases are used to give commands an alternative name.</span>
     <table id="aliases_list" class="table wide-table"><tbody>
@@ -890,7 +894,7 @@
         </button>
     </div>
     <span v-else class="gray">Max number of aliases reached; Cannot add more.</span>
-</div><div id="mutes" v-if="selectedGuildID && column === 'mutes'">
+</div><div id="mutes" v-if="selectedGuildID && column === 'mutes' && !loading">
     <div class="header">
         <span class="bold">Mutes</span>
     </div>
@@ -914,7 +918,7 @@
             <td>{{ data.reason }}</td>
         </tr>
     </tbody></table>
-</div><div id="filter" v-if="selectedGuildID && column === 'filter'">
+</div><div id="filter" v-if="selectedGuildID && column === 'filter' && !loading">
     <div class="header">
         <span class="bold">Filter</span>
         <label class="switch">
@@ -925,7 +929,7 @@
     <div class="box is-warning" v-if="gSettings.filter.enabled && !gSettings.automod.enabled">
         <span class="gray">Filter is not currently enabled because <a href="#automod">automod</a> is disabled.</span>
     </div>
-    <span class="info">The filter is used to prevent members from typing certain words/phrases in chat.<br>It works using standard JavaScript regex syntax. For more info, see <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions" target="_blank">this page.</a></span>
+    <span class="info">The filter is used to prevent members from typing certain words/phrases in chat.<br>It works using standard <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions" target="_blank">JavaScript regex syntax</a>. To test whether your patter will match certain words/phrases, I recommend <a href="https://regexr.com/" target="_blank">Regexr</a>.</span>
     <br>
     <br>
     <div class="columns">
@@ -1119,7 +1123,7 @@
         </button>
     </div>
     <span v-else class="gray">Max number of items reached (20); Cannot add more.</span>
-</div><div id="namefilter" v-if="selectedGuildID && column === 'namefilter'">
+</div><div id="namefilter" v-if="selectedGuildID && column === 'namefilter' && !loading">
     <div class="header">
         <span class="bold">Name Filter</span>
         <label class="switch">
@@ -1127,7 +1131,7 @@
             <span class="slider round"></span>
         </label>
     </div>
-    <span class="info">Automatically bans any members with names that match the patterns you add below. Uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions" target="_blank">JavaScript regex syntax</a>.</span>
+    <span class="info">Automatically bans any members with names that match the patterns you add below. Uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions" target="_blank">JavaScript regex syntax</a>.<br>To test whether your patter will match certain words/phrases, I recommend <a href="https://regexr.com/" target="_blank">Regexr</a>.</span>
     <br>
     <br>
     <div class="setting">
@@ -1278,7 +1282,7 @@
         </button>
     </div>
     <span v-else class="gray">Max number of items reached (20); Cannot add more.</span>
-</div><div id="names" v-if="selectedGuildID && column === 'names'">
+</div><div id="names" v-if="selectedGuildID && column === 'names' && !loading">
     <div class="header">
         <span class="bold">Name History</span>
     </div>
@@ -1300,7 +1304,7 @@
             <td>{{ gNames[userID] ?  gNames[userID].join(', ') : 'N/A' }}</td>
         </tr>
     </tbody></table>
-</div><div id="giveaways" v-if="selectedGuildID && column === 'giveaways'">
+</div><div id="giveaways" v-if="selectedGuildID && column === 'giveaways' && !loading">
     <div class="header">
         <span class="bold">Giveaways</span>
     </div>
@@ -1326,7 +1330,7 @@
             <td>{{ data.winners || 1 }}</td>
         </tr>
     </tbody></table>
-</div><div id="cmdstatus" v-if="selectedGuildID && column === 'cmdstatus'">
+</div><div id="cmdstatus" v-if="selectedGuildID && column === 'cmdstatus' && !loading">
     <div class="header">
         <span class="bold">Disabled Commands & Groups</span>
     </div>
@@ -1346,7 +1350,7 @@
             </label></td>
         </tr>
     </tbody></table>
-</div><div id="automod" v-if="selectedGuildID && column === 'automod'">
+</div><div id="automod" v-if="selectedGuildID && column === 'automod' && !loading">
     <div class="header">
         <span class="bold">Automod</span>
         <label class="switch">
@@ -1354,7 +1358,7 @@
             <span class="slider round"></span>
         </label>
     </div>
-    <div class="setting text-setting" v-show="gSettings.automod.enabled">
+    <div class="setting text-setting">
         <span class="key">Ignore members by </span>
         <div class="dd">
             <div class="dd-trigger">
@@ -1470,6 +1474,7 @@
             </button>
         </span>
     </div>
+    <hr>
     <div class="columns">
         <div class="setting column">
             <span class="key">Allow invites:</span>
@@ -1477,7 +1482,7 @@
                 <input type="checkbox" v-model="gSettings.automod.allow_invites">
                 <span class="slider round"></span>
             </label>
-            <span class="info">When a user posts an invite to another Discord server, i.e. <a href="https://discord.gg/99xaeGn">https://discord.gg/99xaeGn</a>, the message will be removed and an automod violation will be issued.</span>
+            <span class="info">When a user posts an invite to another Discord server, i.e. <a href="https://discord.gg/99xaeGn">https://discord.gg/99xaeGn</a>, the message <span :class="gSettings.automod.allow_invites ? 'green' : 'red'">{{ gSettings.automod.allow_invites ? 'will not' : 'will'}}</span> be removed and an automod violation <span :class="gSettings.automod.allow_invites ? 'green' : 'red'">{{ gSettings.automod.allow_invites ? 'will not' : 'will'}}</span> be issued.</span>
         </div>
         <div class="setting column" v-show="!gSettings.automod.allow_invites">
             <span class="key">Ignore invites from members by </span>
@@ -1603,7 +1608,7 @@
                 <input type="checkbox" v-model="gSettings.automod.selfbots">
                 <span class="slider round"></span>
             </label>
-            <span class="info">When someone uses a command on their selfbot and it is detected, the message will be removed and an automod violation will be issued.</span>
+            <span class="info">When someone uses a command on their selfbot and it is detected, the message <span :class="gSettings.automod.selfbots ? 'green' : 'red'">{{ gSettings.automod.selfbots ? 'will not' : 'will'}}</span> be removed and an automod violation <span :class="gSettings.automod.selfbots ? 'green' : 'red'">{{ gSettings.automod.selfbots ? 'will not' : 'will'}}</span> be issued.</span>
         </div>
         <div class="setting column" v-show="!gSettings.automod.selfbots">
             <span class="key">Ignore selfbots used by members by </span>
@@ -1722,8 +1727,136 @@
             </div>
         </div>
     </div>
+    <div class="columns">
+        <div class="setting column">
+            <span class="key">Maximum number of mentions:</span>
+            <div class="time-setting">
+                <span v-if="gSettings.automod.mentions !== 0">Mentioning more than </span><input type="number" placeholder="6" v-model.number="gSettings.automod.mentions"></input><span v-if="gSettings.automod.mentions !== 0"> users will lead to an automod violation.</span><span class="gray" v-else> No automod violations will be issued for mentioning too many users.</span>
+            </div>
+            <div class="time-setting">
+                <span v-if="gSettings.automod['mention-ban'] !== 0">Mentioning more than </span><input type="number" placeholder="20" v-model.number="gSettings.automod['mention-ban']"></input><span v-if="gSettings.automod['mention-ban'] !== 0"> users will result in an automatic ban.</span><span class="gray" v-else> No bans will be issued for mentioning too many users.</span>
+            </div>
+            <span class="info">Set either of the above settings to 0 to disable them.</span>
+        </div>
+        <div class="setting column" v-show="gSettings.automod.mentions !== 0 || gSettings.automod['mention-ban'] !== 0">
+            <span class="key">Ignore too many mentions from members by </span>
+            <div class="dd">
+                <div class="dd-trigger">
+                    <button class="button" @click="openDropdown = openDropdown === 'ign-ment' ? null : 'ign-ment'">
+                        <div v-if="gSettings.ignore.mentions.type">
+                            <span>{{ ignorePermsTypes[gSettings.ignore.mentions.type] }}</span>
+                        </div>
+                        <span v-else>None</span>
+                    </button>
+                </div>
+                <div v-show="openDropdown === 'ign-ment'" class="dd-content">
+                    <label for="ign-ment-0">
+                        <input type="radio" id="ign-ment-0" value="none" v-model="gSettings.ignore.mentions.type" class="hidden">
+                        <span>None</span>
+                    </label><br>
+                    <label for="ign-ment-1">
+                        <input type="radio" id="ign-ment-1" value="role_hier" v-model="gSettings.ignore.mentions.type" class="hidden">
+                        <span>{{ ignorePermsTypes.role_hier }}</span>
+                    </label><br>
+                    <label for="ign-ment-2">
+                        <input type="radio" id="ign-ment-2" value="role_list" v-model="gSettings.ignore.mentions.type" class="hidden">
+                        <span>{{ ignorePermsTypes.role_list }}</span>
+                    </label><br>
+                    <label for="ign-ment-3">
+                        <input type="radio" id="ign-ment-3" value="discord_perm" v-model="gSettings.ignore.mentions.type" class="hidden">
+                        <span>{{ ignorePermsTypes.discord_perm }}</span>
+                    </label><br>
+                </div>
+            </div>
+            <span class="key">: </span>
+            <div class="dd" v-if="gSettings.ignore.mentions.type === 'role_hier'">
+                <div class="dd-trigger">
+                    <button class="button" @click="openDropdown = openDropdown === 'ign-ment-roleh' ? null : 'ign-ment-roleh'">
+                        <span v-if="!gSettings.ignore.mentions.data" class="role-icon">@</span>
+                        <span v-if="!gSettings.ignore.mentions.data">Choose a role...</span>
+                        <div v-if="gSettings.ignore.mentions.data">
+                            <span :style="getRole(gSettings.ignore.mentions.data).cssColor" class="role-icon">@</span>
+                            <span :style="getRole(gSettings.ignore.mentions.data).cssColor">{{ getRole(gSettings.ignore.mentions.data).name }}</span>
+                        </div>
+                    </button>
+                </div>
+                <div v-show="openDropdown === 'ign-ment-roleh'" class="dd-content">
+                    <div v-for="role in gRoles" v-if="role.id !== selectedGuildID">
+                        <label :for="'IIH-' + role.id" :class="role.managed ? 'managed disabled' : getGuild(selectedGuildID).owner || role.position < memberRank ? '' : 'too-high disabled'">
+                            <input type="radio" :id="'IIH-' + role.id" :value="role.id" v-model="gSettings.ignore.mentions.data" class="hidden">
+                            <span :style="role.cssColor" class="role-icon">@</span>
+                            <span :style="role.cssColor">{{ role.name }}</span>
+                        </label>
+                        <br>
+                    </div>
+                    <div v-if="gRoles.length === 0">
+                        <span class="gray">No eligible roles.</span>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="gSettings.ignore.mentions.type === 'discord_perm'">
+                <div class="dd">
+                    <div class="dd-trigger">
+                        <button class="button" @click="openDropdown = openDropdown === 'ign-ment-dis' ? null : 'ign-ment-dis'">
+                            <span v-if="!gSettings.ignore.mentions.data">Choose a Discord permission...</span>
+                            <div v-if="gSettings.ignore.mentions.data">{{ discordPermissionNames[gSettings.ignore.mentions.data] }}</div>
+                        </button>
+                    </div>
+                    <div v-show="openDropdown === 'ign-ment-dis'" class="dd-content">
+                        <div v-for="(permName, permID) in discordPermissionNames">
+                            <label :for="'IID-' + permID">
+                                <input type="radio" :id="'IID-' + permID" :value="permID" v-model="gSettings.ignore.mentions.data" class="hidden">
+                                <span>{{ permName }}</span>
+                            </label>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else>
+                <div class="guild box" v-for="(roleID, index) in gSettings.ignore.mentions.data">
+                    <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
+                    <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
+                    <a @click="del('iil', index)" class="remove"></a>
+                </div>
+                <div v-if="!gSettings.ignore.mentions.data || gSettings.ignore.mentions.data.length === 0">
+                    <span class="gray">No roles selected.</span>
+                </div>
+                <br>
+                <span class="key">Add a role:</span>
+                <div class="dd">
+                    <div class="dd-trigger">
+                        <button class="button" @click="openDropdown = openDropdown === 'ign-ment-rolel' ? null : 'ign-ment-rolel'">
+                            <span v-if="!temp.iil" class="role-icon">@</span>
+                            <span v-if="!temp.iil">Choose a role...</span>
+                            <div v-if="temp.iil">
+                                <span :style="getRole(temp.iil).cssColor" class="role-icon">@</span>
+                                <span :style="getRole(temp.iil).cssColor">{{ getRole(temp.iil).name }}</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div v-show="openDropdown === 'ign-ment-rolel'" class="dd-content">
+                        <div v-for="role in gRoles" v-if="role.id !== selectedGuildID">
+                            <label :for="'IIL-' + role.id" :class="role.managed ? 'managed disabled' : getGuild(selectedGuildID).owner || role.position < memberRank ? '' : 'too-high disabled'">
+                                <input type="radio" :id="'IIL-' + role.id" :value="role.id" v-model="temp.iil" class="hidden">
+                                <span :style="role.cssColor" class="role-icon">@</span>
+                                <span :style="role.cssColor">{{ role.name }}</span>
+                            </label>
+                            <br>
+                        </div>
+                        <div v-if="gRoles.length === 0">
+                            <span class="gray">No eligible roles.</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="button add" @click="add('iil')" :disabled="!temp.iil">
+                    <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+                </button>
+            </div>
+        </div>
+    </div>
     <!-- TODO: do the rest of the automod/ignore settings -->
-</div><div id="perms" v-if="selectedGuildID && column === 'perms'">
+</div><div id="perms" v-if="selectedGuildID && column === 'perms' && !loading">
     <div class="header">
         <span class="bold">Permissions</span>
     </div>
@@ -1984,7 +2117,7 @@
             </div></td>
         </tr>
     </tbody></table>
-</div><div id="cperms" v-if="selectedGuildID && column === 'cperms'">
+</div><div id="cperms" v-if="selectedGuildID && column === 'cperms' && !loading">
     <div class="header">
         <span class="bold">Channel Permissions</span>
     </div>
