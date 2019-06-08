@@ -124,7 +124,8 @@ var page = new Vue({
 			iil: 'invites',
 			fil: 'filter',
 			nfil: 'names',
-			sbil: 'selfbots'
+			sbil: 'selfbots',
+			mil: 'mentions'
 		},
 		botNotPresent: false
 	},
@@ -144,7 +145,61 @@ var page = new Vue({
 			this.previewEnabled = false;
 		},
 		openDropdown: calcDropdowns,
-		previewEnabled: window.highlightAll
+		previewEnabled: window.highlightAll,
+		'gSettings.perms': {
+			deep: true,
+			handler: function(value) {
+				for (const c in value) {
+					if (value[c] && value[c].type === 'role_list' && !Array.isArray(value[c].data)) {
+						this.gSettings.perms[c].data = [];
+					}
+				}
+			}
+		},
+		'gSettings.gperms': {
+			deep: true,
+			handler: function(value) {
+				for (const g in value) {
+					if (value[g] && value[g].type === 'role_list' && !Array.isArray(value[g].data)) {
+						this.gSettings.gperms[g].data = [];
+					}
+				}
+			}
+		},
+		'gSettings.cperms': {
+			deep: true,
+			handler: function(value) {
+				for (const i in value.perms) {
+					for (const c in value.perms[i]) {
+						if (value.perms[i][c] && value.perms[i][c].type === 'role_list' && !Array.isArray(value.perms[i][c].data)) {
+							this.gSettings.cperms.perms[i][c].data = [];
+						}
+					}
+				}
+				for (const i in value.gperms) {
+					for (const g in value.gperms[i]) {
+						if (value.gperms[i][g] && value.gperms[i][g].type === 'role_list' && !Array.isArray(value.gperms[i][g].data)) {
+							this.gSettings.cperms.gperms[i][g].data = [];
+						}
+					}
+				}
+			}
+		},
+		'gSettings.automod.ignore': function(value) {
+			if (value && value.type === 'role_list' && !Array.isArray(value.data)) {
+				this.gSettings.automod.ignore.data = [];
+			}
+		},
+		'gSettings.ignore': {
+			deep: true,
+			handler: function(value) {
+				for (const t in value) {
+					if (value[t] && value[t].type === 'role_list' && !Array.isArray(value[t].data)) {
+						this.gSettings.ignore[t].data = [];
+					}
+				}
+			}
+		}
 	},
 	methods: {
 		reloadGSettings: window.loadGuildSettings,
@@ -180,6 +235,7 @@ var page = new Vue({
 				case 'fil':
 				case 'nfil':
 				case 'sbil':
+				case 'mil':
 					const x = this.ignoreAbbrs[type];
 					this.gSettings.ignore[x] = {
 						data: Array.isArray(this.gSettings.ignore[x].data) ? this.gSettings.ignore[x].data : [],
@@ -228,6 +284,7 @@ var page = new Vue({
 				case 'fil':
 				case 'nfil':
 				case 'sbil':
+				case 'mil':
 					this.gSettings.ignore[this.ignoreAbbrs[type]].data.splice(index, 1);
 					break;
 				case 'perms':

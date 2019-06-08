@@ -1048,7 +1048,7 @@
                 </div>
             </div>
         </div>
-        <span v-else>
+        <span v-else-if="gSettings.ignore.filter.type === 'role_list'">
             <div class="guild box" v-for="(roleID, index) in gSettings.ignore.filter.data">
                 <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                 <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
@@ -1207,7 +1207,7 @@
                 </div>
             </div>
         </div>
-        <span v-else>
+        <span v-else-if="gSettings.ignore.names.type === 'role_list'">
             <div class="guild box" v-for="(roleID, index) in gSettings.ignore.names.data">
                 <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                 <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
@@ -1431,7 +1431,7 @@
                 </div>
             </div>
         </div>
-        <span v-else>
+        <span v-else-if="gSettings.automod.ignore.type === 'role_list'">
             <div class="guild box" v-for="(roleID, index) in gSettings.automod.ignore.data">
                 <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                 <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
@@ -1559,7 +1559,7 @@
                     </div>
                 </div>
             </div>
-            <div v-else>
+            <div v-else-if="gSettings.ignore.invites.type === 'role_list'">
                 <div class="guild box" v-for="(roleID, index) in gSettings.ignore.invites.data">
                     <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                     <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
@@ -1813,11 +1813,11 @@
                     </div>
                 </div>
             </div>
-            <div v-else>
+            <div v-else-if="gSettings.ignore.mentions.type === 'role_list'">
                 <div class="guild box" v-for="(roleID, index) in gSettings.ignore.mentions.data">
                     <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                     <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
-                    <a @click="del('iil', index)" class="remove"></a>
+                    <a @click="del('mil', index)" class="remove"></a>
                 </div>
                 <div v-if="!gSettings.ignore.mentions.data || gSettings.ignore.mentions.data.length === 0">
                     <span class="gray">No roles selected.</span>
@@ -1827,18 +1827,18 @@
                 <div class="dd">
                     <div class="dd-trigger">
                         <button class="button" @click="openDropdown = openDropdown === 'ign-ment-rolel' ? null : 'ign-ment-rolel'">
-                            <span v-if="!temp.iil" class="role-icon">@</span>
-                            <span v-if="!temp.iil">Choose a role...</span>
-                            <div v-if="temp.iil">
-                                <span :style="getRole(temp.iil).cssColor" class="role-icon">@</span>
-                                <span :style="getRole(temp.iil).cssColor">{{ getRole(temp.iil).name }}</span>
+                            <span v-if="!temp.mil" class="role-icon">@</span>
+                            <span v-if="!temp.mil">Choose a role...</span>
+                            <div v-if="temp.mil">
+                                <span :style="getRole(temp.mil).cssColor" class="role-icon">@</span>
+                                <span :style="getRole(temp.mil).cssColor">{{ getRole(temp.mil).name }}</span>
                             </div>
                         </button>
                     </div>
                     <div v-show="openDropdown === 'ign-ment-rolel'" class="dd-content">
                         <div v-for="role in gRoles" v-if="role.id !== selectedGuildID">
-                            <label :for="'IIL-' + role.id" :class="role.managed ? 'managed disabled' : getGuild(selectedGuildID).owner || role.position < memberRank ? '' : 'too-high disabled'">
-                                <input type="radio" :id="'IIL-' + role.id" :value="role.id" v-model="temp.iil" class="hidden">
+                            <label :for="'MIL-' + role.id" :class="role.managed ? 'managed disabled' : getGuild(selectedGuildID).owner || role.position < memberRank ? '' : 'too-high disabled'">
+                                <input type="radio" :id="'MIL-' + role.id" :value="role.id" v-model="temp.mil" class="hidden">
                                 <span :style="role.cssColor" class="role-icon">@</span>
                                 <span :style="role.cssColor">{{ role.name }}</span>
                             </label>
@@ -1849,7 +1849,7 @@
                         </div>
                     </div>
                 </div>
-                <button class="button add" @click="add('iil')" :disabled="!temp.iil">
+                <button class="button add" @click="add('mil')" :disabled="!temp.mil">
                     <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
                 </button>
             </div>
@@ -1956,7 +1956,7 @@
                         </div>
                     </div>
                 </div>
-                <span v-else-if="gSettings.gperms[group].type">
+                <span v-else-if="gSettings.gperms[group].type === 'role_list'">
                     <div class="guild box" v-for="(roleID, index) in gSettings.gperms[group].data">
                         <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                         <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
@@ -2073,7 +2073,7 @@
                         </div>
                     </div>
                 </div>
-                <span v-else-if="gSettings.perms[command].type">
+                <span v-else-if="gSettings.perms[command].type === 'role_list'">
                     <div class="guild box" v-for="(roleID, index) in gSettings.perms[command].data">
                         <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                         <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
@@ -2245,7 +2245,7 @@
                         </div>
                     </div>
                 </div>
-                <span v-else-if="gSettings.cperms.gperms[temp.cperms_chan][group].type">
+                <span v-else-if="gSettings.cperms.gperms[temp.cperms_chan][group].type === 'role_list'">
                     <div class="guild box" v-for="(roleID, index) in gSettings.cperms.gperms[temp.cperms_chan][group].data">
                         <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                         <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
@@ -2364,7 +2364,7 @@
                         </div>
                     </div>
                 </div>
-                <span v-else-if="gSettings.cperms.perms[temp.cperms_chan][command].type">
+                <span v-else-if="gSettings.cperms.perms[temp.cperms_chan][command].type === 'role_list'">
                     <div class="guild box" v-for="(roleID, index) in gSettings.cperms.perms[temp.cperms_chan][command].data">
                         <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
                         <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
