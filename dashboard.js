@@ -125,7 +125,8 @@ var page = new Vue({
 			fil: 'filter',
 			nfil: 'names',
 			sbil: 'selfbots',
-			mil: 'mentions'
+			mil: 'mentions',
+			sil: 'spam'
 		},
 		botNotPresent: false
 	},
@@ -236,6 +237,7 @@ var page = new Vue({
 				case 'nfil':
 				case 'sbil':
 				case 'mil':
+				case 'sil':
 					const x = this.ignoreAbbrs[type];
 					this.gSettings.ignore[x] = {
 						data: Array.isArray(this.gSettings.ignore[x].data) ? this.gSettings.ignore[x].data : [],
@@ -285,6 +287,7 @@ var page = new Vue({
 				case 'nfil':
 				case 'sbil':
 				case 'mil':
+				case 'sil':
 					this.gSettings.ignore[this.ignoreAbbrs[type]].data.splice(index, 1);
 					break;
 				case 'perms':
@@ -370,6 +373,36 @@ var page = new Vue({
 				}
 			}
 			return userID;
+		},
+		automodSpamUnit() {
+			switch (this.gSettings.automod.spamTimeUnits) {
+				case 'ms':
+					this.gSettings.automod.spamTimeUnits = 's';
+					break;
+				case 's':
+					this.gSettings.automod.spamTimeUnits = 'm';
+					break;
+				case 'm':
+					this.gSettings.automod.spamTimeUnits = 'ms';
+					break;
+				default:
+
+			}
+		},
+		automodMuteUnit() {
+			switch (this.gSettings.automod.muteTimeUnits) {
+				case 's':
+					this.gSettings.automod.muteTimeUnits = 'm';
+					break;
+				case 'm':
+					this.gSettings.automod.muteTimeUnits = 'h';
+					break;
+				case 'h':
+					this.gSettings.automod.muteTimeUnits = 's';
+					break;
+				default:
+
+			}
 		}
 	},
 	computed: {

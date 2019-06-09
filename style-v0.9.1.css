@@ -356,6 +356,12 @@ span.code {
 .green {
     color: #0f0;
 }
+.yellow {
+    color: #ff0;
+}
+.blue {
+    color: #08f;
+}
 
 a:not([class]):not(#sidenav-close) {
     color: #faa61a !important;
