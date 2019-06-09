@@ -383,7 +383,7 @@ a:not([class]):not(#sidenav-close):hover {
 
 #sidenav {
     width: 250px;
-    position:  absolute;
+    position: fixed;
     background: #2f3434;
     overflow-y: auto;
     z-index: 11;
