@@ -264,6 +264,15 @@ var page = new Vue({
 					this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data.push(this.temp['cp-'+cg]);
 					this.temp['cp-'+cg] = null;
 					break;
+				case 'whitelist_code':
+					const pieces = this.temp[type].split('/');
+					this.temp[type] = pieces.pop();
+				case 'whitelist_id':
+					if (!Array.isArray(this.gSettings.automod.invite_whitelist))
+						this.gSettings.automod.invite_whitelist = [];
+					this.gSettings.automod.invite_whitelist.push(this.temp[type]);
+					this.temp[type] = null;
+					break;
 
 			}
 			//this.$forceUpdate();
@@ -296,10 +305,13 @@ var page = new Vue({
 				case 'cperms':
 					this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data.splice(index, 1);
 					break;
+				case 'whitelist':
+					this.gSettings.automod.invite_whitelist.splice(index, 1);
+					break;
 			}
-			//this.$forceUpdate();
-			//setTimeout( this.$forceUpdate, 69);
-			//setTimeout( this.$forceUpdate, 690);
+			this.$forceUpdate();
+			setTimeout( this.$forceUpdate, 69);
+			setTimeout( this.$forceUpdate, 690);
 		},
 		parseMD: function(str) {
 			// parse markdown (i.e. underlining) and syntax highlighting

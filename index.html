@@ -126,6 +126,7 @@
 </div><div id="pro" v-show="column === 'pro' && !loading">
     <div class="header">
         <span class="bold">Bender Pro Settings <img id="pp_logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/2000px-PayPal.svg.png"></span>
+        <hr>
     </div>
     <div id="paypalIntegration" v-if="paypalInfo">
         <img v-if="paypalInfo.picture" :src="paypalInfo.picture">
@@ -164,6 +165,7 @@
 </div><div id="general" v-if="selectedGuildID && column === 'general' && !loading">
     <div class="header">
         <span class="bold">General Settings</span>
+        <hr>
     </div>
     <div class="columns">
         <div class="setting column">
@@ -290,6 +292,7 @@
 </div><div id="welcome" v-if="selectedGuildID && column === 'welcome' && !loading">
     <div class="header">
         <span class="bold">Welcome messages</span>
+        <hr>
     </div>
     <div class="setting">
         <div class="columns">
@@ -372,6 +375,7 @@
 </div><div id="selfroles" v-if="selectedGuildID && column === 'selfroles' && !loading">
     <div class="header">
         <span class="bold">Selfroles</span>
+        <hr>
     </div>
     <div class="setting">
         <span class="info">Mark roles as joinable, so members can use <span class="code">{{ gSettings.prefix || ';' }}roleme</span> to add that role to themselves.</span>
@@ -411,6 +415,7 @@
             <input type="checkbox" v-model="gSettings.agreement.enabled">
             <span class="slider round"></span>
         </label>
+        <hr>
     </div>
     <div class="columns">
     <div class="setting column">
@@ -534,6 +539,7 @@
 </div><div id="logging" v-if="selectedGuildID && column === 'logging' && !loading">
     <div class="header">
         <span class="bold">Logging Settings</span>
+        <hr>
     </div>
     <div class="columns">
         <div class="setting column">
@@ -776,7 +782,10 @@
         </div>
     </div>
 </div><div id="tags" v-if="selectedGuildID && column === 'tags' && !loading">
-    <div class="header"><span class="bold">Tags</span></div>
+    <div class="header">
+        <span class="bold">Tags</span>
+        <hr>
+    </div>
     <span class="info">Tags are used like simple commands; if you use Bender's prefix + the tag name, you get a response.<br>For example, you could make a tag "hello" with the response "world." Details about variables you can use, i.e. <span class="code">{args}</span>, can be found <a href="https://benderbot.co/commands#tag" target="_blank">here.</a></span>
     <div>
         <span class="key">Edit</span>
@@ -817,7 +826,10 @@
     </div>
     <span v-else class="gray">Max number of tags reached; Cannot add more.</span>
 </div><div id="modlog" v-if="selectedGuildID && column === 'modlog' && !loading">
-    <div class="header"><span class="bold">Mod Log</span></div>
+    <div class="header">
+        <span class="bold">Mod Log</span>
+        <hr>
+    </div>
     <div class="setting" v-if="getLen(gSettings.modlog) > 0">
         <span class="gray">{{ getLen(gSettings.modlog) }} case{{ getLen(gSettings.modlog) > 1 ? 's' : '' }} on record.</span>
         <span class="key">Search case:</span> <input id="search-input" type="text" placeholder="Case" v-model="searchValue">
@@ -846,7 +858,10 @@
         </tr>
     </tbody></table>
 </div><div id="aliases" v-if="selectedGuildID && column === 'aliases' && !loading">
-    <div class="header"><span class="bold">Aliases</span></div>
+    <div class="header">
+        <span class="bold">Aliases</span>
+        <hr>
+    </div>
     <span class="info">Aliases are used to give commands an alternative name.</span>
     <table id="aliases_list" class="table wide-table"><tbody>
         <tr>
@@ -897,6 +912,7 @@
 </div><div id="mutes" v-if="selectedGuildID && column === 'mutes' && !loading">
     <div class="header">
         <span class="bold">Mutes</span>
+        <hr>
     </div>
     <div class="setting" v-if="getLen(gSettings.mutes, ['role', 'default']) > 0">
         <span class="key">There {{ getLen(gSettings.mutes, ['role', 'default']) > 1 ? 'are' : 'is' }} currently {{ getLen(gSettings.mutes, ['role', 'default']) }} active mute{{ getLen(gSettings.mutes, ['role', 'default']) > 1 ? 's' : '' }}.</span>
@@ -925,6 +941,7 @@
             <input type="checkbox" v-model="gSettings.filter.enabled">
             <span class="slider round"></span>
         </label>
+        <hr>
     </div>
     <div class="box is-warning" v-if="gSettings.filter.enabled && !gSettings.automod.enabled">
         <span class="gray">Filter is not currently enabled because <a href="#automod">automod</a> is disabled.</span>
@@ -1130,6 +1147,7 @@
             <input type="checkbox" v-model="gSettings.namefilter.enabled">
             <span class="slider round"></span>
         </label>
+        <hr>
     </div>
     <span class="info">Automatically bans any members with names that match the patterns you add below. Uses <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions" target="_blank">JavaScript regex syntax</a>.<br>To test whether your patter will match certain words/phrases, I recommend <a href="https://regexr.com/" target="_blank">Regexr</a>.</span>
     <br>
@@ -1285,6 +1303,7 @@
 </div><div id="names" v-if="selectedGuildID && column === 'names' && !loading">
     <div class="header">
         <span class="bold">Name History</span>
+        <hr>
     </div>
     <div class="setting" v-if="getLen(gSettings.nicknames) > 0">
         <span class="info">There {{ getLen(gSettings.nicknames) > 1 ? 'are' : 'is' }} currently {{ getLen(gSettings.nicknames) }} member{{ getLen(gSettings.nicknames) > 1 ? 's' : '' }} with name changes recorded.</span>
@@ -1307,6 +1326,7 @@
 </div><div id="giveaways" v-if="selectedGuildID && column === 'giveaways' && !loading">
     <div class="header">
         <span class="bold">Giveaways</span>
+        <hr>
     </div>
     <div class="setting" v-if="getLen(gSettings.giveaways) > 0">
         <span class="info">There {{ getLen(gSettings.giveaways) > 1 ? 'are' : 'is' }} {{ getLen(gSettings.giveaways) }} active giveaway{{ getLen(gSettings.giveaways) > 1 ? 's' : '' }}.</span>
@@ -1333,6 +1353,7 @@
 </div><div id="cmdstatus" v-if="selectedGuildID && column === 'cmdstatus' && !loading">
     <div class="header">
         <span class="bold">Disabled Commands & Groups</span>
+        <hr>
     </div>
     <table v-for="(data, group) in commandList" class="table skinny-table"><tbody>
         <tr>
@@ -1357,6 +1378,7 @@
             <input type="checkbox" v-model="gSettings.automod.enabled">
             <span class="slider round"></span>
         </label>
+        <hr>
     </div>
     <div class="setting text-setting">
         <span class="key">Ignore members by </span>
@@ -1474,7 +1496,7 @@
             </button>
         </span>
     </div>
-    <hr>
+    <hr class="thin">
     <div class="columns">
         <div class="setting column">
             <span class="key">Allow invites:</span>
@@ -1601,6 +1623,7 @@
             </div>
         </div>
     </div>
+    <hr class="thin">
     <div class="columns">
         <div class="setting column">
             <span class="key">Allow selfbots:</span>
@@ -1727,6 +1750,7 @@
             </div>
         </div>
     </div>
+    <hr class="thin">
     <div class="columns">
         <div class="setting column">
             <span class="key">Maximum number of mentions:</span>
@@ -1855,12 +1879,13 @@
             </div>
         </div>
     </div>
+    <hr class="thin">
     <div class="columns">
         <div class="time-setting column">
             <span class="key">Spam threshold:</span>
             <input type="number" placeholder="6" v-model.number="gSettings.automod.spamCount">
             <span>messages/</span>
-            <input type="number" placeholder="5" v-model.number="gSettings.automod.spamTime">
+            <input type="number" placeholder="5s" v-model.number="gSettings.automod.spamTime">
             <span @click="automodSpamUnit()" class="blue" style="cursor: pointer;">{{ gSettings.automod.spamTimeUnits === 'ms' ? 'milliseconds' : gSettings.automod.spamTimeUnits === 'm' ? 'minutes' : 'seconds' }}</span>
             <span class="info" v-show="gSettings.automod.spamCount !== 0">When a user spams (sends <span class="yellow">{{ gSettings.automod.spamCount }}</span> messages in <span class="yellow">{{ gSettings.automod.spamTime }} {{ gSettings.automod.spamTimeUnits === 'ms' ? 'milliseconds' : gSettings.automod.spamTimeUnits === 'm' ? 'minutes' : 'seconds' }}</span>), an automod violation will be issued. Set the number of messages to 0 to disable. Click the units to toggle them (<span class="blue">milliseconds</span>, <span class="blue">seconds</span>, or <span class="blue">minutes</span>.)</span>
             <span class="info" v-show="gSettings.automod.spamCount === 0">Spam protection is disabled.</span>
@@ -1982,10 +2007,49 @@
             </div>
         </div>
     </div>
-    <!-- TODO: do the rest of the automod/ignore settings -->
+    <hr class="thin">
+    <div class="time-setting">
+        <span class="key">Mute threshold:</span>
+        <input type="number" placeholder="3" v-model.number="gSettings.automod.muteViolations">
+        <span>violations/</span>
+        <input type="number" placeholder="1m" v-model.number="gSettings.automod.muteTime">
+        <span @click="automodMuteUnit()" class="blue" style="cursor: pointer;">{{ gSettings.automod.muteTimeUnits === 's' ? 'seconds' : gSettings.automod.muteTimeUnits === 'h' ? 'hours' : 'minutes' }}</span>
+        <span class="info">When a user receives <span class="yellow">{{ gSettings.automod.muteViolations }}</span> automod violations in <span class="yellow">{{ gSettings.automod.muteTime }} {{ gSettings.automod.muteTimeUnits === 's' ? 'seconds' : gSettings.automod.muteTimeUnits === 'h' ? 'hours' : 'minutes' }}</span>, they will be muted. Click the units to toggle them (<span class="blue">seconds</span>, <span class="blue">minutes</span>, or <span class="blue">hours</span>.)</span>
+    </div>
+    <hr class="thin">
+    <div class="setting" v-show="!gSettings.automod.allow_invites">
+        <span class="key">Server invite whitelist:</span>
+        <div class="columns">
+            <div class="column is-three-quarters">
+                <div v-if="gSettings.automod.invite_whitelist">
+                    <div v-for="(thing, index) in gSettings.automod.invite_whitelist" class="guild box">
+                        <span v-if="thing.length >= 17"><span class="green">Server ID: </span>{{ thing }}</span><span v-else><span class="blue">Code: </span><a :href="'https://discord.gg/' + thing" target="_blank">https://discord.gg/{{ thing }}</a></span>
+                        <a class="remove" @click="del('whitelist', index)"></a>
+                    </div>
+                </div>
+                <span class="gray" v-show="!gSettings.automod.invite_whitelist || gSettings.automod.invite_whitelist.length === 0">No servers/invite codes are whitelisted.</span>
+            </div>
+            <div class="column">
+                <span class="key">Invite code:</span>
+                <input type="text" v-model="temp.whitelist_code" placeholder="99xaeGn">
+                <button class="button add" @click="add('whitelist_code')" :disabled="!temp.whitelist_code || temp.whitelist_code.length < 2 || gSettings.automod.invite_whitelist.indexOf(temp.whitelist_code) !== -1">
+                    <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+                </button>
+                <br>
+                <span class="key">Server ID:</span>
+                <input type="text" v-model="temp.whitelist_id" placeholder="353660669490626560" style="min-width: 170px;">
+                <button class="button add" @click="add('whitelist_id')" :disabled="!temp.whitelist_id || temp.whitelist_id.length < 17 || temp.whitelist_id.length > 20 || temp.whitelist_id.match(/\D/) || gSettings.automod.invite_whitelist.indexOf(temp.whitelist_id) !== -1">
+                    <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+                </button>
+            </div>
+        </div>
+        <span class="info">Whitelist a server so that users can post invites to it even though posting invites is not allowed. If you use the server ID, all invite codes to that server will be allowed as long as only one invite is sent in the message. If you whitelist a specific invite code, it will always be allowed.</span>
+    </div>
+    <!-- TODO: add things to add/delete items from whitelist -->
 </div><div id="perms" v-if="selectedGuildID && column === 'perms' && !loading">
     <div class="header">
         <span class="bold">Permissions</span>
+        <hr>
     </div>
     <div class="setting">
         <span class="key">Edit permissions for command group: </span>
@@ -2247,6 +2311,7 @@
 </div><div id="cperms" v-if="selectedGuildID && column === 'cperms' && !loading">
     <div class="header">
         <span class="bold">Channel Permissions</span>
+        <hr>
     </div>
     <div class="setting">
         <span class="key">Edit permissions for channel: </span>

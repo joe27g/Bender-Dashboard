@@ -124,6 +124,12 @@ input:checked + .slider:before {
 #header, .header, .level img.guild-icon, .switch, #sidenav-toggle, img.b {
     vertical-align:  middle;
 }
+.header > hr {
+    margin: 3px 0.5rem;
+}
+hr.thin {
+    margin: 0.5rem;
+}
 
 span.info {
     color: rgba(255, 255, 255, 0.7);
@@ -312,6 +318,11 @@ aside.menu {
 }
 .button {
     color: #fff !important;
+}
+.button[disabled] {
+    background-color: #282f2f !important;
+    border-color: #4c5759 !important;
+    opacity: .4 !important;
 }
 a#logout {
     float: right;
@@ -581,6 +592,7 @@ a.discord img {
 .guild.box {
     display: inline-block;
     padding: 5px 15px;
+    margin: 3px !important;
 }
 .guild.box > * {
     vertical-align:  middle;
