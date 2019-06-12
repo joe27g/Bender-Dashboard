@@ -107,6 +107,10 @@ var page = new Vue({
 		},
 		tzRegions: window.tzRegions,
 		tzs: window.tzs,
+		getTZName: function (id) {
+			let tz = this.tzs.filter(c => c.id === id)[0];
+			return tz && tz.name ? tz.name : id;
+		},
 		navSections: window.navSections,
 		ignorePermsTypes: window.permTypes,
 		discordPermissionNames: window.discordPermissionNames,
@@ -145,7 +149,9 @@ var page = new Vue({
 			this.searchValue = null;
 			this.previewEnabled = false;
 		},
-		openDropdown: calcDropdowns,
+		openDropdown: function() {
+			setTimeout(calcDropdowns);
+		},
 		previewEnabled: window.highlightAll,
 		'gSettings.perms': {
 			deep: true,

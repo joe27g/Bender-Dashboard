@@ -37,10 +37,12 @@ function calcDropdowns() {
     }
 }
 
-// close dropdowns when clicking outside them
 window.addEventListener('click', function(e) {
+    if(e.target.closest('.dd-content label:not(.disabled)')) {
+        page.openDropdown = null; // close dropdowns after selecting an option
+    }
     if (window.page && e.target.closest('.dd-content') === null && e.target.closest('.dd-trigger') === null) {
-        page.openDropdown = null;
+        page.openDropdown = null; // close dropdowns when clicking outside them
     }
 });
 

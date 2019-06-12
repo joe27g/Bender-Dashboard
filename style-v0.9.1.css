@@ -198,9 +198,11 @@ label.switch.small {
 }
 
 button > span {
-    color:  #fff;
-    margin-left: 5px;
+    color: #fff;
     text-shadow: 0 0 10px #000;
+}
+button > span:not(:only-child) {
+    margin-left: 5px;
 }
 
 div#notif {
@@ -441,6 +443,9 @@ a:not([class]):not(#sidenav-close):hover {
     padding: 5px 10px;
     cursor: pointer;
     display: block;
+}
+.dd-content > div > label {
+    margin: 7px 5px;
 }
 .dd-content label.disabled {
     pointer-events: none;

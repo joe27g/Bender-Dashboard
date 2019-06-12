@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<title>PayPal Login</title>
+		<script>
+			if (top.window.opener.location.hash !== '#pro') {
+				top.window.opener.location.hash = "pro";
+			}
+			top.window.opener.location.reload(false);
+			window.close();
+		</script>
+    	<style>
+			@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic);
+			html {
+			    background: #1f2424;
+			    font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+			}
+			h3, div {
+			    color: #fff;
+			    text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<h3>You disabled JavaScript for some reason???</h3>
+		<div>Close this window and refresh the dashboard for results.</div>
+	</body>
+</html>
