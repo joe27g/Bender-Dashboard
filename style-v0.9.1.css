@@ -381,6 +381,9 @@ span.code {
 .blue {
     color: #08f;
 }
+.margin-bottom-5 {
+    margin-bottom: 5px;
+}
 
 a:not([class]):not(#sidenav-close) {
     color: #faa61a !important;
@@ -608,6 +611,9 @@ a.discord img {
 }
 .guild.box > * {
     vertical-align:  middle;
+}
+table .guild.box {
+    background-color: #4d5758;
 }
 .remove {
     background-image: url(./trash.png);

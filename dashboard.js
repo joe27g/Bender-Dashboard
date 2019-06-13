@@ -103,6 +103,7 @@ var page = new Vue({
 		aliasMap: window.aliasMap || {},
 		groupNames: window.groupNames || {},
 		defaultPerms: window.defaultPerms || {},
+		shortcutMap: window.shortcutMap || {},
 		moment: window.moment,
 		paypalInfo: null,
 		loading: false,
@@ -142,8 +143,11 @@ var page = new Vue({
 			deep: true,
 			handler: function(value) {
 				for (const c in value) {
-					if (value[c] && value[c].type === 'role_list' && !Array.isArray(value[c].data)) {
+					if (value[c].type === 'role_list' && !Array.isArray(value[c].data)) {
 						this.gSettings.perms[c].data = [];
+					}
+					else if (value[c].type !== 'role_list' && Array.isArray(value[c].data)) {
+						this.gSettings.perms[c].data = null;
 					}
 				}
 			}
@@ -152,8 +156,11 @@ var page = new Vue({
 			deep: true,
 			handler: function(value) {
 				for (const g in value) {
-					if (value[g] && value[g].type === 'role_list' && !Array.isArray(value[g].data)) {
+					if (value[g].type === 'role_list' && !Array.isArray(value[g].data)) {
 						this.gSettings.gperms[g].data = [];
+					}
+					else if (value[g].type !== 'role_list' && Array.isArray(value[g].data)) {
+						this.gSettings.gperms[g].data = null;
 					}
 				}
 			}
@@ -163,31 +170,43 @@ var page = new Vue({
 			handler: function(value) {
 				for (const i in value.perms) {
 					for (const c in value.perms[i]) {
-						if (value.perms[i][c] && value.perms[i][c].type === 'role_list' && !Array.isArray(value.perms[i][c].data)) {
+						if (value.perms[i][c].type === 'role_list' && !Array.isArray(value.perms[i][c].data)) {
 							this.gSettings.cperms.perms[i][c].data = [];
+						}
+						else if (value.perms[i][c].type !== 'role_list' && Array.isArray(value.perms[i][c].data)) {
+							this.gSettings.cperms.perms[i][c].data = null;
 						}
 					}
 				}
 				for (const i in value.gperms) {
 					for (const g in value.gperms[i]) {
-						if (value.gperms[i][g] && value.gperms[i][g].type === 'role_list' && !Array.isArray(value.gperms[i][g].data)) {
+						if (value.gperms[i][g].type === 'role_list' && !Array.isArray(value.gperms[i][g].data)) {
 							this.gSettings.cperms.gperms[i][g].data = [];
+						}
+						else if (value.gperms[i][g].type !== 'role_list' && Array.isArray(value.gperms[i][g].data)) {
+							this.gSettings.cperms.gperms[i][g].data = null;
 						}
 					}
 				}
 			}
 		},
 		'gSettings.automod.ignore': function(value) {
-			if (value && value.type === 'role_list' && !Array.isArray(value.data)) {
+			if (value.type === 'role_list' && !Array.isArray(value.data)) {
 				this.gSettings.automod.ignore.data = [];
+			}
+			else if (value.type !== 'role_list' && Array.isArray(value.data)) {
+				this.gSettings.automod.ignore.data = null;
 			}
 		},
 		'gSettings.ignore': {
 			deep: true,
 			handler: function(value) {
 				for (const t in value) {
-					if (value[t] && value[t].type === 'role_list' && !Array.isArray(value[t].data)) {
+					if (value[t].type === 'role_list' && !Array.isArray(value[t].data)) {
 						this.gSettings.ignore[t].data = [];
+					}
+					else if (value[t].type !== 'role_list' && Array.isArray(value[t].data)) {
+						this.gSettings.ignore[t].data = null;
 					}
 				}
 			}
@@ -275,8 +294,9 @@ var page = new Vue({
 						this.gSettings[com ? 'perms' : 'gperms'][cg] = {};
 					if (!Array.isArray(this.gSettings[com ? 'perms' : 'gperms'][cg].data))
 						this.gSettings[com ? 'perms' : 'gperms'][cg].data = [];
-					this.gSettings[com ? 'perms' : 'gperms'][cg].data.push(this.temp['pl-'+cg]);
-					this.temp['pl-'+cg] = null;
+					const special = typeof com === 'string';
+					this.gSettings[com ? 'perms' : 'gperms'][cg].data.push(this.temp[special ? com : 'pl-'+cg]);
+					this.temp[special ? com : 'pl-'+cg] = null;
 					break;
 				}
 				case 'cperms': {
@@ -286,8 +306,9 @@ var page = new Vue({
 						this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg] = {};
 					if (!Array.isArray(this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data))
 						this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data = [];
-					this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data.push(this.temp['cp-'+cg]);
-					this.temp['cp-'+cg] = null;
+					const special = typeof com === 'string';
+					this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data.push(this.temp[special ? com : 'cp-'+cg]);
+					this.temp[special ? com : 'cp-'+cg] = null;
 					break;
 				}
 				case 'whitelist_code': {

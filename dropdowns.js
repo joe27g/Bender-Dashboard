@@ -40,6 +40,7 @@ function calcDropdowns() {
 window.addEventListener('click', function(e) {
     if(e.target.closest('.dd-content label:not(.disabled)')) {
         window.page.openDropdown = null; // close dropdowns after selecting an option
+        setTimeout(window.page.$forceUpdate, 69);
     }
     if (window.page && e.target.closest('.dd-content') === null && e.target.closest('.dd-trigger') === null) {
         window.page.openDropdown = null; // close dropdowns when clicking outside them
