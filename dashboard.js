@@ -1,6 +1,6 @@
 function makeRequest (opts) {
 	return new Promise(function (resolve, reject) {
-		let xhr = new XMLHttpRequest();
+		const xhr = new XMLHttpRequest();
 		xhr.open(opts.method, opts.url);
 		xhr.onload = function () {
 			if (this.status >= 200 && this.status < 300) {
@@ -33,22 +33,22 @@ function makeRequest (opts) {
 	});
 }
 function showNotif (type, text, time) {
-    let status = document.getElementById('notif');
+    const status = document.getElementById('notif');
     if (!status) return false;
     status.className = type;
     status.innerHTML = text;
 
     if (time) {
         setTimeout(() => {
-        	status.className = '';
-        	status.innerHTML = '';
+			status.className = '';
+			status.innerHTML = '';
         }, time);
     }
 }
 
 // lazily copied from StackOverflow tbh
 function getCookie(name) {
-    let match = document.cookie.match(RegExp('(?:^|;\\s*)' + (name).replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1') + '=([^;]*)'));
+    const match = document.cookie.match(RegExp('(?:^|;\\s*)' + (name).replace(/([.*+?^${}()|[\]/])/g, '\\$1') + '=([^;]*)'));
     return match ? match[1] : null;
 }
 // not from StackOverflow :poggers:
@@ -56,7 +56,7 @@ function setCookie(name, value, expiry) {
 	return document.cookie = `${name}=${value}; domain=.benderbot.co; path=/; expires=${new Date(Date.now() + (expiry || 1000*60*60*24*365))}`;
 }
 
-paypal.use( ['login'], function (login) {
+window.paypal.use( ['login'], function (login) {
     login.render ({
 		appid:       "ASalasGVCX8iXiOGrGrm9PqGuTW-4fbaPikTmZN4mWzLvhFwsA2N5rFok2FcwVLbT0GHGZQAIWeWwg-k",
 		scopes:      "openid profile email https://uri.paypal.com/services/paypalattributes",
@@ -80,6 +80,7 @@ const defaultGuildSettings = {
 	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "tags": {}, "temproles": {}
 };
 
+// eslint-disable-next-line
 var page = new Vue({
 	el: '#app',
 	data: {
@@ -119,7 +120,7 @@ var page = new Vue({
 		botNotPresent: false
 	},
 	watch: {
-		selectedGuildID: function (newID, oldID) {
+		selectedGuildID: function (newID) { // , oldID
 			/*console.log(oldID, newID);
 			this.prevGuildID = oldID;*/
 			this.botNotPresent = false;
@@ -134,7 +135,7 @@ var page = new Vue({
 			this.previewEnabled = false;
 		},
 		openDropdown: function() {
-			setTimeout(calcDropdowns);
+			setTimeout(window.calcDropdowns);
 		},
 		previewEnabled: window.highlightAll,
 		'gSettings.perms': {
@@ -196,20 +197,29 @@ var page = new Vue({
 		reloadGSettings: window.loadGuildSettings,
 		saveGSettings: window.saveGuildSettings,
 		getGuild: function (id) {
-			let guild = this.guilds.filter(g => g.id === id)[0];
+			const guild = this.guilds.filter(g => g.id === id)[0];
 			return guild || {};
 		},
 		getRole: function (id) {
-			let role = this.gRoles.filter(r => r.id === id)[0];
+			const role = this.gRoles.filter(r => r.id === id)[0];
 			return role || { name: `<deleted role | ID: ${id}>` };
 		},
 		getChannel: function (id) {
-			let chan = this.gChannels.filter(c => c.id === id)[0];
+			const chan = this.gChannels.filter(c => c.id === id)[0];
 			return chan || { name: `<deleted channel | ID: ${id}>` };
 		},
 		getTZName: function (id) {
-			let tz = this.tzs.filter(c => c.id === id)[0];
+			const tz = this.tzs.filter(c => c.id === id)[0];
 			return tz && tz.name ? tz.name : id;
+		},
+		getType: function (id) {
+			const guild = this.guilds.filter(g => g.id === id)[0];
+			if (guild) return 'guild';
+			const role = this.gRoles.filter(r => r.id === id)[0];
+			if (role) return 'role';
+			const chan = this.gChannels.filter(c => c.id === id)[0];
+			if (chan) return 'channel';
+			return 'user';
 		},
 		add: function(type, cg, com) {
 			this.openDropdown = null;
@@ -243,7 +253,7 @@ var page = new Vue({
 				case 'nfil':
 				case 'sbil':
 				case 'mil':
-				case 'sil':
+				case 'sil': {
 					const x = this.ignoreAbbrs[type];
 					this.gSettings.ignore[x] = {
 						data: Array.isArray(this.gSettings.ignore[x].data) ? this.gSettings.ignore[x].data : [],
@@ -252,6 +262,7 @@ var page = new Vue({
 					this.gSettings.ignore[x].data.push(this.temp[type]);
 					this.temp[type] = null;
 					break;
+				}
 				case 'perms':
 					if (typeof this.gSettings[com ? 'perms' : 'gperms'][cg] !== 'object')
 						this.gSettings[com ? 'perms' : 'gperms'][cg] = {};
@@ -270,9 +281,10 @@ var page = new Vue({
 					this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data.push(this.temp['cp-'+cg]);
 					this.temp['cp-'+cg] = null;
 					break;
-				case 'whitelist_code':
+				case 'whitelist_code': {
 					const pieces = this.temp[type].split('/');
 					this.temp[type] = pieces.pop();
+				}
 				case 'whitelist_id':
 					if (!Array.isArray(this.gSettings.automod.invite_whitelist))
 						this.gSettings.automod.invite_whitelist = [];
@@ -321,8 +333,8 @@ var page = new Vue({
 		},
 		parseMD: function(str) {
 			// parse markdown (i.e. underlining) and syntax highlighting
-			let mdParse = SimpleMarkdown.defaultBlockParse;
-		    let htmlOutput = SimpleMarkdown.reactFor(SimpleMarkdown.ruleOutput(SimpleMarkdown.defaultRules, 'html'));
+			const mdParse = window.SimpleMarkdown.defaultBlockParse;
+			const htmlOutput = window.SimpleMarkdown.reactFor(window.SimpleMarkdown.ruleOutput(window.SimpleMarkdown.defaultRules, 'html'));
 			str = htmlOutput(mdParse(str))[0];
 			str = str.replace(/markdown-code-/g, 'hljs '); // fix code highlighting bullshit
 			str = str.replace(/<a href="/g, '<a target="_blank" href="'); // make links open in new tab
@@ -332,9 +344,9 @@ var page = new Vue({
 				return `<img title=":${p2}:" alt=":${p2}:" src="https://cdn.discordapp.com/emojis/${p3}.${p1 ? 'gif' : 'png'}?v=1" style="height:24px!important;vertical-align:middle;">`
 			});
 			// parse channel mentions
-			let gc = this.gChannels, g = this.selectedGuildID;
+			const gc = this.gChannels, g = this.selectedGuildID;
 			str = str.replace(/&lt;#(\d{17,20})&gt;/g, (match, p1) => {
-				for (let i in gc) {
+				for (const i in gc) {
 					if (gc[i].id === p1) {
 						return `<a target="_blank" href="https://discordapp.com/channels/${g}/${p1}" class="mention">#${gc[i].name}</a>`;
 					}
@@ -342,9 +354,9 @@ var page = new Vue({
 				return '<span class="mention">#deleted-channel</span>';
 			});
 			// parse role mentions
-			let gr = this.gRoles;
+			const gr = this.gRoles;
 			str = str.replace(/&lt;@&amp;(\d{17,20})&gt;/g, (match, p1) => {
-				for (let i in gr) {
+				for (const i in gr) {
 					if (gr[i].id === p1) {
 						return `<span class="mention" style="${gr[i].cssColor}">@${gr[i].name}</span>`;
 					}
@@ -352,9 +364,9 @@ var page = new Vue({
 				return '<span class="mention">@deleted-role</span>';
 			});
 			// resolve user mentions
-			let m = this.gMembers;
+			const m = this.gMembers;
 			str = str.replace(/(?:<|&lt;)@(\d{17,20})(?:>|&gt;)/g, (match, p1) => {
-				for (let i in m) {
+				for (const i in m) {
 					if (m[i].user.id === p1) {
 						return `<span class="mention">@${m[i].user.username}</span>`;
 					}
@@ -366,10 +378,10 @@ var page = new Vue({
 
 			return str;
 		},
-		hlRegex: RegexColorizer.colorizeText, // highlight regex
+		hlRegex: window.RegexColorizer.colorizeText, // highlight regex
 		getLen(obj, ignore = []) {
 			let count = 0;
-			for (let key in obj) {
+			for (const key in obj) {
 				if (ignore.indexOf(key) === -1)
 					count++;
 			}
@@ -383,8 +395,8 @@ var page = new Vue({
 				return (this.user.pfp ? `<img class="pfp mid" src="${this.user.pfp}">` : '') +
 				`<span class="mid">${this.escapeHTML(this.user.username)}<span class="gray">#${this.user.discriminator}</span></span>`;
 			}
-			let m = this.gMembers;
-			for (let i in m) {
+			const m = this.gMembers;
+			for (const i in m) {
 				if (m[i].user.id === userID) {
 					return (m[i].user.avatar ? `<img class="pfp mid" src="https://cdn.discordapp.com/avatars/${m[i].user.id}/${m[i].user.avatar}.${m[i].user.avatar.startsWith('a_') ? 'gif' : 'png'}">` : '') +
 					`<span class="mid">${this.escapeHTML(m[i].user.username)}<span class="gray">#${m[i].user.discriminator}</span></span>`;
@@ -435,7 +447,7 @@ var page = new Vue({
 	computed: {
 		maxPremiumGuilds: function() {
 			if (!this.paypalInfo || !this.paypalInfo.plan || typeof this.paypalInfo.plan.description !== 'string') return 0;
-			let num = parseInt(this.paypalInfo.plan.description.substr(0, 1));
+			const num = parseInt(this.paypalInfo.plan.description.substr(0, 1));
 			return isNaN(num) ? 0 : (num > 5 ? 5 : num);
 		}
 	}
@@ -449,22 +461,22 @@ if (window.location.hash) {
 async function loadUserInfo() {
 	if (getCookie('token')) {
 		page.loading = true;
-	    showNotif('pending', 'Fetching user info...');
-	    let userinfo = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/userinfo', auth: getCookie('token')}).catch(console.error);
+		showNotif('pending', 'Fetching user info...');
+		let userinfo = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/userinfo', auth: getCookie('token')}).catch(console.error);
 		if (userinfo)
 			userinfo = JSON.parse(userinfo);
 		//console.log(userinfo);
 		page.loading = false;
-	    if (userinfo && userinfo.guilds && userinfo.user) {
-	        showNotif('success', 'Loaded user info + guilds!', 4000);
-	        page.guilds = userinfo.guilds;
-	        page.user = userinfo.user;
-	    } else {
-	        showNotif('error', 'Failed to load user info + guilds.', 6000);
-	    }
+		if (userinfo && userinfo.guilds && userinfo.user) {
+			showNotif('success', 'Loaded user info + guilds!', 4000);
+			page.guilds = userinfo.guilds;
+			page.user = userinfo.user;
+		} else {
+			showNotif('error', 'Failed to load user info + guilds.', 6000);
+		}
 	} else if (getCookie('refresh_token')) {
 		page.loading = true;
-	    let data = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/refresh', auth: getCookie('refresh_token')}).catch(console.error);
+		let data = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/refresh', auth: getCookie('refresh_token')}).catch(console.error);
 		page.loading = false;
 		if (typeof data === 'string') {
 			try {
@@ -478,10 +490,10 @@ async function loadUserInfo() {
         if (data) {
 			setCookie('token', data.access_token, (parseInt(data.expires_in) * 1000));
 			setCookie('refresh_token', data.refresh_token);
-	        return loadUserInfo();
-	    }
+			return loadUserInfo();
+		}
 	} else {
-	    showNotif('pending', 'Log in already u heckin nerd', 4000);
+		showNotif('pending', 'Log in already u heckin nerd', 4000);
 	}
 }
 
@@ -503,9 +515,9 @@ async function loadGuildSettings(gID) {
 	}
 	if (getCookie('token')) {
 		page.loading = true;
-	    showNotif('pending', 'Fetching guild settings...');
+		showNotif('pending', 'Fetching guild settings...');
 		let err;
-	    let gData = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token')}).catch(e => err = e);
+		let gData = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token')}).catch(e => err = e);
 		if (err && err.responseText === "Bender is not in this guild.") {
 			console.error(err);
 			page.loading = false;
@@ -527,32 +539,33 @@ async function loadGuildSettings(gID) {
 		} else {
 			try {
 				gData = JSON.parse(gData);
+				// eslint-disable-next-line
 			} catch(err) {}
 		}
 
 		page.loading = false;
-	    if (gData) {
-	        showNotif('success', 'Loaded guild settings!', 4000);
+		if (gData) {
+			showNotif('success', 'Loaded guild settings!', 4000);
 			gData.settings.guildID = gID;
-	        page.gSettings = gData.settings;
+			page.gSettings = gData.settings;
 			page.gNames = gData.usernames;
 			//page.unsaved = false;
 			page.gRoles = gData.roles;
 			page.gChannels = gData.channels;
 			page.gMembers = gData.members || [];
 			page.memberRank = gData.highestRolePosition;
-	    } else {
-	        showNotif('error', 'Failed to load guild settings.', 6000);
-	    }
+		} else {
+			showNotif('error', 'Failed to load guild settings.', 6000);
+		}
 	} else {
-	    showNotif('pending', 'You are not logged in. Cannot fetch settings.', 4000);
+		showNotif('pending', 'You are not logged in. Cannot fetch settings.', 4000);
 	}
 	// trigger auto-expand of textareas
-	setTimeout(autoExpandAll, 5);
+	setTimeout(window.autoExpandAll, 5);
 	// apply syntax highlighting to codeblocks
-	setTimeout(highlightAll, 5);
+	setTimeout(window.highlightAll, 5);
 }
-
+// eslint-disable-next-line
 async function saveGuildSettings(gID) {
 	if (!gID) return;
 	/*if (!page.unsaved) {
@@ -564,27 +577,29 @@ async function saveGuildSettings(gID) {
 	if (gID === 'PAYPAL') {
 		if (!page.paypalInfo || (!getCookie('paypal_token') && !getCookie('token')))
 			return showNotif('error', 'You are not logged in to PayPal. Cannot save Bender Pro settings.', 4000);
-		let temp = {
+		const temp = {
 			guilds: page.paypalInfo.guilds,
 			discordID: page.user.id
 		};
 		console.log(temp);
 		showNotif('pending', 'Saving Bender Pro settings...');
-	    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token'), auth2: getCookie('token'), body: temp}).catch(er => {
+		let err;
+		await makeRequest({method: 'POST', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token'), auth2: getCookie('token'), body: temp}).catch(er => {
 			err = er;
 			console.error(er);
 		});
 		page.loading = false;
-	    if (err) {
+		if (err) {
 			showNotif('error', 'Failed to save Bender Pro settings.\n'+err, 6000);
 		} else {
-	        showNotif('success', 'Saved Bender Pro settings!', 4000);
+			showNotif('success', 'Saved Bender Pro settings!', 4000);
 			//page.unsaved = false;
-	    }
+		}
 		return;
 	}
 
 	// TODO: actually do this shit
+	/* eslint-disable */
 	alert('Saving settings is not done yet! Come back soon™'); return;
 
 	let temp = Object.assign({}, page.gSettings);
@@ -603,6 +618,7 @@ async function saveGuildSettings(gID) {
         showNotif('success', 'Saved guild settings!', 4000);
 		//page.unsaved = false;
     }
+	/* eslint-enable */
 }
 
 let firstPP = true;
@@ -611,7 +627,7 @@ async function updatePaypalInfo() {
 		page.loading = true;
 		if (!firstPP)
 			showNotif('pending', 'Fetching PayPal info...');
-        let data = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token')}).catch(console.error);
+        const data = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token')}).catch(console.error);
 		page.loading = false;
         if (data) {
 			if (!firstPP)
@@ -642,7 +658,7 @@ async function updatePaypalInfo() {
 		page.loading = true;
 		if (!firstPP)
 			showNotif('pending', 'Attempting to fetch PayPal info via Discord info (for gifted subs)...');
-        let data = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('token')}).catch(console.error);
+        const data = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('token')}).catch(console.error);
 		page.loading = false;
         if (data) {
 			if (!firstPP)
@@ -662,7 +678,7 @@ async function updatePaypalInfo() {
 loadUserInfo();
 updatePaypalInfo();
 
-// more shit from StackOverflow
+/* more shit from StackOverflow
 function compareObj(obj1, obj2) {
 	for (let p in obj1) {
 		if (p === '__ob__') continue;
@@ -683,7 +699,7 @@ function compareObj(obj1, obj2) {
 		if (typeof (obj1[p]) == 'undefined') return false;
 	}
 	return true;
-};
+}*/
 
 /*page.$watch('gSettings', function(newValue, oldValue) {
 	page.unsaved = oldValue.guildID && oldValue.guildID === newValue.guildID && !compareObj(newValue, oldValue);

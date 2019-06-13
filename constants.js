@@ -2,10 +2,10 @@ const data = {"Africa":["Abidjan","Accra","Addis_Ababa","Algiers","Asmara","Asme
 
 window.tzRegions = [];
 window.tzs = [];
-for (let key in data) {
+for (const key in data) {
 	window.tzRegions.push(key);
-	let zones = data[key];
-	for (let i in zones) {
+	const zones = data[key];
+	for (const i in zones) {
 		window.tzs.push({region: key, name: zones[i], id: key + '/' + zones[i]})
 	}
 }
