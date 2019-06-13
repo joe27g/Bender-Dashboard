@@ -78,8 +78,7 @@ window.navSections = [
 		id: 'cmdstatus'
 	}, {
 		name: 'Blacklist',
-		id: 'blacklist',
-		cs: true
+		id: 'blacklist'
 	}]
 ];
 window.permTypes = {

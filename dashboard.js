@@ -225,7 +225,7 @@ var page = new Vue({
 			this.openDropdown = null;
 			switch (type) {
 				case 'tag':
-				case 'alias':
+				case 'alias': {
 					if (!this.temp[type+'_name'] || !this.temp[type+'_content']) {
 						showNotif('error', `${type[0].toUpperCase()}${type.substr(1)} needs a name and content!`, 3000); return;
 					}
@@ -233,21 +233,28 @@ var page = new Vue({
 					this.temp[type+'_name'] = null;
 					this.temp[type+'_content'] = null;
 					break;
+				}
 				case 'filter':
-				case 'namefilter':
-					// TODO: check for errors in regex (invalid sequences)
-					if (!this.temp[type]) {
-						showNotif('error', `Invalid regex content in ${type}.`, 3000); return;
+				case 'namefilter': {
+					let err;
+					try {
+						new RegExp(this.temp[type], 'gi');
+					} catch(e) { err = e; }
+
+					if (err || !this.temp[type]) {
+						showNotif('error', `Invalid regex content in ${type}. See the red underlined portions.`, 3000); return;
 					}
 					this.gSettings[type].patterns.push(this.temp[type]);
 					this.temp[type] = null;
 					break;
-				case 'amil':
+				}
+				case 'amil': {
 					if (!Array.isArray(this.gSettings.automod.ignore.data))
 						this.gSettings.automod.ignore.data = [];
 					this.gSettings.automod.ignore.data.push(this.temp.amil);
 					this.temp.amil = null;
 					break;
+				}
 				case 'iil':
 				case 'fil':
 				case 'nfil':
@@ -263,7 +270,7 @@ var page = new Vue({
 					this.temp[type] = null;
 					break;
 				}
-				case 'perms':
+				case 'perms': {
 					if (typeof this.gSettings[com ? 'perms' : 'gperms'][cg] !== 'object')
 						this.gSettings[com ? 'perms' : 'gperms'][cg] = {};
 					if (!Array.isArray(this.gSettings[com ? 'perms' : 'gperms'][cg].data))
@@ -271,7 +278,8 @@ var page = new Vue({
 					this.gSettings[com ? 'perms' : 'gperms'][cg].data.push(this.temp['pl-'+cg]);
 					this.temp['pl-'+cg] = null;
 					break;
-				case 'cperms':
+				}
+				case 'cperms': {
 					if (typeof this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan] !== 'object')
 						this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan] = {};
 					if (typeof this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg] !== 'object')
@@ -281,16 +289,27 @@ var page = new Vue({
 					this.gSettings.cperms[com ? 'perms' : 'gperms'][this.temp.cperms_chan][cg].data.push(this.temp['cp-'+cg]);
 					this.temp['cp-'+cg] = null;
 					break;
+				}
 				case 'whitelist_code': {
 					const pieces = this.temp[type].split('/');
 					this.temp[type] = pieces.pop();
 				}
-				case 'whitelist_id':
+				case 'whitelist_id': {
 					if (!Array.isArray(this.gSettings.automod.invite_whitelist))
 						this.gSettings.automod.invite_whitelist = [];
 					this.gSettings.automod.invite_whitelist.push(this.temp[type]);
 					this.temp[type] = null;
 					break;
+				}
+				case 'bl_item':
+				case 'bl_chan':
+				case 'bl_role': {
+					if (!Array.isArray(this.gSettings.blacklist))
+						this.gSettings.blacklist = [];
+					this.gSettings.blacklist.push(this.temp[type]);
+					this.temp[type] = null;
+					break;
+				}
 
 			}
 			//this.$forceUpdate();
@@ -325,6 +344,9 @@ var page = new Vue({
 					break;
 				case 'whitelist':
 					this.gSettings.automod.invite_whitelist.splice(index, 1);
+					break;
+				case 'blacklist':
+					this.gSettings.blacklist.splice(index, 1);
 					break;
 			}
 			this.$forceUpdate();

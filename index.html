@@ -2654,6 +2654,95 @@
             </div></td>
         </tr>
     </tbody></table>
+</div><div id="blacklist" v-if="selectedGuildID && column === 'blacklist' && !loading">
+    <div class="header">
+        <span class="bold">Blacklist</span>
+        <hr>
+    </div>
+    <span class="info">Blacklisting a channel prevents any commands from being used there. Blacklisting a user or role prevents that user or anyone with that role from using any commands. The blacklist does not affect anyone with administrator permissions.</span>
+    <br>
+    <div class="columns">
+        <div class="column is-three-fifths">
+            <span class="key">Current blacklist:</span>
+            <div v-if="gSettings.blacklist && getLen(gSettings.blacklist) > 0">
+                <div v-for="(thing, index) in gSettings.blacklist" class="guild box">
+                    <span v-if="getType(thing) === 'channel'"><span class="blue">Channel: </span><span class="channel-icon">#</span>{{ getChannel(thing).name }}</span>
+                    <span v-else-if="getType(thing) === 'role'"><span class="green">Role: </span><span class="role-icon" :style="getRole(thing).cssColor">@</span><span :style="getRole(thing).cssColor">{{ getRole(thing).name }}</span></span>
+                    <span v-else><span class="yellow">User:&nbsp;</span><span v-html="resolveUser(thing)"></span></span>
+                    <a class="remove" @click="del('blacklist', index)"></a>
+                </div>
+            </div>
+            <span class="gray" v-else>No items on the blacklist.</span>
+            <br>
+            <span class="info">Note that deleted channels and roles will also show up as a User here.</span>
+        </div>
+        <div class="column">
+            <span class="key">Add user/channel/role by ID:</span>
+            <input type="text" v-model="temp.bl_item" placeholder="17-18 digit ID" style="min-width: 170px;">
+            <button class="button add" @click="add('bl_item')" :disabled="!temp.bl_item || temp.bl_item.length < 17 || temp.bl_item.length > 20 || temp.bl_item.match(/\D/) || (gSettings.blacklist && gSettings.blacklist.indexOf(temp.bl_item) !== -1)">
+                <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+            </button>
+            <br>
+            <span class="key">Add role:</span>
+            <div class="dd">
+                <div class="dd-trigger">
+                    <button class="button" @click="openDropdown = openDropdown === 'bl_role' ? null : 'bl_role'">
+                        <span v-if="!temp.bl_role" class="role-icon">@</span>
+                        <span v-if="!temp.bl_role">Choose a role...</span>
+                        <div v-if="temp.bl_role">
+                            <span :style="getRole(temp.bl_role).cssColor" class="role-icon">@</span>
+                            <span :style="getRole(temp.bl_role).cssColor">{{ getRole(temp.bl_role).name }}</span>
+                        </div>
+                    </button>
+                </div>
+                <div v-show="openDropdown === 'bl_role'" class="dd-content">
+                    <div v-for="role in gRoles" v-if="role.id !== selectedGuildID">
+                        <label :for="'BR-' + role.id" :class="getGuild(selectedGuildID).owner || role.position < memberRank ? '' : 'too-high disabled'">
+                            <input type="radio" :id="'BR-' + role.id" :value="role.id" v-model="temp.bl_role" class="hidden">
+                            <span :style="role.cssColor" class="role-icon">@</span>
+                            <span :style="role.cssColor">{{ role.name }}</span>
+                        </label>
+                    </div>
+                    <div v-if="gRoles.length === 0">
+                        <span class="gray">No eligible roles.</span>
+                    </div>
+                </div>
+            </div>
+            <button class="button add" @click="add('bl_role')" :disabled="!temp.bl_role || (gSettings.blacklist && gSettings.blacklist.indexOf(temp.bl_role) !== -1)">
+                <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+            </button>
+            <br>
+            <span class="key">Add channel:</span>
+            <div class="dd">
+                <div class="dd-trigger">
+                    <button class="button" @click="openDropdown = openDropdown === 'bl_chan' ? null : 'bl_chan'">
+                        <span v-if="!temp.bl_chan" class="channel-icon">#</span>
+                        <span v-if="!temp.bl_chan">Choose a channel...</span>
+                        <div v-if="temp.bl_chan">
+                            <span class="channel-icon">#</span>
+                            <span>{{ getChannel(temp.bl_chan).name }}</span>
+                        </div>
+                    </button>
+                </div>
+                <div v-show="openDropdown === 'bl_chan'" class="dd-content">
+                    <div v-for="chan in gChannels">
+                        <label :for="'BLC-' + chan.id" v-if="chan.type === 0">
+                            <input type="radio" :id="'BLC-' + chan.id" :value="chan.id" v-model="temp.bl_chan" class="hidden">
+                            <span class="channel-icon">#</span>
+                            <span>{{ chan.name }}</span>
+                        </label>
+                        <div v-else-if="chan.type === 4" class="gray mini-header">{{ chan.name }}</div>
+                    </div>
+                    <div v-if="gChannels.length === 0">
+                        <span class="gray">No eligible channels.</span>
+                    </div>
+                </div>
+            </div>
+            <button class="button add" @click="add('bl_chan')" :disabled="!temp.bl_chan || (gSettings.blacklist && gSettings.blacklist.indexOf(temp.bl_chan) !== -1)">
+                <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+            </button>
+        </div>
+    </div>
 </div></section>
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>
 <div id="notif" class=""><span id="notif-text"></span></div>
