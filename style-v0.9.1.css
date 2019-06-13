@@ -234,7 +234,10 @@ div#notif.pending {
 
 img#pp_logo {
     height: 30px;
-    margin-left: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+    border-left: 2px solid #5e6d6f;
+    padding-left: 13px;
 }
 
 footer {
@@ -291,13 +294,16 @@ input::-webkit-inner-spin-button {
     height: 100px !important;
 }
 .ro, .cs {
-    color: red;
+    color: #00ff69;
     font-variant: all-small-caps;
     vertical-align: super;
     line-height: 10px;
 }
 .cs {
-    color: orange;
+    color: #09f;
+}
+a.is-active > .ro, a.is-active > .cs {
+    color: #fff;
 }
 aside.menu {
     width: 250px;
@@ -391,6 +397,7 @@ a:not([class]):not(#sidenav-close):hover {
     z-index: 11;
     top: 0;
     height: 100%;
+    padding-bottom: 20px;
 }
 #sidenav .menu-label {
     box-shadow: 0 0 19px -3px black;
@@ -664,6 +671,19 @@ td {
     color: #fff;
 }
 
+/* name history */
+span.name {
+    background: #cb5f2c;
+    padding: 1px 5px;
+    border-radius: 3px;
+    display: inline-block;
+    cursor: text;
+}
+span.name:not(:last-of-type) {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
 pre {
     padding: 2px 7px !important;
     border: 3px solid rgba(0, 0, 0, 0.15);
@@ -697,3 +717,53 @@ code.hljs {
 .regex b.g5  {background: rgba(0, 153, 26, 0.2);color: #019800;} /* group: depth 5 */
 .regex b.err {color: red; border-bottom: solid 2px red;} /* error */
 .regex b, .regex i, .regex u {font-weight: normal; font-style: normal; text-decoration: none;}
+
+/* animation on the pro tab cause i was bored */
+a[href="#pro"] {
+    position: relative;
+    z-index: 5;
+}
+a[href="#pro"]:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+  border-radius: 4px;
+  animation: animatedgradient 7s linear infinite;
+  z-index: -1;
+  background-size: 300% 300%;
+  opacity: 0.3;
+  transition: opacity 150ms;
+}
+a[href="#pro"]:hover:before {
+	opacity: 0.7;
+}
+a[href="#pro"].is-active:before {
+	opacity: 0.9;
+}
+a[href="#pro"].is-active:hover:before {
+	opacity: 1;
+}
+@keyframes animatedgradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	10% {
+		background-position: 0% 50%;
+	}
+	40% {
+		background-position: 100% 50%;
+	}
+	60% {
+		background-position: 100% 50%;
+	}
+	90% {
+		background-position: 0% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}

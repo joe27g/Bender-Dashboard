@@ -17,21 +17,21 @@ window.navSections = [
 		name: 'General Settings',
 		id: 'general'
 	}, {
-		name: 'Aliases',
-		id: 'aliases'
+		name: 'Agreement',
+		id: 'agreement'
 	}, {
 		name: 'Welcome Messages',
 		id: 'welcome'
 	}, {
-		name: 'Giveaways',
-		id: 'giveaways',
-		ro: true
+		name: 'Aliases',
+		id: 'aliases'
 	}, {
 		name: 'Tags',
 		id: 'tags'
 	}, {
-		name: 'Agreement',
-		id: 'agreement'
+		name: 'Giveaways',
+		id: 'giveaways',
+		ro: true
 	}], [{
 		name: 'Automod',
 		id: 'automod'
@@ -45,6 +45,9 @@ window.navSections = [
 		name: 'Logging Settings',
 		id: 'logging'
 	}, {
+		name: 'Mute & DM Settings',
+		id: 'moderation'
+	}, {
 		name: 'Mod Log (cases)',
 		id: 'modlog',
 		ro: true
@@ -56,6 +59,11 @@ window.navSections = [
 		name: 'Name History',
 		id: 'names',
 		ro: true
+	}, {
+		name: 'Temporary Roles',
+		id: 'roles',
+		ro: true,
+		cs: true
 	}], [{
 		name: 'Permissions',
 		id: 'perms'
@@ -63,11 +71,15 @@ window.navSections = [
 		name: 'Channel Permissions',
 		id: 'cperms'
 	}], [{
-		name: 'Selfroles',
+		name: 'Selfroles (Joinable Roles)',
 		id: 'selfroles'
 	}, {
-		name: 'Disabled Commands & Groups',
+		name: 'Disabled Commands/Groups',
 		id: 'cmdstatus'
+	}, {
+		name: 'Blacklist',
+		id: 'blacklist',
+		cs: true
 	}]
 ];
 window.permTypes = {

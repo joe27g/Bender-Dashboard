@@ -89,28 +89,12 @@ var page = new Vue({
 		openDropdown: null,
 		sidenavOpen: false,
 		guilds: [],
-		getGuild: function (id) {
-			let guild = this.guilds.filter(g => g.id === id)[0];
-			return guild || {};
-		},
 		user: null,
 		gSettings: defaultGuildSettings,
 		gRoles: [],
-		getRole: function (id) {
-			let role = this.gRoles.filter(r => r.id === id)[0];
-			return role || { name: `<deleted role | ID: ${id}>` };
-		},
 		gChannels: [],
-		getChannel: function (id) {
-			let chan = this.gChannels.filter(c => c.id === id)[0];
-			return chan || { name: `<deleted channel | ID: ${id}>` };
-		},
 		tzRegions: window.tzRegions,
 		tzs: window.tzs,
-		getTZName: function (id) {
-			let tz = this.tzs.filter(c => c.id === id)[0];
-			return tz && tz.name ? tz.name : id;
-		},
 		navSections: window.navSections,
 		ignorePermsTypes: window.permTypes,
 		discordPermissionNames: window.discordPermissionNames,
@@ -211,6 +195,22 @@ var page = new Vue({
 	methods: {
 		reloadGSettings: window.loadGuildSettings,
 		saveGSettings: window.saveGuildSettings,
+		getGuild: function (id) {
+			let guild = this.guilds.filter(g => g.id === id)[0];
+			return guild || {};
+		},
+		getRole: function (id) {
+			let role = this.gRoles.filter(r => r.id === id)[0];
+			return role || { name: `<deleted role | ID: ${id}>` };
+		},
+		getChannel: function (id) {
+			let chan = this.gChannels.filter(c => c.id === id)[0];
+			return chan || { name: `<deleted channel | ID: ${id}>` };
+		},
+		getTZName: function (id) {
+			let tz = this.tzs.filter(c => c.id === id)[0];
+			return tz && tz.name ? tz.name : id;
+		},
 		add: function(type, cg, com) {
 			this.openDropdown = null;
 			switch (type) {
@@ -403,8 +403,6 @@ var page = new Vue({
 				case 'm':
 					this.gSettings.automod.spamTimeUnits = 'ms';
 					break;
-				default:
-
 			}
 		},
 		automodMuteUnit() {
@@ -418,8 +416,19 @@ var page = new Vue({
 				case 'h':
 					this.gSettings.automod.muteTimeUnits = 's';
 					break;
-				default:
-
+			}
+		},
+		muteUnit() {
+			switch (this.gSettings.muteTimeUnits) {
+				case 'm':
+					this.gSettings.muteTimeUnits = 'h';
+					break;
+				case 'h':
+					this.gSettings.muteTimeUnits = 'd';
+					break;
+				case 'd':
+					this.gSettings.muteTimeUnits = 'm';
+					break;
 			}
 		}
 	},

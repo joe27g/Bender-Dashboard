@@ -152,7 +152,7 @@
             <a v-show="selectedGuildID" @click="paypalInfo.guilds.push(selectedGuildID)" :style="paypalInfo.guilds.length < maxPremiumGuilds && paypalInfo.guilds.indexOf(selectedGuildID) === -1 ? '' : 'pointer-events:none;opacity:.5;'">Add selected server ({{ getGuild(selectedGuildID).name }})</a>
             <span v-show="!selectedGuildID" class="gray">Select a server at the top to add it to Bender Pro.</span>
             <br>
-            <a v-if="paypalInfo && paypalInfo.plan && user && paypalInfo.id !== user.id" href="https://www.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=PJZ5K5YLMQDJU">
+            <a v-if="paypalInfo && paypalInfo.id && paypalInfo.plan && user && paypalInfo.id !== user.id" href="https://www.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=PJZ5K5YLMQDJU">
                 <img src="https://www.paypalobjects.com/en_US/i/btn/btn_unsubscribe_LG.gif" border="0">
             </a>
         </div>
@@ -777,6 +777,88 @@
             </div>
         </div>
     </div>
+</div><div id="moderation" v-if="selectedGuildID && column === 'moderation' && !loading">
+    <div class="header">
+        <span class="bold">Mute & DM Settings</span>
+        <hr>
+    </div>
+    <div class="columns">
+        <div class="setting column">
+            <span class="key">Mute role:</span>
+            <div class="dd">
+                <div class="dd-trigger">
+                    <button class="button" @click="openDropdown = openDropdown === 'muterole' ? null : 'muterole'">
+                        <span v-if="!gSettings.mutes.role" class="role-icon">@</span>
+                        <span v-if="!gSettings.mutes.role">Choose a role...</span>
+                        <div v-if="gSettings.mutes.role">
+                            <span :style="getRole(gSettings.mutes.role).cssColor" class="role-icon">@</span>
+                            <span :style="getRole(gSettings.mutes.role).cssColor">{{ getRole(gSettings.mutes.role).name }}</span>
+                        </div>
+                    </button>
+                </div>
+                <div v-show="openDropdown === 'muterole'" class="dd-content">
+                    <div><label for="MR-none">
+                        <input type="radio" id="MR-none" value="" v-model="gSettings.mutes.role" class="hidden">
+                        <span class="role-icon">❓</span>
+                        <span class="role-name">None</span>
+                    </label></div>
+                    <div v-for="role in gRoles" v-if="role.id !== selectedGuildID">
+                        <label :for="'MR-' + role.id" :class="role.id === gSettings.agreement.role ? 'agreement disabled' : role.managed ? 'managed disabled' : getGuild(selectedGuildID).owner || role.position < memberRank ? '' : 'too-high disabled'">
+                            <input type="radio" :id="'MR-' + role.id" :value="role.id" v-model="gSettings.mutes.role" class="hidden">
+                            <span :style="role.cssColor" class="role-icon">@</span>
+                            <span :style="role.cssColor">{{ role.name }}</span>
+                        </label>
+                    </div>
+                    <div v-if="gRoles.length === 0">
+                        <span class="gray">No eligible roles.</span>
+                    </div>
+                </div>
+            </div>
+            <span class="info">Role that is added to members when they are muted. If you don't have one, see the help for <span class="code">{{ gSettings.prefix || ';' }}setup mute</span> on the <a href="https://benderbot.co/commands#setup" target="_blank">commands page</a>.</span>
+        </div>
+        <div class="time-setting column">
+            <span class="key">Default mute duration:</span>
+            <input type="number" placeholder="30m" v-model.number="gSettings.muteTime">
+            <span @click="muteUnit()" class="blue" style="cursor: pointer;">{{ {m: 'minutes', h: 'hours', d: 'days'}[gSettings.muteTimeUnits] }}</span>
+            <span class="info">The amount of time a user will be muted when a moderator uses <span class="code">{{ gSettings.prefix || ';' }}mute</span> without a time, or when being automatically muted due to an automod or filter violation. Click the units to toggle them (<span class="blue">minutes</span>, <span class="blue">hours</span>, or <span class="blue">days</span>.)</span>
+        </div>
+    </div>
+    <hr>
+    <span class="key">DM settings:</span>
+    <span class="info">These messages will be sent to a user that is being muted, unmuted, kicked, or banned, respectively. To see the variables available in these messages, see the <a href="https://benderbot.co/commands#dm" target="_blank">commands page</a>.</span>
+    <br>
+    <div class="smallToggle">
+        <span class="key">Edit</span>
+        <label class="switch small">
+            <input type="checkbox" v-model="previewEnabled">
+            <span class="slider round"></span>
+        </label>
+        <span class="key">&nbsp;&nbsp;Preview</span>
+    </div>
+    <div class="text-setting">
+        <span :class="previewEnabled ? 'key yellow' : 'key'">Mute DM:</span>
+        <textarea v-show="!previewEnabled" placeholder="You have been muted in {server}." v-model="gSettings.config.muteDM">{{ gSettings.config.muteDM }}</textarea>
+        <div v-show="previewEnabled && gSettings.config.muteDM" v-html="parseMD('*You have been muted in {server}.*\n'+gSettings.config.muteDM)"></div>
+        <span v-show="previewEnabled && !gSettings.config.muteDM" class="gray">None</span>
+    </div>
+    <div class="text-setting">
+        <span :class="previewEnabled ? 'key yellow' : 'key'">Unmute DM:</span>
+        <textarea v-show="!previewEnabled" placeholder="You have been unmuted in {server}." v-model="gSettings.config.unmuteDM">{{ gSettings.config.unmuteDM }}</textarea>
+        <div v-show="previewEnabled && gSettings.config.unmuteDM" v-html="parseMD('*You have been unmuted in {server}.*\n'+gSettings.config.unmuteDM)"></div>
+        <span v-show="previewEnabled && !gSettings.config.unmuteDM" class="gray">None</span>
+    </div>
+    <div class="text-setting">
+        <span :class="previewEnabled ? 'key yellow' : 'key'">Kick DM:</span>
+        <textarea v-show="!previewEnabled" placeholder="You have been kicked from {server}." v-model="gSettings.config.kickDM">{{ gSettings.config.kickDM }}</textarea>
+        <div v-show="previewEnabled && gSettings.config.kickDM" v-html="parseMD('*You have been kicked from {server}.*\n'+gSettings.config.kickDM)"></div>
+        <span v-show="previewEnabled && !gSettings.config.kickDM" class="gray">None</span>
+    </div>
+    <div class="text-setting">
+        <span :class="previewEnabled ? 'key yellow' : 'key'">Ban DM:</span>
+        <textarea v-show="!previewEnabled" placeholder="You have been banned from {server}." v-model="gSettings.config.banDM">{{ gSettings.config.banDM }}</textarea>
+        <div v-show="previewEnabled && gSettings.config.banDM" v-html="parseMD('*You have been banned from {server}.*\n'+gSettings.config.banDM)"></div>
+        <span v-show="previewEnabled && !gSettings.config.banDM" class="gray">None</span>
+    </div>
 </div><div id="tags" v-if="selectedGuildID && column === 'tags' && !loading">
     <div class="header">
         <span class="bold">Tags</span>
@@ -1319,8 +1401,8 @@
         </tr>
         <tr v-for="(data, userID) in gSettings.nicknames">
             <td v-html="resolveUser(userID)"></td>
-            <td>{{ data.join(', ') }}</td>
-            <td>{{ gNames[userID] ?  gNames[userID].join(', ') : 'N/A' }}</td>
+            <td><span class="name" v-for="item in data">{{ item }}</span></td>
+            <td><div v-if="gNames[userID]"><span class="name" v-for="item in gNames[userID]">{{ item }}</span></div><div v-else>N/A</div></td>
         </tr>
     </tbody></table>
 </div><div id="giveaways" v-if="selectedGuildID && column === 'giveaways' && !loading">
