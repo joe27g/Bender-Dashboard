@@ -587,7 +587,7 @@ async function loadGuildSettings(gID) {
 		}
 
 		page.loading = false;
-		if (gData) {
+		if (gData && gData.settings) {
 			showNotif('success', 'Loaded guild settings!', 4000);
 			gData.settings.guildID = gID;
 			page.gSettings = gData.settings;

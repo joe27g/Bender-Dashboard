@@ -12,7 +12,7 @@
     <meta name="og:image" content="https://benderbot.co/Bender-large.png">
     <meta name="og:site_name" content="Bender Bot">
     <meta name="og:url" content="https://dashboard.benderbot.co">
-    <link rel="stylesheet" media="screen" href="./style-v0.9.1.css">
+    <link rel="stylesheet" media="screen" href="./style-v0.9.2.css">
     <link rel="stylesheet" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.6.2/darkly/bulmaswatch.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
@@ -132,6 +132,7 @@
         <img v-if="paypalInfo.picture" :src="paypalInfo.picture">
         <span class="username" v-if="paypalInfo.name">Logged in as: {{ paypalInfo.name }}</span>
         <span class="gray" v-if="paypalInfo.email">{{ paypalInfo.email }}</span>
+        <span class="gray" v-if="!paypalInfo.id"><i>Not logged into PayPal.</i></span>
         <br><br>
         <div v-if="paypalInfo.plan">
             <span>Plan: {{ paypalInfo.plan.description }}</span> | <span class="gray">${{ paypalInfo.plan.amount }} {{ paypalInfo.plan.currency }} per {{ paypalInfo.plan.freq }}</span> | <span>State: {{ paypalInfo.plan.valid_until >= Date.now() ? 'Active' : 'Expired' }}</span> <span v-if="paypalInfo.plan.valid_until >= Date.now()">| Valid until: {{ moment(paypalInfo.plan.valid_until).format('MMM Do YYYY, h:mma') }} UTC</span> <span v-if="paypalInfo.plan.valid_until < Date.now()">| Expired on: {{ moment(paypalInfo.plan.valid_until).format('MMM Do YYYY, h:mma') }} UTC</span>
@@ -908,7 +909,7 @@
         <span class="bold">Mod Log</span>
         <hr>
     </div>
-    <div class="setting" v-else><span class="info"><i>To enable/disable the case system or set which commands make cases, see the <a href="#logging">Logging Settings</a> section.</i></span></div>
+    <div class="setting"><span class="info"><i>To enable/disable the case system or set which commands make cases, see the <a href="#logging">Logging Settings</a> section.</i></span></div>
     <div class="setting" v-if="getLen(gSettings.modlog) > 0">
         <span class="gray">{{ getLen(gSettings.modlog) }} case{{ getLen(gSettings.modlog) > 1 ? 's' : '' }} on record.</span>
         <span class="key">Search case:</span> <input id="search-input" type="text" placeholder="Case" v-model="searchValue">
@@ -3443,6 +3444,33 @@
                 <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
             </button>
         </div>
+    </div>
+</div><div id="roles" v-if="selectedGuildID && column === 'roles' && !loading">
+    <div class="header">
+        <span class="bold">Temporary Roles</span>
+        <hr>
+    </div>
+    <div class="setting"><span class="info">A list of temporary role assignments done using <span class="code">{{ gSettings.prefix || ';' }}role</span>.</span></div>
+    <br>
+    <div v-for="(data, roleID) in gSettings.temproles" v-if="getLen(gSettings.temproles[roleID]) > 0" class="bordered">
+        <div style="margin-bottom: -10px;">
+            <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
+            <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
+        </div>
+        <table class="table wide-table" ><tbody>
+            <tr>
+                <th>User ID</th>
+                <th>Assigned at</th>
+                <th>Issuer ID</th>
+                <th>Expires at</th>
+            </tr>
+            <tr v-for="(data, key) in gSettings.temproles[roleID]">
+                <td v-html="resolveUser(key)"></td>
+                <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.startTime).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.startTime).format('MMM Do YYYY, h:mma z') }}</td>
+                <td v-html="resolveUser(data.issuer)"></td>
+                <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
+            </tr>
+        </tbody></table>
     </div>
 </div></section>
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>

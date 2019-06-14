@@ -62,8 +62,7 @@ window.navSections = [
 	}, {
 		name: 'Temporary Roles',
 		id: 'roles',
-		ro: true,
-		cs: true
+		ro: true
 	}], [{
 		name: 'Permissions',
 		id: 'perms'
