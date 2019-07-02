@@ -12,7 +12,7 @@
     <meta name="og:image" content="https://benderbot.co/Bender-large.png">
     <meta name="og:site_name" content="Bender Bot">
     <meta name="og:url" content="https://dashboard.benderbot.co">
-    <link rel="stylesheet" media="screen" href="./style-v0.9.2.css">
+    <link rel="stylesheet" media="screen" href="./style-v1.0.css">
     <link rel="stylesheet" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.6.2/darkly/bulmaswatch.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
@@ -906,7 +906,7 @@
     <span v-else class="gray">Max number of tags reached; Cannot add more.</span>
 </div><div id="modlog" v-if="selectedGuildID && column === 'modlog' && !loading">
     <div class="header">
-        <span class="bold">Mod Log</span>
+        <span class="bold">Mod Log [COMING SOON]</span>
         <hr>
     </div>
     <div class="setting"><span class="info"><i>To enable/disable the case system or set which commands make cases, see the <a href="#logging">Logging Settings</a> section.</i></span></div>
@@ -2256,8 +2256,12 @@
                 </tr>
                 <tr v-for="(aliases, command) in data" v-show="gSettings.groupStatus[group]">
                     <td><span class="code">{{ (gSettings.prefix || ';')+command }}</span></td>
-                    <td><span class="gray" v-if="gSettings.commandStatus[command] === false">
+                    <td><span class="gray" v-if="command === 'nsfwagree'">
+                        Command is DM-only.
+                    </span><span class="gray" v-else-if="gSettings.commandStatus[command] === false">
                         Command is disabled.
+                    </span><span v-else-if="shortcutMap[command]">
+                        See <span class="code">{{ (gSettings.prefix || ';')+shortcutMap[command] }}</span>.
                     </span><div v-else>
                         <div class="dd">
                             <div class="dd-trigger">
@@ -2890,8 +2894,12 @@
                 </tr>
                 <tr v-for="(aliases, command) in data" v-show="gSettings.groupStatus[group]">
                     <td><span class="code">{{ (gSettings.prefix || ';')+command }}</span></td>
-                    <td><span class="gray" v-if="gSettings.commandStatus[command] === false">
+                    <td><span class="gray" v-if="command === 'nsfwagree'">
+                        Command is DM-only.
+                    </span><span class="gray" v-else-if="gSettings.commandStatus[command] === false">
                         Command is disabled.
+                    </span><span v-else-if="shortcutMap[command]">
+                        See <span class="code">{{ (gSettings.prefix || ';')+shortcutMap[command] }}</span>.
                     </span><div v-else>
                         <div class="dd">
                             <div class="dd-trigger">
@@ -3471,6 +3479,50 @@
                 <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
             </tr>
         </tbody></table>
+    </div>
+</div><div id="music" v-if="selectedGuildID && column === 'music' && !loading">
+    <div class="header">
+        <span class="bold">Music</span>
+        <hr>
+    </div>
+    <div id="volume" :class="'setting slider-wrap' + (guildPro ? '' : ' disabled')">
+        <span class="title is-5">Volume</span>
+        <span class="info">The default volume at which music will play.</span>
+		<input type="range" min="0" max="1000" step="5" v-model="gSettings.music.volume">
+		<span class="vol-tt" :style="'left:calc((100% - 20px) * ' + (gSettings.music.volume / 1000) + ' - 15px)'">{{ gSettings.music.volume }}%</span>
+        <div class="tick">0%</div>
+        <div class="graytick"></div>
+        <div class="tick">100%</div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="tick">500%</div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="graytick"></div>
+        <div class="tick">1000%</div>
+    </div>
+    <div  :class="'setting' + (guildPro ? '' : ' disabled')">
+        <span class="key">Autoplay</span>
+        <label class="switch small">
+            <input type="checkbox" v-model="gSettings.music.autoplay">
+            <span class="slider round"></span>
+        </label>
+        <br>
+        <span class="info">Play related songs after the music queue ends.</span>
+    </div>
+    <div class="setting" v-show="!guildPro">
+        <span>To change volume or enable autoplay, please purchase <a href="https://benderbot.co/pro" target="_blank">Bender Pro</a> and <a href="#pro" @click="column = 'pro'">enable it</a> for this server.</span>
     </div>
 </div></section>
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>

@@ -92,6 +92,7 @@ var page = new Vue({
 		guilds: [],
 		user: null,
 		gSettings: defaultGuildSettings,
+		guildPro: false,
 		gRoles: [],
 		gChannels: [],
 		tzRegions: window.tzRegions,
@@ -568,6 +569,7 @@ async function loadGuildSettings(gID) {
 			page.botNotPresent = true;
 
 			page.gSettings = defaultGuildSettings;
+			page.guildPro = false;
 			page.gNames = {};
 			//page.unsaved = false;
 			page.gRoles = [];
@@ -591,6 +593,7 @@ async function loadGuildSettings(gID) {
 			showNotif('success', 'Loaded guild settings!', 4000);
 			gData.settings.guildID = gID;
 			page.gSettings = gData.settings;
+			page.guildPro = gData.pro;
 			page.gNames = gData.usernames;
 			//page.unsaved = false;
 			page.gRoles = gData.roles;
@@ -641,27 +644,23 @@ async function saveGuildSettings(gID) {
 		return;
 	}
 
-	// TODO: actually do this shit
-	/* eslint-disable */
-	alert('Saving settings is not done yet! Come back soon™'); return;
-
-	let temp = Object.assign({}, page.gSettings);
-	delete temp.guildID;
 	page.loading = true;
     showNotif('pending', 'Saving guild settings...');
-    let err, gData = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token'), body: temp}).catch(er => {
+    let err;
+	await makeRequest({method: 'POST', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token'), body: page.gSettings}).catch(er => {
 		err = er;
 		console.error(er);
 	});
 
 	page.loading = false;
-    if (err) {
+	if (err.code === 400) {
+		//show modal
+	} /* else */ if (err) {
 		showNotif('error', 'Failed to save guild settings.\n'+err, 6000);
 	} else {
         showNotif('success', 'Saved guild settings!', 4000);
 		//page.unsaved = false;
     }
-	/* eslint-enable */
 }
 
 let firstPP = true;

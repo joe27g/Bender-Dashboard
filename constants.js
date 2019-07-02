@@ -50,7 +50,8 @@ window.navSections = [
 	}, {
 		name: 'Mod Log (cases)',
 		id: 'modlog',
-		ro: true
+		ro: true,
+		cs: true
 	}, {
 		name: 'Mutes',
 		id: 'mutes',
@@ -78,6 +79,9 @@ window.navSections = [
 	}, {
 		name: 'Blacklist',
 		id: 'blacklist'
+	}, {
+		name: 'Music',
+		id: 'music'
 	}]
 ];
 window.permTypes = {
