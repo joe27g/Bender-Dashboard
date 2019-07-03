@@ -55,6 +55,17 @@ function getCookie(name) {
 function setCookie(name, value, expiry) {
 	return document.cookie = `${name}=${value}; domain=.benderbot.co; path=/; expires=${new Date(Date.now() + (expiry || 1000*60*60*24*365))}`;
 }
+// also modified from StackOverflow
+/*function merge(obj, obj2) {
+    for (const prop in obj2) {
+        const val = obj2[prop];
+        if (typeof val === "object" && !Array.isArray(val) && val !== null)
+            merge(obj[prop], val);
+        else
+            obj[prop] = val;
+    }
+    return obj;
+}*/
 
 window.paypal.use( ['login'], function (login) {
     login.render ({
@@ -89,6 +100,7 @@ var page = new Vue({
 		//prevGuildID: null,
 		openDropdown: null,
 		sidenavOpen: false,
+		modalText: '',
 		guilds: [],
 		user: null,
 		gSettings: defaultGuildSettings,
@@ -636,7 +648,7 @@ async function saveGuildSettings(gID) {
 		});
 		page.loading = false;
 		if (err) {
-			showNotif('error', 'Failed to save Bender Pro settings.\n'+err, 6000);
+			showNotif('error', `Failed to save Bender Pro settings.\n${err.status} ${err.statusText}`, 6000);
 		} else {
 			showNotif('success', 'Saved Bender Pro settings!', 4000);
 			//page.unsaved = false;
@@ -647,16 +659,19 @@ async function saveGuildSettings(gID) {
 	page.loading = true;
     showNotif('pending', 'Saving guild settings...');
     let err;
-	await makeRequest({method: 'POST', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token'), body: page.gSettings}).catch(er => {
+	const response = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token'), body: page.gSettings}).catch(er => {
 		err = er;
 		console.error(er);
 	});
 
 	page.loading = false;
-	if (err.code === 400) {
-		//show modal
-	} /* else */ if (err) {
-		showNotif('error', 'Failed to save guild settings.\n'+err, 6000);
+	if (err && err.status === 400) {
+		page.modalText = err.responseText;
+		showNotif('', '');
+	} else if (err) {
+		showNotif('error', `Failed to save guild settings.\n${err.status} ${err.statusText}`, 6000);
+	} else if (response === null) { // response was a 204
+		showNotif('pending', 'Saved - No changes were needed.', 5000);
 	} else {
         showNotif('success', 'Saved guild settings!', 4000);
 		//page.unsaved = false;

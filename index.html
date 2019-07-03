@@ -502,7 +502,7 @@
     </div>
     <div class="time-setting">
         <span class="key">Wait time:</span>
-        <input type="number" placeholder="5" v-model="gSettings.agreement.wait">
+        <input type="number" placeholder="5" v-model.number="gSettings.agreement.wait">
         <span>minutes</span>
         <label class="switch small">
             <input type="checkbox" v-model="gSettings.agreement.waitH">
@@ -513,7 +513,7 @@
     </div>
     <div class="time-setting">
         <span class="key">Warn time:</span>
-        <input type="number" placeholder="5" v-model="gSettings.agreement.warn">
+        <input type="number" placeholder="1" v-model.number="gSettings.agreement.warn">
         <span>minutes</span>
         <label class="switch small">
             <input type="checkbox" v-model="gSettings.agreement.warnH">
@@ -524,7 +524,7 @@
     </div>
     <div class="time-setting">
         <span class="key">Kick time:</span>
-        <input type="number" placeholder="5" v-model="gSettings.agreement.kick">
+        <input type="number" placeholder="2" v-model.number="gSettings.agreement.kick">
         <span>minutes</span>
         <label class="switch small">
             <input type="checkbox" v-model="gSettings.agreement.kickH">
@@ -3527,6 +3527,20 @@
 </div></section>
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>
 <div id="notif" class=""><span id="notif-text"></span></div>
+<div :class="'modal' + (modalText ? ' is-active' : '')">
+    <div class="modal-background" @click="modalText = ''"></div>
+    <div class="modal-content">
+        <div class="message is-danger is-medium">
+            <div class="message-header">
+                <span>Error saving settings.</span>
+                <button class="delete is-large" aria-label="delete" @click="modalText = ''"></button>
+            </div>
+            <div class="message-body box">
+                <span class="white">{{ modalText }}</span>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 </body>
 </html>
