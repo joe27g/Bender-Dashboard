@@ -276,6 +276,8 @@ var page = new Vue({
 					if (err || !this.temp[type]) {
 						showNotif('error', `Invalid regex content in ${type}. See the red underlined portions.`, 3000); return;
 					}
+					if (!Array.isArray(this.gSettings[type].patterns))
+						this.gSettings[type].patterns = [];
 					this.gSettings[type].patterns.push(this.temp[type]);
 					this.temp[type] = null;
 					break;
@@ -349,7 +351,6 @@ var page = new Vue({
 			//this.$forceUpdate();
 		},
 		del: function(type, index, cg, com) {
-			console.log(`deleting ${index} of type ${type}`);
 			switch (type) {
 				case 'tag':
 				case 'alias':
@@ -639,7 +640,7 @@ async function saveGuildSettings(gID) {
 			guilds: page.paypalInfo.guilds,
 			discordID: page.user.id
 		};
-		console.log(temp);
+		//console.log(temp);
 		showNotif('pending', 'Saving Bender Pro settings...');
 		let err;
 		await makeRequest({method: 'POST', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token'), auth2: getCookie('token'), body: temp}).catch(er => {
