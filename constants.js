@@ -59,7 +59,8 @@ window.navSections = [
 	}, {
 		name: 'Name History',
 		id: 'names',
-		ro: true
+		ro: true,
+		cs: true
 	}, {
 		name: 'Temporary Roles',
 		id: 'roles',
@@ -82,6 +83,10 @@ window.navSections = [
 	}, {
 		name: 'Music',
 		id: 'music'
+	}, {
+		name: 'Starboard',
+		id: 'starboard',
+		cs: true
 	}]
 ];
 window.permTypes = {
