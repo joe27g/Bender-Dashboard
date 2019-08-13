@@ -12,7 +12,7 @@
     <meta name="og:image" content="https://benderbot.co/Bender-large.png">
     <meta name="og:site_name" content="Bender Bot">
     <meta name="og:url" content="https://dashboard.benderbot.co">
-    <link rel="stylesheet" media="screen" href="./style-v1.0.css">
+    <link rel="stylesheet" media="screen" href="./style-v1.0.1.css">
     <link rel="stylesheet" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.6.2/darkly/bulmaswatch.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
@@ -175,33 +175,83 @@
             <span class="info">The custom prefix for commands. Default is <span class="code">;</span>. Mentioning <span class="mention">@Bender</span> will always trigger commands, no matter what the prefix is.</span>
         </div>
         <div class="setting column">
-            <span class="key">Autorole:</span>
-            <div class="dd">
-                <div class="dd-trigger">
-                    <button class="button" @click="openDropdown = openDropdown === 'autorole' ? null : 'autorole'">
-                        <span v-if="!gSettings.autorole" class="role-icon">@</span>
-                        <span v-if="!gSettings.autorole">Choose a role...</span>
-                        <div v-if="gSettings.autorole">
-                            <span :style="getRole(gSettings.autorole).cssColor" class="role-icon">@</span>
-                            <span :style="getRole(gSettings.autorole).cssColor">{{ getRole(gSettings.autorole).name }}</span>
-                        </div>
-                    </button>
+            <div :class="'setting' + (guildPro ? '' : ' disabled')">
+                <span class="key">Single autorole</span>
+                <label class="switch small">
+                    <input type="checkbox" v-model="temp.multi_autorole">
+                    <span class="slider round"></span>
+                </label>
+                <span class="key">&nbsp;&nbsp;Multiple autoroles <span v-show="!guildPro">(Requires Bender Pro)</span></span>
+            </div>
+            <div class="setting" v-if="Array.isArray(gSettings.autorole)">
+                <span class="key">Autoroles:</span>
+                <div class="guild box" v-for="(roleID, index) in gSettings.autorole">
+                    <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
+                    <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
+                    <a @click="del('ar', index)" class="remove"></a>
                 </div>
-                <div v-show="openDropdown === 'autorole'" class="dd-content">
-                    <div><label for="AR-none">
-                        <input type="radio" id="AR-none" value="" v-model="gSettings.autorole" class="hidden">
-                        <span class="role-icon">❓</span>
-                        <span class="role-name">None</span>
-                    </label></div>
-                    <div v-for="role in gRoles" v-if="role.id !== selectedGuildID">
-                        <label :for="'AR-' + role.id" :class="role.id === gSettings.agreement.role ? 'agreement disabled' : role.managed ? 'managed disabled' : getGuild(selectedGuildID).owner || role.position < memberRank ? '' : 'too-high disabled'">
-                            <input type="radio" :id="'AR-' + role.id" :value="role.id" v-model="gSettings.autorole" class="hidden">
-                            <span :style="role.cssColor" class="role-icon">@</span>
-                            <span :style="role.cssColor">{{ role.name }}</span>
-                        </label>
+                <div v-if="!gSettings.autorole || gSettings.autorole.length === 0">
+                    <span class="gray">No roles selected.</span>
+                </div>
+                <br>
+                <span class="key">Add a role:</span>
+                <div class="dd">
+                    <div class="dd-trigger">
+                        <button class="button" @click="openDropdown = openDropdown === 'ar-list' ? null : 'ar-list'">
+                            <span v-if="!temp.arl" class="role-icon">@</span>
+                            <span v-if="!temp.arl">Choose a role...</span>
+                            <div v-if="temp.arl">
+                                <span :style="getRole(temp.arl).cssColor" class="role-icon">@</span>
+                                <span :style="getRole(temp.arl).cssColor">{{ getRole(temp.arl).name }}</span>
+                            </div>
+                        </button>
                     </div>
-                    <div v-if="gRoles.length === 0">
-                        <span class="gray">No eligible roles.</span>
+                    <div v-show="openDropdown === 'ar-list'" class="dd-content">
+                        <div v-for="role in gRoles" v-if="role.id !== selectedGuildID">
+                            <label :for="'ARL-' + role.id" :class="role.managed ? 'managed disabled' : getGuild(selectedGuildID).owner || role.position < memberRank ? '' : 'too-high disabled'">
+                                <input type="radio" :id="'ARL-' + role.id" :value="role.id" v-model="temp.arl" class="hidden">
+                                <span :style="role.cssColor" class="role-icon">@</span>
+                                <span :style="role.cssColor">{{ role.name }}</span>
+                            </label>
+                        </div>
+                        <div v-if="gRoles.length === 0">
+                            <span class="gray">No eligible roles.</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="button add" @click="add('arl')" :disabled="!temp.arl">
+                    <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
+                </button>
+            </div>
+            <div class="setting" v-else>
+                <span class="key">Autorole:</span>
+                <div class="dd">
+                    <div class="dd-trigger">
+                        <button class="button" @click="openDropdown = openDropdown === 'autorole' ? null : 'autorole'">
+                            <span v-if="!gSettings.autorole" class="role-icon">@</span>
+                            <span v-if="!gSettings.autorole">Choose a role...</span>
+                            <div v-if="gSettings.autorole">
+                                <span :style="getRole(gSettings.autorole).cssColor" class="role-icon">@</span>
+                                <span :style="getRole(gSettings.autorole).cssColor">{{ getRole(gSettings.autorole).name }}</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div v-show="openDropdown === 'autorole'" class="dd-content">
+                        <div><label for="AR-none">
+                            <input type="radio" id="AR-none" value="" v-model="gSettings.autorole" class="hidden">
+                            <span class="role-icon">❓</span>
+                            <span class="role-name">None</span>
+                        </label></div>
+                        <div v-for="role in gRoles" v-if="role.id !== selectedGuildID">
+                            <label :for="'AR-' + role.id" :class="role.id === gSettings.agreement.role ? 'agreement disabled' : role.managed ? 'managed disabled' : getGuild(selectedGuildID).owner || role.position < memberRank ? '' : 'too-high disabled'">
+                                <input type="radio" :id="'AR-' + role.id" :value="role.id" v-model="gSettings.autorole" class="hidden">
+                                <span :style="role.cssColor" class="role-icon">@</span>
+                                <span :style="role.cssColor">{{ role.name }}</span>
+                            </label>
+                        </div>
+                        <div v-if="gRoles.length === 0">
+                            <span class="gray">No eligible roles.</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -349,7 +399,7 @@
     <div class="text-setting">
         <span class="key">Welcome DM:</span>
         <textarea v-show="!previewEnabled" placeholder="Example: Welcome to {server}, please read the rules and enjoy!" v-model="gSettings.memberLog['join-dm']">{{ gSettings.memberLog['join-dm'] }}</textarea>
-        <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog['join-dm'] || '')"></div>
+        <div class="preview-wrapper" v-show="previewEnabled" v-html="parseMD(gSettings.memberLog['join-dm'] || '')"></div>
         <span class="info">Message sent to a user's DM when they join the server.</span>
     </div>
     <div class="text-setting">
@@ -361,7 +411,7 @@
     <div class="text-setting">
         <span class="key">Leave message:</span>
         <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.leave" placeholder="Example: Goodbye {user}, we won't miss you!">{{ gSettings.memberLog.leave }}</textarea>
-        <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.leave || '')"></div>
+        <div class="preview-wrapper" v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.leave || '')"></div>
         <span class="info">Message sent when someone leaves the server.</span>
     </div>
     <div class="text-setting">
@@ -497,7 +547,7 @@
             <span class="key">&nbsp;&nbsp;Preview</span>
         </div>
         <textarea v-show="!previewEnabled" placeholder="Message for new users" v-model="gSettings.agreement.message">{{ gSettings.agreement.message }}</textarea>
-        <div v-show="previewEnabled" v-html="parseMD(gSettings.agreement.message || '')"></div>
+        <div class="preview-wrapper" v-show="previewEnabled" v-html="parseMD(gSettings.agreement.message || '')"></div>
         <span class="info">If specified, this message will be sent as a DM when a new user joins. It should contain server info, how to agree to the server rules, etc.</span>
     </div>
     <div class="time-setting">
@@ -839,25 +889,25 @@
     <div class="text-setting">
         <span :class="previewEnabled ? 'key yellow' : 'key'">Mute DM:</span>
         <textarea v-show="!previewEnabled" placeholder="You have been muted in {server}." v-model="gSettings.config.muteDM">{{ gSettings.config.muteDM }}</textarea>
-        <div v-show="previewEnabled && gSettings.config.muteDM" v-html="parseMD('*You have been muted in {server}.*\n'+gSettings.config.muteDM)"></div>
+        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.muteDM" v-html="parseMD('*You have been muted in {server}.*\n'+gSettings.config.muteDM)"></div>
         <span v-show="previewEnabled && !gSettings.config.muteDM" class="gray">None</span>
     </div>
     <div class="text-setting">
         <span :class="previewEnabled ? 'key yellow' : 'key'">Unmute DM:</span>
         <textarea v-show="!previewEnabled" placeholder="You have been unmuted in {server}." v-model="gSettings.config.unmuteDM">{{ gSettings.config.unmuteDM }}</textarea>
-        <div v-show="previewEnabled && gSettings.config.unmuteDM" v-html="parseMD('*You have been unmuted in {server}.*\n'+gSettings.config.unmuteDM)"></div>
+        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.unmuteDM" v-html="parseMD('*You have been unmuted in {server}.*\n'+gSettings.config.unmuteDM)"></div>
         <span v-show="previewEnabled && !gSettings.config.unmuteDM" class="gray">None</span>
     </div>
     <div class="text-setting">
         <span :class="previewEnabled ? 'key yellow' : 'key'">Kick DM:</span>
         <textarea v-show="!previewEnabled" placeholder="You have been kicked from {server}." v-model="gSettings.config.kickDM">{{ gSettings.config.kickDM }}</textarea>
-        <div v-show="previewEnabled && gSettings.config.kickDM" v-html="parseMD('*You have been kicked from {server}.*\n'+gSettings.config.kickDM)"></div>
+        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.kickDM" v-html="parseMD('*You have been kicked from {server}.*\n'+gSettings.config.kickDM)"></div>
         <span v-show="previewEnabled && !gSettings.config.kickDM" class="gray">None</span>
     </div>
     <div class="text-setting">
         <span :class="previewEnabled ? 'key yellow' : 'key'">Ban DM:</span>
         <textarea v-show="!previewEnabled" placeholder="You have been banned from {server}." v-model="gSettings.config.banDM">{{ gSettings.config.banDM }}</textarea>
-        <div v-show="previewEnabled && gSettings.config.banDM" v-html="parseMD('*You have been banned from {server}.*\n'+gSettings.config.banDM)"></div>
+        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.banDM" v-html="parseMD('*You have been banned from {server}.*\n'+gSettings.config.banDM)"></div>
         <span v-show="previewEnabled && !gSettings.config.banDM" class="gray">None</span>
     </div>
 </div><div id="tags" v-if="selectedGuildID && column === 'tags' && !loading">
@@ -1217,6 +1267,18 @@
         </button>
     </div>
     <span v-else class="gray">Max number of items reached (20); Cannot add more.</span>
+    <hr>
+    <div class="setting">
+        <span class="title is-5">Warnlist:</span>
+        <div id="filter_warnlist" v-show="getLen(gSettings.filter.warnlist) > 0">
+            <div class="guild box" v-for="(count, userID) in gSettings.filter.warnlist" v-if="count > 0">
+                <span class="blue">User:</span> <span v-html="resolveUser(userID)"></span>
+                <br>
+                <span class="red">Warnings:</span> <span>{{ count }}</span>
+            </div>
+        </div>
+        <span class="info" v-show="getLen(gSettings.filter.warnlist) === 0">No members warned for violating the filter.</span>
+    </div>
 </div><div id="namefilter" v-if="selectedGuildID && column === 'namefilter' && !loading">
     <div class="header">
         <span class="bold">Name Filter</span>
@@ -2136,6 +2198,8 @@
                 </label></div>
             </div>
         </div>
+        <span class="key spacer"></span>
+        <button v-show="temp.perms_group" class="button is-danger" @click="clearPerms(temp.perms_group)">Clear perms for all {{ groupNames[temp.perms_group] }} commands</button>
     </div>
     <div class="columns">
         <div class="column">
@@ -2755,6 +2819,8 @@
                 </div>
             </div>
         </div>
+        <span class="key spacer"></span>
+        <button v-show="temp.cperms_group && temp.cperms_chan" class="button is-danger" @click="clearPerms(temp.cperms_group, temp.cperms_chan)">Clear perms for all {{ groupNames[temp.cperms_group] }} commands in #{{ getChannel(temp.cperms_chan).name }}</button>
     </div>
     <div class="setting">
         <span class="key">For command group: </span>
@@ -2774,6 +2840,9 @@
                 </label></div>
             </div>
         </div>
+        <!-- TODO: broken
+        <span class="key spacer"></span>
+        <button v-show="temp.cperms_group" class="button is-danger" @click="clearPerms(temp.cperms_group, true)">Clear perms for all {{ groupNames[temp.cperms_group] }} commands in all channels</button> -->
     </div>
     <div class="columns" v-if="temp.cperms_chan">
         <div class="column">
@@ -3524,6 +3593,78 @@
     <div class="setting" v-show="!guildPro">
         <span>To change volume or enable autoplay, please purchase <a href="https://benderbot.co/pro" target="_blank">Bender Pro</a> and <a href="#pro" @click="column = 'pro'">enable it</a> for this server.</span>
     </div>
+</div><div id="starboard" v-if="selectedGuildID && column === 'starboard' && !loading">
+    <div class="header">
+        <span class="bold">Starboard</span>
+        <label class="switch">
+            <input type="checkbox" v-model="gSettings.starboard.enabled">
+            <span class="slider round"></span>
+        </label>
+        <hr>
+    </div>
+    <span class="info">
+        When a message receives enough <span>
+        <span v-if="!gSettings.starboard.emoji">⭐</span>
+        <object class="sb-emoji" v-else-if="gSettings.starboard.emoji.length > 16" :data="'https://cdn.discordapp.com/emojis/' + gSettings.starboard.emoji + '.gif?v=1'" type="image/gif">
+            <img :src="'https://cdn.discordapp.com/emojis/' + gSettings.starboard.emoji + '.png?v=1'" style="height:24px!important;vertical-align:middle;">
+        </object>
+        <span v-else>{{ gSettings.starboard.emoji }}</span>
+        </span> reactions, that message will be posted in the starboard channel.
+    </span>
+    <div class="columns">
+        <div class="setting column">
+            <span class="key">Channel:</span>
+            <div class="dd">
+                <div class="dd-trigger">
+                    <button class="button" @click="openDropdown = openDropdown === 'star-chan' ? null : 'star-chan'">
+                        <div v-if="gSettings.starboard.channel">
+                            <span class="channel-icon">#</span>
+                            <span>{{ getChannel(gSettings.starboard.channel).name }}</span>
+                        </div>
+                        <div v-else>
+                            <span class="channel-icon">#</span>
+                            <span>Choose a channel...</span>
+                        </div>
+                    </button>
+                </div>
+                <div v-show="openDropdown === 'star-chan'" class="dd-content">
+                    <div v-show="gSettings.starboard.channel"><label for="SB-unset">
+                        <input type="radio" id="SB-unset" value="" v-model="gSettings.starboard.channel" class="hidden">
+                        <span class="channel-icon">❓</span>
+                        <span class="channel-name">None</span>
+                    </label></div>
+                    <div v-for="chan in gChannels" v-show="gSettings.starboard.channel !== chan.id">
+                        <label :for="'SB-' + chan.id" v-if="chan.type === 0">
+                            <input type="radio" :id="'SB-' + chan.id" :value="chan.id" v-model="gSettings.starboard.channel" class="hidden">
+                            <span class="channel-icon">#</span>
+                            <span>{{ chan.name }}</span>
+                        </label>
+                        <div v-else-if="chan.type === 4" class="gray mini-header">{{ chan.name }}</div>
+                    </div>
+                    <div v-if="gChannels.length === 0">
+                        <span class="gray">No eligible channels.</span>
+                    </div>
+                </div>
+            </div>
+            <span class="info"><i>Note: Reactions to messages already in this channel will be ignored.</i></span>
+        </div>
+        <div class="setting column">
+            <span class="key">Count:</span>
+            <input type="number" v-model.number="gSettings.starboard.count" placeholder="5"></input>
+            <span class="info">The number of reactions needed to be featured in the starboard channel.</span>
+        </div>
+    </div>
+    <span class="info">
+        Current emoji is: <span>
+        <span v-if="!gSettings.starboard.emoji">⭐</span>
+        <object class="sb-emoji" v-else-if="gSettings.starboard.emoji.length > 16" :data="'https://cdn.discordapp.com/emojis/' + gSettings.starboard.emoji + '.gif?v=1'" type="image/gif">
+            <img :src="'https://cdn.discordapp.com/emojis/' + gSettings.starboard.emoji + '.png?v=1'" style="height:24px!important;vertical-align:middle;">
+        </object>
+        <span v-else>{{ gSettings.starboard.emoji }}</span>
+        </span>
+        <br>
+        To set the emoji, please use <span class="code">{{ gSettings.prefix || ';' }}starboard emoji</span> in your server.
+    </span>
 </div></section>
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>
 <div id="notif" class=""><span id="notif-text"></span></div>

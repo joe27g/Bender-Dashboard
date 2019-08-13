@@ -88,7 +88,7 @@ for (const group in window.commandList) {
 }
 
 const defaultGuildSettings = {
-	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "tags": {}, "temproles": {}
+	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "starboard": {}, "tags": {}, "temproles": {}
 };
 
 // eslint-disable-next-line
@@ -120,7 +120,7 @@ var page = new Vue({
 		moment: window.moment,
 		paypalInfo: null,
 		loading: false,
-		temp: {},
+		temp: { multi_autorole: false },
 		searchValue: null,
 		previewEnabled: false,
 		ignoreAbbrs: {
@@ -156,6 +156,7 @@ var page = new Vue({
 			deep: true,
 			handler: function(value) {
 				for (const c in value) {
+					if (!value[c]) continue;
 					if (value[c].type === 'role_list' && !Array.isArray(value[c].data)) {
 						this.gSettings.perms[c].data = [];
 					}
@@ -169,6 +170,7 @@ var page = new Vue({
 			deep: true,
 			handler: function(value) {
 				for (const g in value) {
+					if (!value[g]) continue;
 					if (value[g].type === 'role_list' && !Array.isArray(value[g].data)) {
 						this.gSettings.gperms[g].data = [];
 					}
@@ -183,6 +185,7 @@ var page = new Vue({
 			handler: function(value) {
 				for (const i in value.perms) {
 					for (const c in value.perms[i]) {
+						if (!value.perms[i][c]) continue;
 						if (value.perms[i][c].type === 'role_list' && !Array.isArray(value.perms[i][c].data)) {
 							this.gSettings.cperms.perms[i][c].data = [];
 						}
@@ -193,6 +196,7 @@ var page = new Vue({
 				}
 				for (const i in value.gperms) {
 					for (const g in value.gperms[i]) {
+						if (!value.gperms[i][g]) continue;
 						if (value.gperms[i][g].type === 'role_list' && !Array.isArray(value.gperms[i][g].data)) {
 							this.gSettings.cperms.gperms[i][g].data = [];
 						}
@@ -222,6 +226,14 @@ var page = new Vue({
 						this.gSettings.ignore[t].data = null;
 					}
 				}
+			}
+		},
+		'temp.multi_autorole': function(value) {
+			if (value && !Array.isArray(this.gSettings.autorole)) {
+				this.gSettings.autorole = [];
+			}
+			else if (!value && Array.isArray(this.gSettings.autorole)) {
+				this.gSettings.autorole = null;
 			}
 		}
 	},
@@ -346,6 +358,13 @@ var page = new Vue({
 					this.temp[type] = null;
 					break;
 				}
+				case 'arl': {
+					if (!Array.isArray(this.gSettings.autorole))
+						this.gSettings.autorole = [];
+					this.gSettings.autorole.push(this.temp.arl);
+					this.temp.arl = null;
+					break;
+				}
 
 			}
 			//this.$forceUpdate();
@@ -383,10 +402,33 @@ var page = new Vue({
 				case 'blacklist':
 					this.gSettings.blacklist.splice(index, 1);
 					break;
+				case 'arl':
+					this.gSettings.autorole.splice(index, 1);
+					break;
 			}
 			this.$forceUpdate();
 			setTimeout( this.$forceUpdate, 69);
 			setTimeout( this.$forceUpdate, 690);
+		},
+		clearPerms: function(group, channel) {
+			if (!channel) {
+				if (!this.commandList[group]) return;
+				for (const command of Object.keys(this.commandList[group])) {
+					this.gSettings.perms[command] = {};
+				}
+			} else if (channel === true) {
+				for (const chanID of Object.keys(this.gSettings.cperms.perms)) {
+					if (!this.gSettings.cperms.perms[chanID]) continue;
+					for (const command in Object.keys(this.commandList[group])) {
+						this.gSettings.cperms.perms[chanID][command] = {};
+					}
+				}
+			} else {
+				if (!this.gSettings.cperms.perms[channel]) return;
+				for (const command of Object.keys(this.commandList[group])) {
+					this.gSettings.cperms.perms[channel][command] = {};
+				}
+			}
 		},
 		parseMD: function(str) {
 			// parse markdown (i.e. underlining) and syntax highlighting
@@ -582,6 +624,7 @@ async function loadGuildSettings(gID) {
 			page.botNotPresent = true;
 
 			page.gSettings = defaultGuildSettings;
+			page.temp.multi_autorole = false;
 			page.guildPro = false;
 			page.gNames = {};
 			//page.unsaved = false;
@@ -607,6 +650,7 @@ async function loadGuildSettings(gID) {
 			gData.settings.guildID = gID;
 			page.gSettings = gData.settings;
 			page.guildPro = gData.pro;
+			page.temp.multi_autorole = Array.isArray(page.gSettings.autorole);
 			page.gNames = gData.usernames;
 			//page.unsaved = false;
 			page.gRoles = gData.roles;

@@ -85,8 +85,7 @@ window.navSections = [
 		id: 'music'
 	}, {
 		name: 'Starboard',
-		id: 'starboard',
-		cs: true
+		id: 'starboard'
 	}]
 ];
 window.permTypes = {
