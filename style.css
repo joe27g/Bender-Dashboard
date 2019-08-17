@@ -66,14 +66,14 @@ div.b {
 #integration img {
     vertical-align: super;
 }
-#guilds .guild-name, #integration .user-tag > span:first-child {
+#guilds-button .guild-name, #integration .user-tag > span:first-child {
         text-overflow: ellipsis;
         overflow: hidden;
         display: inline-block;
         margin-bottom: -7px;
     }
 @media screen and (min-width: 573px) and (max-width: 1060px) {
-    #guilds .guild-name, #integration .user-tag > span:first-child {
+    #guilds-button .guild-name, #integration .user-tag > span:first-child {
         max-width: 200px;
     }
 }
@@ -82,13 +82,13 @@ div.b {
         max-width: 100px;
     }
 }
-@media screen and (max-width: 500px) {
-    #guilds .guild-name, #integration .user-tag > span:first-child {
+@media screen and (max-width: 499px) {
+    #guilds-button .guild-name, #integration .user-tag > span:first-child {
         max-width: 200px;
     }
 }
 @media screen and (max-width: 376px) {
-    #guilds .guild-name, #integration .user-tag > span:first-child {
+    #guilds-button .guild-name, #integration .user-tag > span:first-child {
         max-width: 135px;
     }
 }
