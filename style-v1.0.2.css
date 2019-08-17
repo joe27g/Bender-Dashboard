@@ -991,3 +991,27 @@ input[type=range]:focus + .vol-tt {
     vertical-align: middle;
     margin: 2px;
 }
+
+@media screen and (max-width: 573px) {
+    #navbar {
+        flex-wrap: wrap;
+    }
+
+    #guild-picker {
+        display: flex;
+        width: 100%;
+        order: 3;
+    }
+
+    #guilds-chooser {
+        width: 100%;
+    }
+
+    #guilds {
+        width: 100%;
+    }
+
+    #refresh, #save {
+        margin: 6px 0 6px 7px;
+    }
+}
