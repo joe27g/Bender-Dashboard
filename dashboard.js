@@ -373,7 +373,7 @@ var page = new Vue({
 			switch (type) {
 				case 'tag':
 				case 'alias':
-					this.$delete(this.gSettings[type === 'tag' ? 'tags' : 'aliases'], index);
+					this.gSettings[type === 'tag' ? 'tags' : 'aliases'][index] = null;
 					break;
 				case 'filter':
 				case 'namefilter':

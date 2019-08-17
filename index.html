@@ -932,7 +932,7 @@
             <th>Tag Name</th>
             <th>Tag Content</th>
         </tr>
-        <tr v-for="(content, name) in gSettings.tags">
+        <tr v-for="(content, name) in gSettings.tags" v-if="content !== null">
             <td><span class="csfont">{{ (gSettings.prefix || ';') + name }}</span></td>
             <td>
                 <textarea v-show="!previewEnabled" v-model="gSettings.tags[name]">{{ content }}</textarea>
@@ -1001,7 +1001,7 @@
             <th>Alias</th>
             <th>Command</th>
         </tr>
-        <tr v-for="(command, name) in gSettings.aliases">
+        <tr v-for="(command, name) in gSettings.aliases" v-if="command !== null">
             <td><span class="csfont">{{ (gSettings.prefix || ';') + name }}</span></td>
             <td><span class="code">{{ (gSettings.prefix || ';') + command }}</span></td>
             <td><a @click="del('alias', name)" class="remove"></a></td>
