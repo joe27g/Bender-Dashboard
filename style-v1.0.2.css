@@ -66,6 +66,20 @@ div.b {
 #integration img {
     vertical-align: super;
 }
+@media screen and (max-width: 1060px) {
+    #guilds .guild-name, #integration .user-tag > span:first-child {
+        max-width: 200px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: inline-block;
+        margin-bottom: -7px;
+    }
+}
+@media screen and (max-width: 850px) {
+    #integration .user-tag > span:first-child {
+        max-width: 100px;
+    }
+}
 img.pfp {
     border-radius: 50%;
     height: 32px;
