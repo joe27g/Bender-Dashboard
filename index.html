@@ -33,6 +33,9 @@
 </transition>
 <transition name="fade-slide">
     <div class="menu" id="sidenav" v-show="sidenavOpen">
+        <div id="mobile-header">
+            <a class="b bold" href="/"><img src="./Bender.png" class="b">Bender Dashboard</a>
+        </div>
         <a id="sidenav-close" @click="sidenavOpen = false">x</a>
         <p class="menu-label">Overview</p>
         <ul class="menu-list">
@@ -75,9 +78,6 @@
         <a class="b bold" href="/"><img src="./Bender.png" class="b">Bender Dashboard</a>
     </div>
     <div id="navbar" class="level is-mobile">
-        <div id="mobile-header">
-            <a class="b bold" href="/"><img src="./Bender.png" class="b">Bender Dashboard</a>
-        </div>
         <a id="sidenav-toggle" @click="sidenavOpen = !sidenavOpen">
             <img src="./menu.svg">
         </a>
