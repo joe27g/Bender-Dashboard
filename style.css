@@ -66,16 +66,33 @@ div.b {
 #integration img {
     vertical-align: super;
 }
-@media screen and (max-width: 1060px) {
-    #guilds .guild-name, #integration .user-tag > span:first-child {
-        max-width: 200px;
+#guilds .guild-name, #integration .user-tag > span:first-child {
         text-overflow: ellipsis;
         overflow: hidden;
         display: inline-block;
         margin-bottom: -7px;
     }
+@media screen and (min-width: 573px) and (max-width: 1060px) {
+    #guilds .guild-name, #integration .user-tag > span:first-child {
+        max-width: 200px;
+    }
 }
-@media screen and (max-width: 850px) {
+@media screen and (min-width: 573px) and (max-width: 850px) {
+    #integration .user-tag > span:first-child {
+        max-width: 100px;
+    }
+}
+@media screen and (max-width: 500px) {
+    #guilds .guild-name, #integration .user-tag > span:first-child {
+        max-width: 200px;
+    }
+}
+@media screen and (max-width: 376px) {
+    #guilds .guild-name, #integration .user-tag > span:first-child {
+        max-width: 135px;
+    }
+}
+@media screen and (max-width: 310px) {
     #integration .user-tag > span:first-child {
         max-width: 100px;
     }
@@ -992,25 +1009,21 @@ input[type=range]:focus + .vol-tt {
     margin: 2px;
 }
 
-@media screen and (max-width: 573px) {
+@media screen and (max-width: 620px) {
     #navbar {
         flex-wrap: wrap;
     }
-
     #guild-picker {
         display: flex;
         width: 100%;
         order: 3;
     }
-
     #guilds-chooser {
         width: 100%;
     }
-
     #guilds {
         width: 100%;
     }
-
     #refresh, #save {
         margin: 6px 0 6px 7px;
     }

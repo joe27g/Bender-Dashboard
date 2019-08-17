@@ -112,7 +112,7 @@
         <div id="integration">
             <img class="pfp" v-if="user && user.pfp" :src="user.pfp">
             <span class="user-area" v-if="user">
-                <span class="user-tag">{{ user.username }}<span class="gray">#{{ user.discriminator }}</span></span>
+                <span class="user-tag"><span>{{ user.username }}</span><span class="gray">#{{ user.discriminator }}</span></span>
                 <a id="logout" href="https://api.benderbot.co/logout">Logout</a>
             </span>
             <a v-else href="https://api.benderbot.co/login_redirect">Login with Discord</a>
