@@ -12,7 +12,7 @@
     <meta name="og:image" content="https://benderbot.co/Bender-large.png">
     <meta name="og:site_name" content="Bender Bot">
     <meta name="og:url" content="https://dashboard.benderbot.co">
-    <link rel="stylesheet" media="screen" href="./style.css?v=104">
+    <link rel="stylesheet" media="screen" href="./style.css?v=106">
     <link rel="stylesheet" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.6.2/darkly/bulmaswatch.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
@@ -341,7 +341,7 @@
     </div>
 </div><div id="welcome" v-if="selectedGuildID && column === 'welcome' && !loading">
     <div class="header">
-        <span class="bold">Welcome messages</span>
+        <span class="bold">Welcome Messages</span>
         <hr>
     </div>
     <div class="setting">
@@ -401,7 +401,8 @@
     <div class="text-setting">
         <span class="key">Welcome DM:</span>
         <textarea v-show="!previewEnabled" placeholder="Example: Welcome to {server}, please read the rules and enjoy!" v-model="gSettings.memberLog['join-dm']">{{ gSettings.memberLog['join-dm'] }}</textarea>
-        <div class="preview-wrapper" v-show="previewEnabled" v-html="parseMD(gSettings.memberLog['join-dm'] || '', 'welcome')"></div>
+        <div class="preview-wrapper" v-show="previewEnabled && gSettings.memberLog['join-dm']" v-html="parseMD(gSettings.memberLog['join-dm'] || '', 'welcome')"></div>
+        <div v-show="previewEnabled && !gSettings.memberLog['join-dm']"><i>None</i></div>
         <span class="info">Message sent to a user's DM when they join the server.</span>
     </div>
     <div class="text-setting">
@@ -931,7 +932,7 @@
             <th>Tag Name</th>
             <th>Tag Content</th>
         </tr>
-        <tr v-for="(content, name) in gSettings.tags" v-if="content !== null">
+        <tr v-for="(content, name) in gSettings.tags" v-if="content">
             <td><span class="csfont">{{ (gSettings.prefix || ';') + name }}</span></td>
             <td>
                 <textarea v-show="!previewEnabled" v-model="gSettings.tags[name]">{{ content }}</textarea>
@@ -1059,10 +1060,11 @@
             <th>Ends at</th>
             <th>Reason</th>
         </tr>
-        <tr v-for="(data, userID) in gSettings.mutes" v-if="userID !== 'role' && userID !== 'default'">
+        <tr v-for="(data, userID) in gSettings.mutes" v-if="data && userID !== 'role' && userID !== 'default'">
             <td v-html="resolveUser(userID)"></td>
             <td v-html="resolveUser(data.issuer)"></td>
-            <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
+            <td v-if="data.timestamp">{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
+            <td v-else><i>Never</i></td>
             <td>{{ data.reason }}</td>
         </tr>
     </tbody></table>
@@ -1273,7 +1275,7 @@
     <div class="setting">
         <span class="title is-5">Warnlist:</span>
         <div id="filter_warnlist" v-show="getLen(gSettings.filter.warnlist) > 0">
-            <div class="guild box" v-for="(count, userID) in gSettings.filter.warnlist" v-if="count > 0">
+            <div class="guild box" v-for="(count, userID) in gSettings.filter.warnlist" v-if="count">
                 <span class="blue">User:</span> <span v-html="resolveUser(userID)"></span>
                 <br>
                 <span class="red">Warnings:</span> <span>{{ count }}</span>
@@ -1464,7 +1466,7 @@
             <th>Nicknames</th>
             <th>Usernames</th>
         </tr>
-        <tr v-for="(data, userID) in gSettings.nicknames">
+        <tr v-for="(data, userID) in gSettings.nicknames" v-if="data">
             <td v-html="resolveUser(userID)"></td>
             <td><span class="name" v-for="item in data">{{ item }}</span></td>
             <td><div v-if="gNames[userID]"><span class="name" v-for="item in gNames[userID]">{{ item }}</span></div><div v-else>N/A</div></td>
@@ -1489,7 +1491,7 @@
             <th>In channel</th>
             <th>Num. of winners</th>
         </tr>
-        <tr v-for="(data, id) in gSettings.giveaways">
+        <tr v-for="(data, id) in gSettings.giveaways" v-if="data">
             <td>{{ id }}</td>
             <td v-html="resolveUser(data.creator)"></td>
             <td>{{ data.prize }}</td>
@@ -3531,7 +3533,7 @@
     </div>
     <div class="setting"><span class="info">A list of temporary role assignments done using <span class="code">{{ gSettings.prefix || ';' }}role</span>.</span></div>
     <br>
-    <div v-for="(data, roleID) in gSettings.temproles" v-if="getLen(gSettings.temproles[roleID]) > 0" class="bordered">
+    <div v-for="(data, roleID) in gSettings.temproles" v-if="data && getLen(gSettings.temproles[roleID]) > 0" class="bordered">
         <div style="margin-bottom: -10px;">
             <span :style="getRole(roleID).cssColor" class="role-icon">@</span>
             <span :style="getRole(roleID).cssColor">{{ getRole(roleID).name }}</span>
@@ -3543,7 +3545,7 @@
                 <th>Issuer ID</th>
                 <th>Expires at</th>
             </tr>
-            <tr v-for="(data, key) in gSettings.temproles[roleID]">
+            <tr v-for="(data, key) in gSettings.temproles[roleID]" v-if="data">
                 <td v-html="resolveUser(key)"></td>
                 <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.startTime).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.startTime).format('MMM Do YYYY, h:mma z') }}</td>
                 <td v-html="resolveUser(data.issuer)"></td>
