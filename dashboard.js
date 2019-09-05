@@ -124,12 +124,12 @@ var page = new Vue({
 		searchValue: null,
 		previewEnabled: false,
 		ignoreAbbrs: {
-			iil: 'invites',
-			fil: 'filter',
+			iil: 'invites', iic: 'invitesChans',
+			fil: 'filter', fic: 'filterChans',
 			nfil: 'names',
-			sbil: 'selfbots',
-			mil: 'mentions',
-			sil: 'spam'
+			sbil: 'selfbots', sbic: 'selfbotsChans',
+			mil: 'mentions', mic: 'mentionsChans',
+			sil: 'spam', sic: 'spamChans'
 		},
 		botNotPresent: false
 	},
@@ -316,6 +316,28 @@ var page = new Vue({
 					this.temp[type] = null;
 					break;
 				}
+				case 'amic': {
+					if (!Array.isArray(this.gSettings.automod.ignoreChans))
+						this.gSettings.automod.ignoreChans = [];
+					this.gSettings.automod.ignoreChans.push(this.temp.amic);
+					this.temp.amic = null;
+					break;
+				}
+				case 'iic':
+				case 'fic':
+				case 'nfic':
+				case 'sbic':
+				case 'mic':
+				case 'sic': {
+					const x = this.ignoreAbbrs[type];
+					this.gSettings.ignore[x] = {
+						data: Array.isArray(this.gSettings.ignore[x]) ? this.gSettings.ignore[x] : [],
+						type: 'role_list'
+					}
+					this.gSettings.ignore[x].push(this.temp[type]);
+					this.temp[type] = null;
+					break;
+				}
 				case 'perms': {
 					if (typeof this.gSettings[com ? 'perms' : 'gperms'][cg] !== 'object')
 						this.gSettings[com ? 'perms' : 'gperms'][cg] = {};
@@ -389,6 +411,17 @@ var page = new Vue({
 				case 'mil':
 				case 'sil':
 					this.gSettings.ignore[this.ignoreAbbrs[type]].data.splice(index, 1);
+					break;
+				case 'amic':
+					this.gSettings.automod.ignoreChans.splice(index, 1);
+					break;
+				case 'iic':
+				case 'fic':
+				case 'nfic':
+				case 'sbic':
+				case 'mic':
+				case 'sic':
+					this.gSettings.ignore[this.ignoreAbbrs[type]].splice(index, 1);
 					break;
 				case 'perms':
 					this.gSettings[com ? 'perms' : 'gperms'][cg].data.splice(index, 1);
