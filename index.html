@@ -401,25 +401,25 @@
     <div class="text-setting">
         <span class="key">Welcome DM:</span>
         <textarea v-show="!previewEnabled" placeholder="Example: Welcome to {server}, please read the rules and enjoy!" v-model="gSettings.memberLog['join-dm']">{{ gSettings.memberLog['join-dm'] }}</textarea>
-        <div class="preview-wrapper" v-show="previewEnabled" v-html="parseMD(gSettings.memberLog['join-dm'] || '')"></div>
+        <div class="preview-wrapper" v-show="previewEnabled" v-html="parseMD(gSettings.memberLog['join-dm'] || '', 'welcome')"></div>
         <span class="info">Message sent to a user's DM when they join the server.</span>
     </div>
     <div class="text-setting">
         <span class="key">Welcome message:</span>
         <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.join" placeholder="Example: Welcome to {server}, {member}!">{{ gSettings.memberLog.join }}</textarea>
-        <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.join || '')"></div>
+        <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.join || '', 'welcome')"></div>
         <span class="info">Message sent when someone joins the server.</span>
     </div>
     <div class="text-setting">
         <span class="key">Leave message:</span>
         <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.leave" placeholder="Example: Goodbye {user}, we won't miss you!">{{ gSettings.memberLog.leave }}</textarea>
-        <div class="preview-wrapper" v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.leave || '')"></div>
+        <div class="preview-wrapper" v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.leave || '', 'welcome')"></div>
         <span class="info">Message sent when someone leaves the server.</span>
     </div>
     <div class="text-setting">
         <span class="key">Ban message:</span>
         <textarea v-show="!previewEnabled" v-model="gSettings.memberLog.ban" placeholder="Example: {user} was unable to follow the rules and has been banned!">{{ gSettings.memberLog.ban }}</textarea>
-        <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.ban || '')"></div>
+        <div v-show="previewEnabled" v-html="parseMD(gSettings.memberLog.ban || '', 'welcome')"></div>
         <span class="info">Message sent when someone is banned from the server.</span>
     </div>
 </div><div id="selfroles" v-if="selectedGuildID && column === 'selfroles' && !loading">
@@ -891,25 +891,25 @@
     <div class="text-setting">
         <span :class="previewEnabled ? 'key yellow' : 'key'">Mute DM:</span>
         <textarea v-show="!previewEnabled" placeholder="You have been muted in {server}." v-model="gSettings.config.muteDM">{{ gSettings.config.muteDM }}</textarea>
-        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.muteDM" v-html="parseMD('*You have been muted in {server}.*\n'+gSettings.config.muteDM)"></div>
+        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.muteDM" v-html="parseMD('*You have been muted in {server}.*\n'+gSettings.config.muteDM, 'dm')"></div>
         <span v-show="previewEnabled && !gSettings.config.muteDM" class="gray">None</span>
     </div>
     <div class="text-setting">
         <span :class="previewEnabled ? 'key yellow' : 'key'">Unmute DM:</span>
         <textarea v-show="!previewEnabled" placeholder="You have been unmuted in {server}." v-model="gSettings.config.unmuteDM">{{ gSettings.config.unmuteDM }}</textarea>
-        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.unmuteDM" v-html="parseMD('*You have been unmuted in {server}.*\n'+gSettings.config.unmuteDM)"></div>
+        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.unmuteDM" v-html="parseMD('*You have been unmuted in {server}.*\n'+gSettings.config.unmuteDM, 'dm')"></div>
         <span v-show="previewEnabled && !gSettings.config.unmuteDM" class="gray">None</span>
     </div>
     <div class="text-setting">
         <span :class="previewEnabled ? 'key yellow' : 'key'">Kick DM:</span>
         <textarea v-show="!previewEnabled" placeholder="You have been kicked from {server}." v-model="gSettings.config.kickDM">{{ gSettings.config.kickDM }}</textarea>
-        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.kickDM" v-html="parseMD('*You have been kicked from {server}.*\n'+gSettings.config.kickDM)"></div>
+        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.kickDM" v-html="parseMD('*You have been kicked from {server}.*\n'+gSettings.config.kickDM, 'dm')"></div>
         <span v-show="previewEnabled && !gSettings.config.kickDM" class="gray">None</span>
     </div>
     <div class="text-setting">
         <span :class="previewEnabled ? 'key yellow' : 'key'">Ban DM:</span>
         <textarea v-show="!previewEnabled" placeholder="You have been banned from {server}." v-model="gSettings.config.banDM">{{ gSettings.config.banDM }}</textarea>
-        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.banDM" v-html="parseMD('*You have been banned from {server}.*\n'+gSettings.config.banDM)"></div>
+        <div class="preview-wrapper" v-show="previewEnabled && gSettings.config.banDM" v-html="parseMD('*You have been banned from {server}.*\n'+gSettings.config.banDM, 'dm')"></div>
         <span v-show="previewEnabled && !gSettings.config.banDM" class="gray">None</span>
     </div>
 </div><div id="tags" v-if="selectedGuildID && column === 'tags' && !loading">
@@ -935,7 +935,7 @@
             <td><span class="csfont">{{ (gSettings.prefix || ';') + name }}</span></td>
             <td>
                 <textarea v-show="!previewEnabled" v-model="gSettings.tags[name]">{{ content }}</textarea>
-                <div v-show="previewEnabled" v-html="parseMD(content)"></div>
+                <div v-show="previewEnabled" v-html="parseMD(content, 'tag')"></div>
             </td>
             <td><a @click="del('tag', name)" class="remove"></a></td>
         </tr>

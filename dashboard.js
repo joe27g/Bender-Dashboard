@@ -430,7 +430,7 @@ var page = new Vue({
 				}
 			}
 		},
-		parseMD: function(str) {
+		parseMD: function(str, varType = null) {
 			// parse markdown (i.e. underlining) and syntax highlighting
 			const mdParse = window.SimpleMarkdown.defaultBlockParse;
 			const htmlOutput = window.SimpleMarkdown.reactFor(window.SimpleMarkdown.ruleOutput(window.SimpleMarkdown.defaultRules, 'html'));
@@ -442,6 +442,38 @@ var page = new Vue({
 			str = str.replace(/&lt;(a?):([a-zA-Z_0-9]{2,32}):(\d{17,20})&gt;/g, (match, p1, p2, p3) => {
 				return `<img title=":${p2}:" alt=":${p2}:" src="https://cdn.discordapp.com/emojis/${p3}.${p1 ? 'gif' : 'png'}?v=1" style="height:24px!important;vertical-align:middle;">`
 			});
+			// parse user variables
+			if (varType != null) {
+				const cg = this.getGuild(this.selectedGuildID);
+				const u = this.user;
+				if (varType == "welcome") {
+					str = str.replace(/{id}/g, `<span class='code'>${u.id}</span>`)
+								.replace(/{user}/g, `<span class='code'>${u.username}#${u.discriminator}</span>`)
+								.replace(/{member}/g, `<@${u.id}>`)
+								.replace(/{server}/g, `<span class='code'>${cg.name}</span>`)
+								.replace(/{count}/g, `<span class='code'>8537</span>`)
+								.replace(/{today}/g, `<span class='code'>12</span>`)
+								.replace(/{thisweek}/g, `<span class='code'>192</span>`)
+								.replace(/{new}/g, `<span class='code'>Created at Apr 20th 2019, 4:20pm UTC</span>`);
+				}
+				if (varType == "dm") {
+					str = str.replace(/{moderator}/g, `<span class='code'>Bender#2282</span>`)
+								.replace(/{reason}/g, `<span class='code'>Not cool enough</span>`)
+								.replace(/{user}/g, `<span class='code'>Mark.#9999</span>`)
+								.replace(/{server}/g, `<span class='code'>${cg.name}</span>`)
+								.replace(/{duration}/g, `<span class='code'>Indy#1010</span>`);
+				}
+				if (varType == "tag") {
+					str = str.replace(/{mention}/g, `<span class='code'>@Bender</span>`)
+								.replace(/{mention.tag}/g, `<span class='code'>Bender#2282</span>`)
+								.replace(/{mention.id}/g, `<span class='code'>300800171988484096</span>`)
+								.replace(/{args}/g, `<span class='code'>argument</span>`)
+								.replace(/{author}/g, `<span class='code'>@${u.username}</span>`)
+								.replace(/{author.tag}/g, `<span class='code'>${u.username}#${u.discriminator}</span>`)
+								.replace(/{author.id}/g, `<span class='code'>${u.id}</span>`)
+								.replace(/{p}/g, `<span class='code'>${this.gSettings.prefix}</span>`);
+				}
+			}
 			// parse channel mentions
 			const gc = this.gChannels, g = this.selectedGuildID;
 			str = str.replace(/&lt;#(\d{17,20})&gt;/g, (match, p1) => {
