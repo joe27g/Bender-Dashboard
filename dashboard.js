@@ -497,14 +497,22 @@ var page = new Vue({
 								.replace(/{duration}/g, `<span class="lightorange">69 minutes</span>`);
 				}
 				if (varType == "tag") {
-					str = str.replace(/{mention}/g, `<span class="mention">@Bender</span>`)
-								.replace(/{mention.tag}/g, `<span class="lightorange">Bender#2282</span>`)
-								.replace(/{mention.id}/g, `<span class="lightorange">300800171988484096</span>`)
-								.replace(/{args}/g, `<span class="lightorange">argument</span>`)
-								.replace(/{author}/g, `<span class="mention">@${u.username}</span>`)
-								.replace(/{author.tag}/g, `<span class="lightorange">${u.username}#${u.discriminator}</span>`)
-								.replace(/{author.id}/g, `<span class="lightorange">${u.id}</span>`)
-								.replace(/{p}/g, `<span class="lightorange">${this.gSettings.prefix}</span>`);
+					str = str.replace(/[^\S]{mention}[\S$]/g, '@Bender')
+							.replace(/{mention}/g, `<span class="mention">@Bender</span>`)
+							.replace(/[^\S]{mention\.tag}[\S$]/g, 'Bender#2282')
+							.replace(/{mention\.tag}/g, `<span class="lightorange">Bender#2282</span>`)
+							.replace(/[^\S]{mention\.id}[\S$]/g, '300800171988484096')
+							.replace(/{mention.id}/g, `<span class="lightorange">300800171988484096</span>`)
+							.replace(/[^\S]{args}[\S$]/g, 'command arguments')
+							.replace(/{args}/g, `<span class="lightorange">command arguments</span>`)
+							.replace(/[^\S]{author}[\S$]/g, '@'+u.username)
+							.replace(/{author}/g, `<span class="mention">@${u.username}</span>`)
+							.replace(/[^\S]{author\.tag}[\S$]/g, `${u.username}#${u.discriminator}`)
+							.replace(/{author.tag}/g, `<span class="lightorange">${u.username}#${u.discriminator}</span>`)
+							.replace(/[^\S]{author\.id}[\S$]/g, u.id)
+							.replace(/{author.id}/g, `<span class="lightorange">${u.id}</span>`)
+							.replace(/[^\S]{p}[\S$]/g, this.gSettings.prefix || ';')
+							.replace(/{p}/g, `<span class="lightorange">${this.gSettings.prefix || ';'}</span>`);
 				}
 			}
 			// parse channel mentions
