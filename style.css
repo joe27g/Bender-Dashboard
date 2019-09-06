@@ -118,6 +118,12 @@ img.pfp {
 span.key {
     margin-right: 10px;
 }
+div.key-header {
+    background: #4c5050;
+    margin-bottom: 7px;
+    border-radius: 6px;
+    padding: 3px;
+}
 
 .channel-icon, .role-icon {
     color: rgba(255, 126, 47, 0.9);
