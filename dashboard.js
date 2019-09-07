@@ -683,7 +683,7 @@ async function loadGuildSettings(gID) {
 		showNotif('pending', 'Fetching guild settings...');
 		let err;
 		let gData = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token')}).catch(e => err = e);
-		if (err.status === 418) {
+		if (err && err.status === 418) {
 			console.error(err);
 			page.loading = false;
 			page.column = null;
