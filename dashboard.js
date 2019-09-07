@@ -631,11 +631,16 @@ async function loadUserInfo() {
 		if (userinfo)
 			userinfo = JSON.parse(userinfo);
 		//console.log(userinfo);
-		page.loading = false;
 		if (userinfo && userinfo.guilds && userinfo.user) {
 			showNotif('success', 'Loaded user info + guilds!', 4000);
 			page.guilds = userinfo.guilds;
 			page.user = userinfo.user;
+
+			const gParam = new URLSearchParams(window.location.search).get('guild_id');
+			if (page.guilds.filter(g => (g.id === gParam)).length === 1) {
+				page.selectedGuildID = gParam;
+			}
+			page.loading = false;
 		} else {
 			showNotif('error', 'Failed to load user info + guilds.', 6000);
 		}
@@ -664,6 +669,7 @@ async function loadUserInfo() {
 
 async function loadGuildSettings(gID) {
 	if (!gID) return;
+	history.pushState(null, null, '/?guild_id='+ page.selectedGuildID);
 	/*if (_blockNext) {
 		_blockNext = false;
 		return;
