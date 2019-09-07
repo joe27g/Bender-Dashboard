@@ -25,7 +25,7 @@
     <script defer src="./constants.js"></script>
     <script defer src="./commandList.js"></script>
     <script defer src="./dropdowns.js"></script>
-    <script defer src="./dashboard.js?v=72"></script>
+    <script defer src="./dashboard.js?v=73"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126650650-2"></script>
     <script>
@@ -90,7 +90,7 @@
         <a id="sidenav-toggle" @click="sidenavOpen = !sidenavOpen">
             <img src="./menu.svg">
         </a>
-        <div id="guild-picker">
+        <div id="guild-picker" v-if="user">
             <div id="guilds" class="dd">
                 <div id="guilds-button" class="dd-trigger">
                     <div id="guilds-chooser" class="button" @click="openDropdown = openDropdown === 'guild' ? null : 'guild'">

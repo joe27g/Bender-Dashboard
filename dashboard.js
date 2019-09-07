@@ -658,7 +658,7 @@ async function loadUserInfo() {
 			return loadUserInfo();
 		}
 	} else {
-		showNotif('pending', 'Log in already u heckin nerd', 4000);
+		window.location.assign("https://api.benderbot.co/login_redirect");
 	}
 }
 
@@ -683,7 +683,7 @@ async function loadGuildSettings(gID) {
 		showNotif('pending', 'Fetching guild settings...');
 		let err;
 		let gData = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token')}).catch(e => err = e);
-		if (err && err.responseText === "Bender is not in this guild.") {
+		if (err.status === 418) {
 			console.error(err);
 			page.loading = false;
 			page.column = null;
