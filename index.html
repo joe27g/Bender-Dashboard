@@ -131,7 +131,7 @@
 <section id="settings-wrapper"><div id="content-placeholder" v-show="!loading && !botNotPresent && ((!selectedGuildID && column !== 'pro') || !column)">
     <span>Nothing to see here...</span> <span class="gray">Choose a server to start changing settings.</span>
 </div><div id="bot-not-present" v-show="botNotPresent">
-    <span>Bender isn't in this server!</span> <span class="gray">To invite it, use this link:</span> <a <a :href="'https://benderbot.co/invite?guild_id=' + selectedGuildID" target="_blank">https://benderbot.co/invite</a>
+    <span>Bender isn't in this server!</span> <span class="gray">To invite it, use this link:</span> <a :href="'https://benderbot.co/invite?guild_id=' + selectedGuildID" target="_blank">https://benderbot.co/invite</a>
 </div><div id="loading" v-show="loading">
     <img src="https://cdn.discordapp.com/emojis/461731014646169601.gif?v=1"><br><span>Loading...</span>
 </div><div id="pro" v-show="column === 'pro' && !loading">
