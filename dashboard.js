@@ -481,39 +481,32 @@ var page = new Vue({
 				const u = this.user;
 				if (varType == "welcome") {
 					str = str.replace(/{id}/g, `<span class="lightorange">${u.id}</span>`)
-								.replace(/{user}/g, `<span class="lightorange">${u.username}#${u.discriminator}</span>`)
-								.replace(/{member}/g, `<span class="mention">@${u.username}</span>`)
-								.replace(/{server}/g, `<span class="lightorange">${cg.name}</span>`)
-								.replace(/{count}/g, `<span class="lightorange">8537</span>`)
-								.replace(/{today}/g, `<span class="lightorange">12</span>`)
-								.replace(/{thisweek}/g, `<span class="lightorange">192</span>`)
-								.replace(/{new}/g, `<span class="lightorange">Created at Apr 20th 2019, 4:20pm UTC</span>`);
+							.replace(/{user}/g, `<span class="lightorange">${u.username}#${u.discriminator}</span>`)
+							.replace(/{member}/g, `<span class="mention">@${u.username}</span>`)
+							.replace(/{server}/g, `<span class="lightorange">${cg.name}</span>`)
+							.replace(/{count}/g, `<span class="lightorange">8537</span>`)
+							.replace(/{today}/g, `<span class="lightorange">12</span>`)
+							.replace(/{thisweek}/g, `<span class="lightorange">192</span>`)
+							.replace(/{new}/g, `<span class="lightorange">Created at Apr 20th 2019, 4:20pm UTC</span>`);
 				}
 				if (varType == "dm") {
 					str = str.replace(/{moderator}/g, `<span class="lightorange">Indy#1010</span>`)
-								.replace(/{reason}/g, `<span class="lightorange">Not cool enough</span>`)
-								.replace(/{user}/g, `<span class="lightorange">Mark.#9999</span>`)
-								.replace(/{server}/g, `<span class="lightorange">${cg.name}</span>`)
-								.replace(/{duration}/g, `<span class="lightorange">69 minutes</span>`);
+							.replace(/{reason}/g, `<span class="lightorange">Not cool enough</span>`)
+							.replace(/{user}/g, `<span class="lightorange">Mark.#9999</span>`)
+							.replace(/{server}/g, `<span class="lightorange">${cg.name}</span>`)
+							.replace(/{duration}/g, `<span class="lightorange">69 minutes</span>`);
 				}
 				if (varType == "tag") {
-					str = str.replace(/[^\S]{mention}[\S$]/g, '@Bender')
-							.replace(/{mention}/g, `<span class="mention">@Bender</span>`)
-							.replace(/[^\S]{mention\.tag}[\S$]/g, 'Bender#2282')
+					str = str.replace(/{mention}/g, `<span class="mention">@Bender</span>`)
 							.replace(/{mention\.tag}/g, `<span class="lightorange">Bender#2282</span>`)
-							.replace(/[^\S]{mention\.id}[\S$]/g, '300800171988484096')
-							.replace(/{mention.id}/g, `<span class="lightorange">300800171988484096</span>`)
-							.replace(/[^\S]{args}[\S$]/g, 'command arguments')
+							.replace(/{mention\.id}/g, `<span class="lightorange">300800171988484096</span>`)
 							.replace(/{args}/g, `<span class="lightorange">command arguments</span>`)
-							.replace(/[^\S]{author}[\S$]/g, '@'+u.username)
 							.replace(/{author}/g, `<span class="mention">@${u.username}</span>`)
-							.replace(/[^\S]{author\.tag}[\S$]/g, `${u.username}#${u.discriminator}`)
-							.replace(/{author.tag}/g, `<span class="lightorange">${u.username}#${u.discriminator}</span>`)
-							.replace(/[^\S]{author\.id}[\S$]/g, u.id)
-							.replace(/{author.id}/g, `<span class="lightorange">${u.id}</span>`)
-							.replace(/[^\S]{p}[\S$]/g, this.gSettings.prefix || ';')
+							.replace(/{author\.tag}/g, `<span class="lightorange">${u.username}#${u.discriminator}</span>`)
+							.replace(/{author\.id}/g, `<span class="lightorange">${u.id}</span>`)
 							.replace(/{p}/g, `<span class="lightorange">${this.gSettings.prefix || ';'}</span>`);
 				}
+				str = str.replace(/(href="[^"]*)<span[^>]*>([^"]*")/g, '$1$2').replace(/(href="[^"]*)<\/span>([^"]*")/g, '$1$2');
 			}
 			// parse channel mentions
 			const gc = this.gChannels, g = this.selectedGuildID;
