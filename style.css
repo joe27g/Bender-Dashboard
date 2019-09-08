@@ -817,11 +817,11 @@ code.hljs {
 .regex b, .regex i, .regex u {font-weight: normal; font-style: normal; text-decoration: none;}
 
 /* animation on the pro tab cause i was bored */
-#sidenav a[href="#pro"] {
+#sidenav a[data-nav="pro"] {
     position: relative;
     z-index: 5;
 }
-#sidenav a[href="#pro"]:before {
+#sidenav a[data-nav="pro"]:before {
   content: '';
   position: absolute;
   top: 0;
@@ -836,13 +836,13 @@ code.hljs {
   opacity: 0.3;
   transition: opacity 150ms;
 }
-#sidenav a[href="#pro"]:hover:before {
+#sidenav a[data-nav="pro"]:hover:before {
 	opacity: 0.7;
 }
-#sidenav a[href="#pro"].is-active:before {
+#sidenav a[data-nav="pro"].is-active:before {
 	opacity: 0.9;
 }
-#sidenav a[href="#pro"].is-active:hover:before {
+#sidenav a[data-nav="pro"].is-active:hover:before {
 	opacity: 1;
 }
 @keyframes animatedgradient {
