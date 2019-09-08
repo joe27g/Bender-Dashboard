@@ -110,6 +110,7 @@ var page = new Vue({
 		tzRegions: window.tzRegions,
 		tzs: window.tzs,
 		navSections: window.navSections,
+		validCols: window.validCols,
 		ignorePermsTypes: window.permTypes,
 		discordPermissionNames: window.discordPermissionNames,
 		commandList: window.commandList || {},
@@ -147,6 +148,7 @@ var page = new Vue({
 			window.autoExpandAll();
 			this.searchValue = null;
 			this.previewEnabled = false;
+			history.pushState(null, null, '/?guild_id=' + this.selectedGuildID + '&c=' + this.column);
 		},
 		openDropdown: function() {
 			setTimeout(window.calcDropdowns);
@@ -618,9 +620,6 @@ var page = new Vue({
 	}
 });
 
-if (window.location.hash) {
-	page.column = window.location.hash.substr(1);
-}
 //let _blockNext = false;
 
 async function loadUserInfo() {
@@ -636,11 +635,15 @@ async function loadUserInfo() {
 			page.guilds = userinfo.guilds;
 			page.user = userinfo.user;
 
+			page.loading = false;
 			const gParam = new URLSearchParams(window.location.search).get('guild_id');
 			if (page.guilds.filter(g => (g.id === gParam)).length === 1) {
 				page.selectedGuildID = gParam;
 			}
-			page.loading = false;
+			const cParam = new URLSearchParams(window.location.search).get('c');
+			if (page.validCols.filter(c => (c.id === cParam)).length === 1) {
+				page.column = cParam;
+			}
 		} else {
 			showNotif('error', 'Failed to load user info + guilds.', 6000);
 		}
@@ -669,7 +672,7 @@ async function loadUserInfo() {
 
 async function loadGuildSettings(gID) {
 	if (!gID) return;
-	history.pushState(null, null, '/?guild_id='+ page.selectedGuildID);
+	history.pushState(null, null, '/?guild_id=' + page.selectedGuildID + '&c=' + page.column);
 	/*if (_blockNext) {
 		_blockNext = false;
 		return;

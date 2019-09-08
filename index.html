@@ -22,10 +22,10 @@
     <script src="https://cdn.jsdelivr.net/npm/highlightjs@9.10.0/highlight.pack.min.js"></script>
     <script src="https://www.paypalobjects.com/js/external/connect/api.js"></script>
     <script defer src="./regex-colorizer.js"></script>
-    <script defer src="./constants.js"></script>
+    <script defer src="./constants.js?v=11"></script>
     <script defer src="./commandList.js"></script>
     <script defer src="./dropdowns.js"></script>
-    <script defer src="./dashboard.js?v=74"></script>
+    <script defer src="./dashboard.js?v=75"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126650650-2"></script>
     <script>
@@ -49,35 +49,35 @@
         <p class="menu-label">Overview</p>
         <ul class="menu-list">
             <li v-for="item in navSections[0]">
-                <a :href="'#' + item.id" @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
+                <a @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
             </li>
         </ul>
         <p class="menu-label">Moderation</p>
         <ul class="menu-list">
             <li v-for="item in navSections[1]">
-                <a :href="'#' + item.id" @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
+                <a @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
             </li>
             <li><ul class="menu-list">
                 <li v-for="item in navSections[2]">
-                    <a :href="'#' + item.id" @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
+                    <a @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
                 </li>
             </ul></li>
             <li v-for="item in navSections[3]">
-                <a :href="'#' + item.id" @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
+                <a @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
             </li>
         </ul>
         <p class="menu-label">Configuration</p>
         <ul class="menu-list">
             <li v-for="item in navSections[4]">
-                <a :href="'#' + item.id" @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
+                <a @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
             </li>
             <li><ul>
                 <li v-for="item in navSections[5]">
-                    <a :href="'#' + item.id" @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
+                    <a @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
                 </li>
             </ul></li>
             <li v-for="item in navSections[6]">
-                <a :href="'#' + item.id" @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
+                <a @click="column = item.id" :data-nav="item.id" :class="item.id === column ? 'is-active' : ''">{{ item.name }} <span v-if="item.ro" class="ro">[Read-only]</span> <span v-if="item.cs" class="cs">[Coming soon™]</span></a>
             </li>
         </ul>
     </div>

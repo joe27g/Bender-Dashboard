@@ -88,6 +88,8 @@ window.navSections = [
 		id: 'starboard'
 	}]
 ];
+window.validCols = ['pro', 'general', 'agreement', 'welcome', 'aliases', 'tags', 'giveaways', 'automod', 'filter', 'namefilter', 'logging', 'moderation', 'modlog', 'mutes', 'names', 'roles', 'perms', 'cperms', 'selfroles', 'cmdstatus', 'blacklist', 'music', 'starboard'];
+
 window.permTypes = {
 	role_hier: 'Specific role and higher',
 	role_list: 'Specific roles only',
