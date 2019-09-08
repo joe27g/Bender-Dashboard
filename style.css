@@ -121,7 +121,7 @@ span.key {
 div.key-header {
     background: #4c5050;
     margin-bottom: 7px;
-    border-radius: 6px;
+    border-radius: 7px;
     padding: 3px;
 }
 
@@ -279,8 +279,8 @@ div#notif {
     position: fixed;
     bottom: 20px;
     padding: 5px 20px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
     box-shadow: 2px 2px 6px #000;
     text-align:  center;
     color: #fff !important;
@@ -462,7 +462,8 @@ span.code, code {
 .bordered {
     border: 3px solid rgba(255, 255, 255, 0.1);
     padding-top: 5px;
-    border-radius: 10px;
+    border-radius: 7px;
+    margin-top: 5px;
     background: rgba(0, 0, 0, 0.1);
 }
 .bordered table {
@@ -638,14 +639,14 @@ a.discord img {
 }
 
 ::-webkit-scrollbar-thumb {
-    border-radius: 10px;
+    border-radius: 7px;
     background-color: rgba(255, 0, 0, .5);
     background-image: -webkit-linear-gradient(90deg, transparent, rgba(255, 178, 0, 0.5) 50%, transparent, transparent);
 }
 
 #guild-picker *::-webkit-scrollbar-track {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
 }
 
 .dd {
@@ -799,7 +800,7 @@ code.hljs {
     display: inline-block;
     border: 3px solid rgba(255, 255, 255, 0.1);
     padding: 5px 15px;
-    border-radius: 6px;
+    border-radius: 7px;
 }
 
 /* regex highlighting */
