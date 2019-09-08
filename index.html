@@ -25,7 +25,7 @@
     <script defer src="./constants.js?v=11"></script>
     <script defer src="./commandList.js"></script>
     <script defer src="./dropdowns.js"></script>
-    <script defer src="./dashboard.js?v=75"></script>
+    <script defer src="./dashboard.js?v=76"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126650650-2"></script>
     <script>
@@ -3825,7 +3825,8 @@
                 <td v-html="resolveUser(key)"></td>
                 <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.startTime).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.startTime).format('MMM Do YYYY, h:mma z') }}</td>
                 <td v-html="resolveUser(data.issuer)"></td>
-                <td>{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
+                <td v-if="data.timestamp">{{ gSettings.tzRegion && gSettings.tz ? moment(data.timestamp).tz(`${gSettings.tzRegion}/${gSettings.tz}`).format('MMM Do YYYY, h:mma z') : moment(data.timestamp).format('MMM Do YYYY, h:mma z') }}</td>
+                <td v-else><i>Never</i></td>
             </tr>
         </tbody></table>
     </div>

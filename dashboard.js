@@ -620,6 +620,10 @@ var page = new Vue({
 	}
 });
 
+const cParam = new URLSearchParams(window.location.search).get('c');
+if (page.validCols.filter(c => (c.id === cParam)).length === 1) {
+	page.column = cParam;
+}
 //let _blockNext = false;
 
 async function loadUserInfo() {
@@ -639,10 +643,6 @@ async function loadUserInfo() {
 			const gParam = new URLSearchParams(window.location.search).get('guild_id');
 			if (page.guilds.filter(g => (g.id === gParam)).length === 1) {
 				page.selectedGuildID = gParam;
-			}
-			const cParam = new URLSearchParams(window.location.search).get('c');
-			if (page.validCols.filter(c => (c.id === cParam)).length === 1) {
-				page.column = cParam;
 			}
 		} else {
 			showNotif('error', 'Failed to load user info + guilds.', 6000);
