@@ -708,7 +708,7 @@ async function loadGuildSettings(gID) {
 			page.gMembers = {};
 			page.memberRank = 0;
 
-			//showNotif('pending', 'Bender is not in this server.', 3000);
+			showNotif('error', 'Bender is not in this guild!', 3000);
 			return;
 		} else if (err) {
 			console.error(err);
