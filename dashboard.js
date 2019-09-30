@@ -692,9 +692,12 @@ async function loadGuildSettings(gID) {
 		showNotif('pending', 'Fetching guild settings...');
 		let err;
 		let gData = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token')}).catch(e => err = e);
-		page.loading = false;
-		if (err && err.status === 418) {
+		if (err && err.status >= 400 && err.status <= 418) {
 			console.error(err);
+			page.loading = false;
+			
+			if(err.status !== 418) page.selectedGuildID = null;
+			
 			page.column = null;
 			page.botNotPresent = true;
 
@@ -708,22 +711,18 @@ async function loadGuildSettings(gID) {
 			page.gMembers = {};
 			page.memberRank = 0;
 
-			showNotif('error', err.responseText, 3000);
-			return;
-		} else if (err) {
-			if(err.status >= 400 && err.status <= 418) {
-				page.selectedGuildID = null;
-			}
-
 			showNotif('error', err.responseText, 6000);
 			return;
+		} else if (err) {
+			console.error(err);
 		} else {
 			try {
 				gData = JSON.parse(gData);
 				// eslint-disable-next-line
 			} catch(err) {}
 		}
-		
+
+		page.loading = false;
 		if (gData && gData.settings) {
 			showNotif('success', 'Loaded guild settings!', 4000);
 			gData.settings.guildID = gID;
