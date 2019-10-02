@@ -649,7 +649,13 @@ async function loadUserInfo() {
 		}
 	} else if (getCookie('refresh_token')) {
 		page.loading = true;
-		let data = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/refresh', auth: getCookie('refresh_token')}).catch(console.error);
+		let data = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/refresh', auth: getCookie('refresh_token')}).catch(err => {
+			console.error(err);
+			if (err && err.status === 401) {
+				window.location.assign("https://api.benderbot.co/login_redirect");
+				return;
+			}
+		});
 		page.loading = false;
 		if (typeof data === 'string') {
 			try {
