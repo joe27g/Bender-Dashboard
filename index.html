@@ -1284,18 +1284,18 @@
             <div class="dd">
                 <div class="dd-trigger">
                     <button class="button" @click="openDropdown = openDropdown === 'fic_chan' ? null : 'fic_chan'">
-                        <span v-if="!temp.fic_chan" class="channel-icon">#</span>
-                        <span v-if="!temp.fic_chan">Choose a channel...</span>
-                        <div v-if="temp.fic_chan">
+                        <span v-if="!temp.fic" class="channel-icon">#</span>
+                        <span v-if="!temp.fic">Choose a channel...</span>
+                        <div v-if="temp.fic">
                             <span class="channel-icon">#</span>
-                            <span>{{ getChannel(temp.fic_chan).name }}</span>
+                            <span>{{ getChannel(temp.fic).name }}</span>
                         </div>
                     </button>
                 </div>
                 <div v-show="openDropdown === 'fic_chan'" class="dd-content">
                     <div v-for="chan in gChannels">
                         <label :for="'FIC-' + chan.id" v-if="chan.type === 0">
-                            <input type="radio" :id="'FIC-' + chan.id" :value="chan.id" v-model="temp.fic_chan" class="hidden">
+                            <input type="radio" :id="'FIC-' + chan.id" :value="chan.id" v-model="temp.fic" class="hidden">
                             <span class="channel-icon">#</span>
                             <span>{{ chan.name }}</span>
                         </label>
@@ -1306,7 +1306,7 @@
                     </div>
                 </div>
             </div>
-            <button class="button add" @click="add('fic_chan')" :disabled="!temp.fic_chan || gSettings.ignore.filterChans.indexOf(temp.fic_chan) !== -1">
+            <button class="button add" @click="add('fic')" :disabled="!temp.fic || gSettings.ignore.filterChans.indexOf(temp.fic) !== -1">
                 <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
             </button>
         </div>
@@ -1731,18 +1731,18 @@
             <div class="dd">
                 <div class="dd-trigger">
                     <button class="button" @click="openDropdown = openDropdown === 'amic_chan' ? null : 'amic_chan'">
-                        <span v-if="!temp.amic_chan" class="channel-icon">#</span>
-                        <span v-if="!temp.amic_chan">Choose a channel...</span>
-                        <div v-if="temp.amic_chan">
+                        <span v-if="!temp.amic" class="channel-icon">#</span>
+                        <span v-if="!temp.amic">Choose a channel...</span>
+                        <div v-if="temp.amic">
                             <span class="channel-icon">#</span>
-                            <span>{{ getChannel(temp.amic_chan).name }}</span>
+                            <span>{{ getChannel(temp.amic).name }}</span>
                         </div>
                     </button>
                 </div>
                 <div v-show="openDropdown === 'amic_chan'" class="dd-content">
                     <div v-for="chan in gChannels">
                         <label :for="'AMIC-' + chan.id" v-if="chan.type === 0">
-                            <input type="radio" :id="'AMIC-' + chan.id" :value="chan.id" v-model="temp.amic_chan" class="hidden">
+                            <input type="radio" :id="'AMIC-' + chan.id" :value="chan.id" v-model="temp.amic" class="hidden">
                             <span class="channel-icon">#</span>
                             <span>{{ chan.name }}</span>
                         </label>
@@ -1753,7 +1753,7 @@
                     </div>
                 </div>
             </div>
-            <button class="button add" @click="add('amic_chan')" :disabled="!temp.amic_chan || gSettings.automod.ignoreChans.indexOf(temp.amic_chan) !== -1">
+            <button class="button add" @click="add('amic')" :disabled="!temp.amic || gSettings.automod.ignoreChans.indexOf(temp.amic) !== -1">
                 <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
             </button>
         </div>
@@ -1895,18 +1895,18 @@
             <div class="dd">
                 <div class="dd-trigger">
                     <button class="button" @click="openDropdown = openDropdown === 'iic_chan' ? null : 'iic_chan'">
-                        <span v-if="!temp.iic_chan" class="channel-icon">#</span>
-                        <span v-if="!temp.iic_chan">Choose a channel...</span>
-                        <div v-if="temp.iic_chan">
+                        <span v-if="!temp.iic" class="channel-icon">#</span>
+                        <span v-if="!temp.iic">Choose a channel...</span>
+                        <div v-if="temp.iic">
                             <span class="channel-icon">#</span>
-                            <span>{{ getChannel(temp.iic_chan).name }}</span>
+                            <span>{{ getChannel(temp.iic).name }}</span>
                         </div>
                     </button>
                 </div>
                 <div v-show="openDropdown === 'iic_chan'" class="dd-content">
                     <div v-for="chan in gChannels">
                         <label :for="'IIC-' + chan.id" v-if="chan.type === 0">
-                            <input type="radio" :id="'IIC-' + chan.id" :value="chan.id" v-model="temp.iic_chan" class="hidden">
+                            <input type="radio" :id="'IIC-' + chan.id" :value="chan.id" v-model="temp.i" class="hidden">
                             <span class="channel-icon">#</span>
                             <span>{{ chan.name }}</span>
                         </label>
@@ -1917,7 +1917,7 @@
                     </div>
                 </div>
             </div>
-            <button class="button add" @click="add('iic_chan')" :disabled="!temp.iic_chan || gSettings.ignore.invitesChans.indexOf(temp.iic_chan) !== -1">
+            <button class="button add" @click="add('i')" :disabled="!temp.i || gSettings.ignore.invitesChans.indexOf(temp.i) !== -1">
                 <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
             </button>
         </div>
@@ -2059,18 +2059,18 @@
             <div class="dd">
                 <div class="dd-trigger">
                     <button class="button" @click="openDropdown = openDropdown === 'sbic_chan' ? null : 'sbic_chan'">
-                        <span v-if="!temp.sbic_chan" class="channel-icon">#</span>
-                        <span v-if="!temp.sbic_chan">Choose a channel...</span>
-                        <div v-if="temp.sbic_chan">
+                        <span v-if="!temp.sb" class="channel-icon">#</span>
+                        <span v-if="!temp.sb">Choose a channel...</span>
+                        <div v-if="temp.sb">
                             <span class="channel-icon">#</span>
-                            <span>{{ getChannel(temp.sbic_chan).name }}</span>
+                            <span>{{ getChannel(temp.sb).name }}</span>
                         </div>
                     </button>
                 </div>
                 <div v-show="openDropdown === 'sbic_chan'" class="dd-content">
                     <div v-for="chan in gChannels">
                         <label :for="'SBIC-' + chan.id" v-if="chan.type === 0">
-                            <input type="radio" :id="'SBIC-' + chan.id" :value="chan.id" v-model="temp.sbic_chan" class="hidden">
+                            <input type="radio" :id="'SBIC-' + chan.id" :value="chan.id" v-model="temp.sb" class="hidden">
                             <span class="channel-icon">#</span>
                             <span>{{ chan.name }}</span>
                         </label>
@@ -2081,7 +2081,7 @@
                     </div>
                 </div>
             </div>
-            <button class="button add" @click="add('sbic_chan')" :disabled="!temp.sbic_chan || gSettings.ignore.selfbotsChans.indexOf(temp.sbic_chan) !== -1">
+            <button class="button add" @click="add('sb')" :disabled="!temp.sb || gSettings.ignore.selfbotsChans.indexOf(temp.sb) !== -1">
                 <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
             </button>
         </div>
@@ -2225,18 +2225,18 @@
             <div class="dd">
                 <div class="dd-trigger">
                     <button class="button" @click="openDropdown = openDropdown === 'mic_chan' ? null : 'mic_chan'">
-                        <span v-if="!temp.mic_chan" class="channel-icon">#</span>
-                        <span v-if="!temp.mic_chan">Choose a channel...</span>
-                        <div v-if="temp.mic_chan">
+                        <span v-if="!temp.m" class="channel-icon">#</span>
+                        <span v-if="!temp.m">Choose a channel...</span>
+                        <div v-if="temp.m">
                             <span class="channel-icon">#</span>
-                            <span>{{ getChannel(temp.mic_chan).name }}</span>
+                            <span>{{ getChannel(temp.m).name }}</span>
                         </div>
                     </button>
                 </div>
                 <div v-show="openDropdown === 'mic_chan'" class="dd-content">
                     <div v-for="chan in gChannels">
                         <label :for="'MIC-' + chan.id" v-if="chan.type === 0">
-                            <input type="radio" :id="'MIC-' + chan.id" :value="chan.id" v-model="temp.mic_chan" class="hidden">
+                            <input type="radio" :id="'MIC-' + chan.id" :value="chan.id" v-model="temp.m" class="hidden">
                             <span class="channel-icon">#</span>
                             <span>{{ chan.name }}</span>
                         </label>
@@ -2247,7 +2247,7 @@
                     </div>
                 </div>
             </div>
-            <button class="button add" @click="add('mic_chan')" :disabled="!temp.mic_chan || gSettings.ignore.mentionsChans.indexOf(temp.mic_chan) !== -1">
+            <button class="button add" @click="add('m')" :disabled="!temp.m || gSettings.ignore.mentionsChans.indexOf(temp.m) !== -1">
                 <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
             </button>
         </div>
@@ -2390,18 +2390,18 @@
             <div class="dd">
                 <div class="dd-trigger">
                     <button class="button" @click="openDropdown = openDropdown === 'sic_chan' ? null : 'sic_chan'">
-                        <span v-if="!temp.sic_chan" class="channel-icon">#</span>
-                        <span v-if="!temp.sic_chan">Choose a channel...</span>
-                        <div v-if="temp.sic_chan">
+                        <span v-if="!temp.s" class="channel-icon">#</span>
+                        <span v-if="!temp.s">Choose a channel...</span>
+                        <div v-if="temp.s">
                             <span class="channel-icon">#</span>
-                            <span>{{ getChannel(temp.sic_chan).name }}</span>
+                            <span>{{ getChannel(temp.s).name }}</span>
                         </div>
                     </button>
                 </div>
                 <div v-show="openDropdown === 'sic_chan'" class="dd-content">
                     <div v-for="chan in gChannels">
                         <label :for="'SIC-' + chan.id" v-if="chan.type === 0">
-                            <input type="radio" :id="'SIC-' + chan.id" :value="chan.id" v-model="temp.sic_chan" class="hidden">
+                            <input type="radio" :id="'SIC-' + chan.id" :value="chan.id" v-model="temp.s" class="hidden">
                             <span class="channel-icon">#</span>
                             <span>{{ chan.name }}</span>
                         </label>
@@ -2412,7 +2412,7 @@
                     </div>
                 </div>
             </div>
-            <button class="button add" @click="add('sic_chan')" :disabled="!temp.sic_chan || gSettings.ignore.mentionsChans.indexOf(temp.sic_chan) !== -1">
+            <button class="button add" @click="add('s')" :disabled="!temp.s || gSettings.ignore.mentionsChans.indexOf(temp.s) !== -1">
                 <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
             </button>
         </div>
