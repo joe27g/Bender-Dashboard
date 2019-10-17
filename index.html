@@ -994,7 +994,7 @@
         <span class="bold">Mod Log [COMING SOON]</span>
         <hr>
     </div>
-    <div class="setting"><span class="info"><i>To enable/disable the case system or set which commands make cases, see the <a href="#logging">Logging Settings</a> section.</i></span></div>
+    <div class="setting"><span class="info"><i>To enable/disable the case system or set which commands make cases, see the <a @click="column = 'logging'">Logging Settings</a> section.</i></span></div>
     <div class="setting" v-if="getLen(gSettings.modlog) > 0">
         <span class="gray">{{ getLen(gSettings.modlog) }} case{{ getLen(gSettings.modlog) > 1 ? 's' : '' }} on record.</span>
         <span class="key">Search case:</span> <input id="search-input" type="text" placeholder="Case" v-model="searchValue">
@@ -1110,7 +1110,7 @@
         <hr>
     </div>
     <div class="box is-warning" v-if="gSettings.filter.enabled && !gSettings.automod.enabled">
-        <span class="gray">Filter is not currently enabled because <a href="#automod">automod</a> is disabled.</span>
+        <span class="gray">Filter is not currently enabled because <a @click="column = 'automod'">automod</a> is disabled.</span>
     </div>
     <span class="info">The filter is used to prevent members from typing certain words/phrases in chat.<br>It works using standard <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions" target="_blank">JavaScript regex syntax</a>. To test whether your pattern will match certain words/phrases, I recommend <a href="https://regexr.com/" target="_blank">Regexr</a>.</span>
     <br>
@@ -3872,7 +3872,7 @@
         <span class="info">Play related songs after the music queue ends.</span>
     </div>
     <div class="setting" v-show="!guildPro">
-        <span>To change volume or enable autoplay, please purchase <a href="https://benderbot.co/pro" target="_blank">Bender Pro</a> and <a href="#pro" @click="column = 'pro'">enable it</a> for this server.</span>
+        <span>To change volume or enable autoplay, please purchase <a href="https://benderbot.co/pro" target="_blank">Bender Pro</a> and <a @click="column = 'pro'">enable it</a> for this server.</span>
     </div>
 </div><div id="starboard" v-if="selectedGuildID && column === 'starboard' && !loading">
     <div class="header">
