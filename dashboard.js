@@ -730,6 +730,15 @@ async function loadGuildSettings(gID) {
 
 		page.loading = false;
 		if (gData && gData.settings) {
+			const categories = gData.channels.filter(e => e.type == 4)
+			const orderedChannels = [];
+			gData.channels.filter(e => e.parent_id == null && (e.type == 0 || e.type == 2)).sort((a, b) => a.position - b.position).forEach(c => orderedChannels.push(c)); // Push channels with no category
+			
+			categories.forEach(e => {
+				orderedChannels.push(e); // Push category first
+				gData.channels.filter(c => c.parent_id == e.id).sort((a, b) => a.position - b.position).forEach(b => orderedChannels.push(b)); // Push channel with category
+			})
+
 			showNotif('success', 'Loaded guild settings!', 4000);
 			gData.settings.guildID = gID;
 			page.gSettings = gData.settings;
@@ -738,7 +747,7 @@ async function loadGuildSettings(gID) {
 			page.gNames = gData.usernames;
 			//page.unsaved = false;
 			page.gRoles = gData.roles;
-			page.gChannels = gData.channels;
+			page.gChannels = orderedChannels;
 			page.gMembers = gData.members || [];
 			page.memberRank = gData.highestRolePosition;
 		} else {
