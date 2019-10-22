@@ -701,9 +701,9 @@ async function loadGuildSettings(gID) {
 		if (err && err.status >= 400 && err.status <= 418) {
 			console.error(err);
 			page.loading = false;
-			
+
 			if(err.status !== 418) page.selectedGuildID = null;
-			
+
 			page.column = null;
 			page.botNotPresent = true;
 
@@ -733,7 +733,7 @@ async function loadGuildSettings(gID) {
 			const categories = gData.channels.filter(e => e.type == 4)
 			const orderedChannels = [];
 			gData.channels.filter(e => e.parent_id == null && (e.type == 0 || e.type == 2)).sort((a, b) => a.position - b.position).forEach(c => orderedChannels.push(c)); // Push channels with no category
-			
+
 			categories.forEach(e => {
 				orderedChannels.push(e); // Push category first
 				gData.channels.filter(c => c.parent_id == e.id).sort((a, b) => a.position - b.position).forEach(b => orderedChannels.push(b)); // Push channel with category
@@ -795,9 +795,9 @@ async function saveGuildSettings(gID) {
 	}
 
 	page.loading = true;
-    showNotif('pending', 'Saving guild settings...');
+    showNotif('pending', `Saving ${page.column} settings...`);
     let err;
-	const response = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token'), body: page.gSettings}).catch(er => {
+	const response = await makeRequest({method: 'POST', url: `https://api.benderbot.co/guild/${gID}/${page.column}`, auth: getCookie('token'), body: page.gSettings[page.column]}).catch(er => { // TODO: page.gSettings[page.column] does not exist! it's more complicated than that
 		err = er;
 		console.error(er);
 	});
@@ -807,11 +807,11 @@ async function saveGuildSettings(gID) {
 		page.modalText = err.responseText;
 		showNotif('', '');
 	} else if (err) {
-		showNotif('error', `Failed to save guild settings.\n${err.status} ${err.statusText}`, 6000);
+		showNotif('error', `Failed to save ${page.column} settings.\n${err.status} ${err.statusText}`, 6000);
 	} else if (response === null) { // response was a 204
 		showNotif('pending', 'Saved - No changes were needed.', 5000);
 	} else {
-        showNotif('success', 'Saved guild settings!', 4000);
+        showNotif('success', `Saved ${page.column} settings!`, 4000);
 		//page.unsaved = false;
     }
 }
