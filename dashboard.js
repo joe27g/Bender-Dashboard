@@ -1,72 +1,3 @@
-function makeRequest (opts) {
-	return new Promise(function (resolve, reject) {
-		const xhr = new XMLHttpRequest();
-		xhr.open(opts.method, opts.url);
-		xhr.onload = function () {
-			if (this.status >= 200 && this.status < 300) {
-				resolve(xhr.response || null);
-			} else {
-				reject({
-					status: this.status,
-					statusText: this.statusText,
-					responseText: this.responseText
-				});
-			}
-		};
-		xhr.onerror = function () {
-			reject({
-				status: this.status,
-				statusText: this.statusText,
-				responseText: this.responseText
-			});
-		};
-		if (opts.method == 'POST') {
-			xhr.setRequestHeader("Content-Type", "application/json");
-		}
-        if (opts.auth) {
-			xhr.setRequestHeader("Authorization", opts.auth);
-		}
-		if (opts.auth2) {
-			xhr.setRequestHeader("X-Discord-Authorization", opts.auth2);
-		}
-		xhr.send(opts.body ? JSON.stringify(opts.body) : undefined);
-	});
-}
-function showNotif (type, text, time) {
-    const status = document.getElementById('notif');
-    if (!status) return false;
-    status.className = type;
-    status.innerHTML = text;
-
-    if (time) {
-        setTimeout(() => {
-			status.className = '';
-			status.innerHTML = '';
-        }, time);
-    }
-}
-
-// lazily copied from StackOverflow tbh
-function getCookie(name) {
-    const match = document.cookie.match(RegExp('(?:^|;\\s*)' + (name).replace(/([.*+?^${}()|[\]/])/g, '\\$1') + '=([^;]*)'));
-    return match ? match[1] : null;
-}
-// not from StackOverflow :poggers:
-function setCookie(name, value, expiry) {
-	return document.cookie = `${name}=${value}; domain=.benderbot.co; path=/; expires=${new Date(Date.now() + (expiry || 1000*60*60*24*365))}`;
-}
-// also modified from StackOverflow
-/*function merge(obj, obj2) {
-    for (const prop in obj2) {
-        const val = obj2[prop];
-        if (typeof val === "object" && !Array.isArray(val) && val !== null)
-            merge(obj[prop], val);
-        else
-            obj[prop] = val;
-    }
-    return obj;
-}*/
-
 window.paypal.use( ['login'], function (login) {
     login.render ({
 		appid:       "ASalasGVCX8iXiOGrGrm9PqGuTW-4fbaPikTmZN4mWzLvhFwsA2N5rFok2FcwVLbT0GHGZQAIWeWwg-k",
@@ -624,8 +555,14 @@ const cParam = new URLSearchParams(window.location.search).get('c');
 if (page.validCols.filter(c => (c.id === cParam)).length === 1) {
 	page.column = cParam;
 }
-//let _blockNext = false;
 
+loadUserInfo();
+let firstPP = true;
+updatePaypalInfo();
+
+/*** Functions ***/
+
+//let _blockNext = false;
 async function loadUserInfo() {
 	if (getCookie('token')) {
 		page.loading = true;
@@ -816,7 +753,6 @@ async function saveGuildSettings(gID) {
     }
 }
 
-let firstPP = true;
 async function updatePaypalInfo() {
     if (getCookie('paypal_token')) {
 		page.loading = true;
@@ -870,8 +806,74 @@ async function updatePaypalInfo() {
     }
 }
 
-loadUserInfo();
-updatePaypalInfo();
+function makeRequest (opts) {
+	return new Promise(function (resolve, reject) {
+		const xhr = new XMLHttpRequest();
+		xhr.open(opts.method, opts.url);
+		xhr.onload = function () {
+			if (this.status >= 200 && this.status < 300) {
+				resolve(xhr.response || null);
+			} else {
+				reject({
+					status: this.status,
+					statusText: this.statusText,
+					responseText: this.responseText
+				});
+			}
+		};
+		xhr.onerror = function () {
+			reject({
+				status: this.status,
+				statusText: this.statusText,
+				responseText: this.responseText
+			});
+		};
+		if (opts.method == 'POST') {
+			xhr.setRequestHeader("Content-Type", "application/json");
+		}
+        if (opts.auth) {
+			xhr.setRequestHeader("Authorization", opts.auth);
+		}
+		if (opts.auth2) {
+			xhr.setRequestHeader("X-Discord-Authorization", opts.auth2);
+		}
+		xhr.send(opts.body ? JSON.stringify(opts.body) : undefined);
+	});
+}
+function showNotif (type, text, time) {
+    const status = document.getElementById('notif');
+    if (!status) return false;
+    status.className = type;
+    status.innerHTML = text;
+
+    if (time) {
+        setTimeout(() => {
+			status.className = '';
+			status.innerHTML = '';
+        }, time);
+    }
+}
+
+// lazily copied from StackOverflow tbh
+function getCookie(name) {
+    const match = document.cookie.match(RegExp('(?:^|;\\s*)' + (name).replace(/([.*+?^${}()|[\]/])/g, '\\$1') + '=([^;]*)'));
+    return match ? match[1] : null;
+}
+// not from StackOverflow :poggers:
+function setCookie(name, value, expiry) {
+	return document.cookie = `${name}=${value}; domain=.benderbot.co; path=/; expires=${new Date(Date.now() + (expiry || 1000*60*60*24*365))}`;
+}
+// also modified from StackOverflow
+/*function merge(obj, obj2) {
+    for (const prop in obj2) {
+        const val = obj2[prop];
+        if (typeof val === "object" && !Array.isArray(val) && val !== null)
+            merge(obj[prop], val);
+        else
+            obj[prop] = val;
+    }
+    return obj;
+}*/
 
 /* more shit from StackOverflow
 function compareObj(obj1, obj2) {
