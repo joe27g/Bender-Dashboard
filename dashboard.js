@@ -10,18 +10,6 @@ window.paypal.use( ['login'], function (login) {
     });
 });
 
-const gpTemplate = {}, pTemplate = {};
-for (const group in window.commandList) {
-	gpTemplate[group] = {};
-	for (const command in window.commandList[group]) {
-		pTemplate[command] = {};
-	}
-}
-
-const defaultGuildSettings = {
-	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "starboard": {}, "tags": {}, "temproles": {}
-};
-
 // eslint-disable-next-line
 var page = new Vue({
 	el: '#app',
@@ -34,7 +22,7 @@ var page = new Vue({
 		modalText: '',
 		guilds: [],
 		user: null,
-		gSettings: defaultGuildSettings,
+		gSettings: window.defaultGuildSettings,
 		guildPro: false,
 		gRoles: [],
 		gChannels: [],
@@ -42,6 +30,7 @@ var page = new Vue({
 		tzs: window.tzs,
 		navSections: window.navSections,
 		validCols: window.validCols,
+		readOnlyCols: window.readOnlyCols,
 		ignorePermsTypes: window.permTypes,
 		discordPermissionNames: window.discordPermissionNames,
 		commandList: window.commandList || {},
@@ -644,7 +633,7 @@ async function loadGuildSettings(gID) {
 			page.column = null;
 			page.botNotPresent = true;
 
-			page.gSettings = defaultGuildSettings;
+			page.gSettings = window.defaultGuildSettings;
 			page.temp.multi_autorole = false;
 			page.guildPro = false;
 			page.gNames = {};
@@ -734,7 +723,7 @@ async function saveGuildSettings(gID) {
 	page.loading = true;
     showNotif('pending', `Saving ${page.column} settings...`);
     let err;
-	const response = await makeRequest({method: 'POST', url: `https://api.benderbot.co/guild/${gID}/${page.column}`, auth: getCookie('token'), body: page.gSettings[page.column]}).catch(er => { // TODO: page.gSettings[page.column] does not exist! it's more complicated than that
+	const response = await makeRequest({method: 'POST', url: `https://api.benderbot.co/guild/${gID}/${page.column}`, auth: getCookie('token'), body: getSettingsBody(page.column)}).catch(er => {
 		err = er;
 		console.error(er);
 	});
@@ -751,6 +740,90 @@ async function saveGuildSettings(gID) {
         showNotif('success', `Saved ${page.column} settings!`, 4000);
 		//page.unsaved = false;
     }
+}
+
+// get an object to send when saving guild settings based on the column
+function getSettingsBody(column) {
+	let obj = {};
+	const g = page.gSettings;
+	switch (column) {
+		case 'general':
+			obj.prefix = g.prefix;
+			obj.autorole = g.autorole;
+			obj.tzRegion = g.tzRegion;
+			obj.tz = g.tz;
+			obj.config = g.config;
+			/*obj.config = {
+				permMsgs: g.config.permMsgs,
+				disabledMsgs: g.config.disabledMsgs,
+				replyDM: g.config.replyDM
+			};*/
+			break;
+		case 'welcome':
+			obj.memberLog = g.memberLog;
+			break;
+		case 'selfroles':
+			obj.joinables = g.joinables;
+			break;
+		case 'moderation':
+			obj.mutes = {role: g.mutes.role};
+			obj.muteTime = g.muteTime;
+			obj.muteTimeUnits = g.muteTimeUnits;
+			obj.config = g.config;
+			/*obj.config = {
+				muteDM: g.config.muteDM,
+				unmuteDM: g.config.unmuteDM,
+				kickDM: g.config.kickDM,
+				banDM: g.config.banDM
+			}*/
+			break;
+		case 'filter':
+			obj.filter = g.filter;
+			obj.ignore = g.ignore;
+			/* obj.ignore = {
+				filter: g.ignore.filter,
+				filterChans: g.ignore.filterChans
+			} */
+			break;
+		case 'namefilter':
+			obj.namefilter = g.namefilter;
+			obj.ignore = g.ignore;
+			/* obj.ignore = {
+				names: g.ignore.names
+			} */
+			break;
+		case 'cmdstatus':
+			obj.commandStatus = g.commandStatus;
+			obj.groupStatus = g.groupStatus;
+			break;
+		case 'automod':
+			obj.automod = g.automod;
+			obj.ignore = g.ignore;
+			/* for (const s of ['invites', 'mentions', 'spam', 'selfbots']) {
+				obj.ignore[s] = g.ignore[s];
+				obj.ignore[s+'Chans'] = g.ignore[s+'Chans'];
+			}
+			obj.ignore.names = g.ignore.names; */
+			break;
+		case 'perms':
+			obj.perms = g.perms;
+			obj.gperms = g.gperms;
+			break;
+		case 'agreement':
+		case 'logging':
+		case 'tags':
+		case 'aliases':
+		case 'cperms':
+		case 'blacklist':
+		case 'music':
+		case 'starboard':
+			obj[column] = g[column];
+			break;
+		default:
+			obj = null;
+			break;
+	}
+	return obj;
 }
 
 async function updatePaypalInfo() {
