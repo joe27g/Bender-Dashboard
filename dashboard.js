@@ -672,7 +672,7 @@ async function loadUserInfo() {
 			return loadUserInfo();
 		}
 	} else {
-		//window.location.assign("https://api.benderbot.co/login_redirect");
+		window.location.assign("https://api.benderbot.co/login_redirect");
 	}
 }
 

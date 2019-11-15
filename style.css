@@ -64,10 +64,11 @@ div.b {
 }
 #guild-picker {
     display: inline-block;
-    text-align: left;
+    padding-top: 11px;
 }
 #integration {
     display: inline-block;
+    margin: 6px 15px;
 }
 #integration img {
     vertical-align: super;
@@ -193,8 +194,12 @@ input:checked + .slider:before {
   transform: translateX(28px);
 }
 
-#header, .header, .level img.guild-icon, .switch, #sidenav-toggle, img.b {
+#header, .header, nav img.guild-icon, .switch, #sidenav-toggle, img.b {
     vertical-align:  middle;
+}
+nav img.guild-icon {
+    display: inline-block;
+    max-height: unset;
 }
 .header > hr {
     margin: 3px 0.5rem;
@@ -1054,10 +1059,12 @@ input[type=range]:focus + .vol-tt {
     color: #fff !important;
 	margin-left: 0;
 }
-#integration a {
+#integration a.button {
     margin: 11px 15px;
 }
-
+.navbar-brand .navbar-item {
+    padding-left: 5px;
+}
 nav.navbar.is-fixed-top {
     background-color: #820000;
     border-radius: 0;
@@ -1065,8 +1072,6 @@ nav.navbar.is-fixed-top {
 .navbar .button.is-primary:hover {
     background-color: #fff;
     color: #000 !important;
-}
-.navbar .button:hover {
     transform: scale(1.075);
 }
 a.button.is-primary {
@@ -1074,12 +1079,56 @@ a.button.is-primary {
     color: #820000 !important;
 }
 .navbar-burger span {
-    height: 2px;
+    height: 2px !important;
 }
 .navbar-burger:not(.is-active) span:nth-child(3) {
-    height: 2.5px;
+    height: 2.5px !important;
     top: calc(50% + 3.5px);
 }
 a.navbar-item:hover, a.navbar-burger:hover {
     background-color: #9e0000 !important;
+}
+div#guilds-dropdown {
+    text-align: left;
+}
+div#integration {
+    display: flex;
+    flex-grow: 0;
+    order: 2;
+}
+nav.navbar.is-fixed-top {
+    display: flex;
+}
+.navbar-menu {
+    order: 1;
+    flex-grow: 1;
+    background-color: transparent !important;
+    padding: 0;
+}
+@media screen and (max-width: 769px) {
+    .navbar-menu {
+        position: absolute;
+        top: 60px;
+        height: 60px;
+        width: 100%;
+        background-color: #820000 !important;
+        border-radius: 0 !important;
+        order: 2;
+    }
+    div#integration {
+        order: 1;
+    }
+    .navbar-brand {
+        flex-grow: 1;
+    }
+    .navbar-brand .navbar-spacer {
+        flex-grow: 1;
+        display: flex;
+    }
+    html.has-navbar-fixed-top {
+        padding-top: 8rem !important;
+    }
+    div#guild-picker {
+        padding-top: 0;
+    }
 }

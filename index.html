@@ -12,7 +12,7 @@
     <meta name="og:image" content="https://benderbot.co/bender.png">
     <meta name="og:site_name" content="Bender Bot">
     <meta name="og:url" content="https://dashboard.benderbot.co">
-    <link rel="stylesheet" media="screen" href="./style.css?v=110">
+    <link rel="stylesheet" media="screen" href="./style.css?v=112">
     <link rel="stylesheet" media="screen" href="./bulmaswatch.min.css">
     <script src="./vue.min.js"></script>
     <script src="./moment.min.js"></script>
@@ -81,11 +81,12 @@
         </a>
         <a class="navbar-item" href="/">
             <img class="round" src="./bender.png" height="32">
-            <span class="title is-5" id="bender-label">&nbsp;Bender Dashboard</span>
+            <span class="title is-5" id="bender-label">&nbsp;Dashboard</span>
         </a>
+        <div class="navbar-spacer"></div>
     </div>
     <div class="navbar-menu">
-        <div id="guild-picker" class="navbar-item" v-show="user">
+        <div id="guild-picker" class="navbar-item is-expanded has-text-centered" v-show="user">
             <div id="guilds" class="dd">
                 <div id="guilds-button" class="dd-trigger">
                     <div id="guilds-chooser" class="button" @click="openDropdown = openDropdown === 'guild' ? null : 'guild'">
@@ -113,62 +114,16 @@
             <img id="refresh" :class="loading ? 'working' : ''" title="Refresh settings" src="./refresh.png" @click="reloadGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID)">
             <img id="save" title="Save settings" src="./floppy_disk.png" @click="saveGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID)">
         </div>
-        <div id="integration" class="navbar-end">
-            <img class="pfp" v-if="user && user.pfp" :src="user.pfp">
-            <span class="user-area" v-if="user">
-                <span class="user-tag"><span>{{ user.username }}</span><span class="gray">#{{ user.discriminator }}</span></span>
-                <a id="logout" href="https://api.benderbot.co/logout">Logout</a>
-            </span>
-            <a v-else class="button is-primary" href="https://api.benderbot.co/login_redirect">Login with Discord</a>
-        </div>
+    </div>
+    <div id="integration" class="navbar-end">
+        <img class="pfp" v-if="user && user.pfp" :src="user.pfp">
+        <span class="user-area" v-if="user">
+            <span class="user-tag"><span>{{ user.username }}</span><span class="gray">#{{ user.discriminator }}</span></span>
+            <a id="logout" href="https://api.benderbot.co/logout">Logout</a>
+        </span>
+        <a v-else class="button is-primary" href="https://api.benderbot.co/login_redirect">Login with Discord</a>
     </div>
 </nav>
-<section id="header-wrapper">
-    <div id="header">
-        <a class="b bold" href="/"><img src="./Bender.png" class="b">Bender Dashboard</a>
-    </div>
-    <div id="navbar" class="level is-mobile">
-        <a id="sidenav-toggle" @click="sidenavOpen = !sidenavOpen">
-            <img src="./menu.svg">
-        </a>
-        <div id="guild-picker" v-if="user">
-            <div id="guilds" class="dd">
-                <div id="guilds-button" class="dd-trigger">
-                    <div id="guilds-chooser" class="button" @click="openDropdown = openDropdown === 'guild' ? null : 'guild'">
-                        <div v-if="selectedGuildID">
-                            <img v-if="getGuild(selectedGuildID).iconSrc" class="guild-icon" :src="getGuild(selectedGuildID).iconSrc">
-                            <span class="guild-name">{{ getGuild(selectedGuildID).name }}</span>
-                        </div>
-                        <div v-else>
-                            <img class="guild-icon" src="https://discordapp.com/assets/1c8a54f25d101bdc607cec7228247a9a.svg">
-                            <span>Choose a server...</span>
-                        </div>
-                    </div>
-                </div>
-                <div id="guilds-dropdown" class="dd-content" v-show="openDropdown === 'guild'">
-                    <label v-for="guild in guilds" v-show="selectedGuildID !== guild.id" :for="'G-' + guild.id" :class="column === 'pro' || guild.permissions & 8 ? '' : 'no-perms disabled'">
-                        <input type="radio" :id="'G-' + guild.id" :value="guild.id" v-model="selectedGuildID" class="hidden">
-                        <img v-if="guild.iconSrc" class="guild-icon" :src="guild.iconSrc">
-                        <span class="guild-name">{{ guild.name }}</span>
-                    </label>
-                    <div v-if="guilds.length === 0">
-                        <span class="gray">No servers with Administrator permission.</span>
-                    </div>
-                </div>
-            </div>
-            <img id="refresh" :class="loading ? 'working' : ''" title="Refresh settings" src="./refresh.png" @click="reloadGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID)">
-            <img id="save" title="Save settings" src="./floppy_disk.png" @click="saveGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID)">
-        </div>
-        <div id="integration">
-            <img class="pfp" v-if="user && user.pfp" :src="user.pfp">
-            <span class="user-area" v-if="user">
-                <span class="user-tag"><span>{{ user.username }}</span><span class="gray">#{{ user.discriminator }}</span></span>
-                <a id="logout" href="https://api.benderbot.co/logout">Logout</a>
-            </span>
-            <a v-else href="https://api.benderbot.co/login_redirect">Login with Discord</a>
-        </div>
-    </div>
-</section>
 <section id="settings-wrapper"><div id="content-placeholder" v-show="!loading && !botNotPresent && ((!selectedGuildID && column !== 'pro') || !column)">
     <span>Nothing to see here...</span> <span class="gray">Choose a server to start changing settings.</span>
 </div><div id="bot-not-present" v-show="botNotPresent">
