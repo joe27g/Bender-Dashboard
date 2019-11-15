@@ -688,7 +688,7 @@ async function loadGuildSettings(gID) {
 	setTimeout(window.highlightAll, 5);
 }
 // eslint-disable-next-line
-async function saveGuildSettings(gID) {
+async function saveGuildSettings(gID, allSettings = false) {
 	if (!gID) return;
 	/*if (!page.unsaved) {
 		showNotif('success', 'No changes needed.', 2000); return;
@@ -721,9 +721,19 @@ async function saveGuildSettings(gID) {
 	}
 
 	page.loading = true;
-    showNotif('pending', `Saving ${page.column} settings...`);
+    showNotif('pending', `Saving ${allSettings ? 'guild' : page.column} settings...`);
     let err;
-	const response = await makeRequest({method: 'POST', url: `https://api.benderbot.co/guild/${gID}/${page.column}`, auth: getCookie('token'), body: getSettingsBody(page.column)}).catch(er => {
+	const reqOptions = {
+		method: 'POST',
+		url: `https://api.benderbot.co/guild/${gID}/${page.column}`,
+		auth: getCookie('token'),
+		body: getSettingsBody(page.column)
+	};
+	if (allSettings) {
+		reqOptions.url = `https://api.benderbot.co/guild/${gID}`;
+		reqOptions.body = page.gSettings;
+	}
+	const response = await makeRequest(reqOptions).catch(er => {
 		err = er;
 		console.error(er);
 	});
@@ -733,11 +743,11 @@ async function saveGuildSettings(gID) {
 		page.modalText = err.responseText;
 		showNotif('', '');
 	} else if (err) {
-		showNotif('error', `Failed to save ${page.column} settings.\n${err.status} ${err.statusText}`, 6000);
-	} else if (response === null) { // response was a 204
+		showNotif('error', `Failed to save ${allSettings ? 'guild' : page.column} settings.\n${err.status} ${err.statusText}`, 6000);
+	} else if (response === null) { // response code was a 204
 		showNotif('pending', 'Saved - No changes were needed.', 5000);
 	} else {
-        showNotif('success', `Saved ${page.column} settings!`, 4000);
+        showNotif('success', `Saved ${allSettings ? 'guild' : page.column} settings!`, 4000);
 		//page.unsaved = false;
     }
 }
@@ -752,12 +762,11 @@ function getSettingsBody(column) {
 			obj.autorole = g.autorole;
 			obj.tzRegion = g.tzRegion;
 			obj.tz = g.tz;
-			obj.config = g.config;
-			/*obj.config = {
+			obj.config = {
 				permMsgs: g.config.permMsgs,
 				disabledMsgs: g.config.disabledMsgs,
 				replyDM: g.config.replyDM
-			};*/
+			};
 			break;
 		case 'welcome':
 			obj.memberLog = g.memberLog;
@@ -769,28 +778,25 @@ function getSettingsBody(column) {
 			obj.mutes = {role: g.mutes.role};
 			obj.muteTime = g.muteTime;
 			obj.muteTimeUnits = g.muteTimeUnits;
-			obj.config = g.config;
-			/*obj.config = {
+			obj.config = {
 				muteDM: g.config.muteDM,
 				unmuteDM: g.config.unmuteDM,
 				kickDM: g.config.kickDM,
 				banDM: g.config.banDM
-			}*/
+			}
 			break;
 		case 'filter':
 			obj.filter = g.filter;
-			obj.ignore = g.ignore;
-			/* obj.ignore = {
+			obj.ignore = {
 				filter: g.ignore.filter,
 				filterChans: g.ignore.filterChans
-			} */
+			}
 			break;
 		case 'namefilter':
 			obj.namefilter = g.namefilter;
-			obj.ignore = g.ignore;
-			/* obj.ignore = {
+			obj.ignore = {
 				names: g.ignore.names
-			} */
+			}
 			break;
 		case 'cmdstatus':
 			obj.commandStatus = g.commandStatus;
@@ -798,12 +804,11 @@ function getSettingsBody(column) {
 			break;
 		case 'automod':
 			obj.automod = g.automod;
-			obj.ignore = g.ignore;
-			/* for (const s of ['invites', 'mentions', 'spam', 'selfbots']) {
+			for (const s of ['invites', 'mentions', 'spam', 'selfbots']) {
 				obj.ignore[s] = g.ignore[s];
 				obj.ignore[s+'Chans'] = g.ignore[s+'Chans'];
 			}
-			obj.ignore.names = g.ignore.names; */
+			obj.ignore.names = g.ignore.names;
 			break;
 		case 'perms':
 			obj.perms = g.perms;
