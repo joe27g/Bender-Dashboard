@@ -1,7 +1,13 @@
 html {
     overflow-y: auto !important;
 }
-
+@font-face {
+	font-family: FuturamaBold;
+	src: url(./fr-bold.woff2);
+}
+#bender-label {
+	font-family: FuturamaBold,"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","Helvetica","Arial",sans-serif;
+}
 img.b {
     width: 40px;
     margin: -15px 10px 0px 0px;
@@ -58,10 +64,11 @@ div.b {
 }
 #guild-picker {
     display: inline-block;
-    text-align: left;
+    padding-top: 11px;
 }
 #integration {
     display: inline-block;
+    margin: 6px 15px;
 }
 #integration img {
     vertical-align: super;
@@ -187,8 +194,12 @@ input:checked + .slider:before {
   transform: translateX(28px);
 }
 
-#header, .header, .level img.guild-icon, .switch, #sidenav-toggle, img.b {
+#header, .header, nav img.guild-icon, .switch, #sidenav-toggle, img.b {
     vertical-align:  middle;
+}
+nav img.guild-icon {
+    display: inline-block;
+    max-height: unset;
 }
 .header > hr {
     margin: 3px 0.5rem;
@@ -486,6 +497,7 @@ a:not([class]):not(#sidenav-close):hover {
     top: 0;
     height: 100%;
     padding-bottom: 20px;
+    margin-top: 60px;
 }
 #sidenav .menu-label {
     box-shadow: 0 0 19px -3px black;
@@ -497,7 +509,7 @@ a:not([class]):not(#sidenav-close):hover {
     padding: 0 10px;
 }
 #sidenav p.menu-label:first-of-type {
-    margin-top: 2.5em;
+    margin-top: 0;
 }
 .menu-list a.is-active {
     background-color: #f50 !important;
@@ -1036,5 +1048,87 @@ input[type=range]:focus + .vol-tt {
     }
     #refresh, #save {
         margin: 6px 0 6px 7px;
+    }
+}
+
+.navbar-menu {
+    display: flex !important;
+}
+.navbar-burger {
+    display: block !important;
+    color: #fff !important;
+	margin-left: 0;
+}
+#integration a.button {
+    margin: 11px 15px;
+}
+.navbar-brand .navbar-item {
+    padding-left: 5px;
+}
+nav.navbar.is-fixed-top {
+    background-color: #820000;
+    border-radius: 0;
+}
+.navbar .button.is-primary:hover {
+    background-color: #fff;
+    color: #000 !important;
+    transform: scale(1.075);
+}
+a.button.is-primary {
+    background-color: #fff;
+    color: #820000 !important;
+}
+.navbar-burger span {
+    height: 2px !important;
+}
+.navbar-burger:not(.is-active) span:nth-child(3) {
+    height: 2.5px !important;
+    top: calc(50% + 3.5px);
+}
+a.navbar-item:hover, a.navbar-burger:hover {
+    background-color: #9e0000 !important;
+}
+div#guilds-dropdown {
+    text-align: left;
+}
+div#integration {
+    display: flex;
+    flex-grow: 0;
+    order: 2;
+}
+nav.navbar.is-fixed-top {
+    display: flex;
+}
+.navbar-menu {
+    order: 1;
+    flex-grow: 1;
+    background-color: transparent !important;
+    padding: 0 !important;
+}
+@media screen and (max-width: 769px) {
+    .navbar-menu {
+        position: absolute;
+        top: 60px;
+        height: 60px;
+        width: 100%;
+        background-color: #820000 !important;
+        border-radius: 0 !important;
+        order: 2;
+    }
+    div#integration {
+        order: 1;
+    }
+    .navbar-brand {
+        flex-grow: 1;
+    }
+    .navbar-brand .navbar-spacer {
+        flex-grow: 1;
+        display: flex;
+    }
+    html.has-navbar-fixed-top {
+        padding-top: 8rem !important;
+    }
+    div#guild-picker {
+        padding-top: 0;
     }
 }
