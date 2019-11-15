@@ -1,7 +1,13 @@
 html {
     overflow-y: auto !important;
 }
-
+@font-face {
+	font-family: FuturamaBold;
+	src: url(./fr-bold.woff2);
+}
+#bender-label {
+	font-family: FuturamaBold,"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue","Helvetica","Arial",sans-serif;
+}
 img.b {
     width: 40px;
     margin: -15px 10px 0px 0px;
@@ -486,6 +492,7 @@ a:not([class]):not(#sidenav-close):hover {
     top: 0;
     height: 100%;
     padding-bottom: 20px;
+    margin-top: 60px;
 }
 #sidenav .menu-label {
     box-shadow: 0 0 19px -3px black;
@@ -497,7 +504,7 @@ a:not([class]):not(#sidenav-close):hover {
     padding: 0 10px;
 }
 #sidenav p.menu-label:first-of-type {
-    margin-top: 2.5em;
+    margin-top: 0;
 }
 .menu-list a.is-active {
     background-color: #f50 !important;
@@ -1037,4 +1044,42 @@ input[type=range]:focus + .vol-tt {
     #refresh, #save {
         margin: 6px 0 6px 7px;
     }
+}
+
+.navbar-menu {
+    display: flex !important;
+}
+.navbar-burger {
+    display: block !important;
+    color: #fff !important;
+	margin-left: 0;
+}
+#integration a {
+    margin: 11px 15px;
+}
+
+nav.navbar.is-fixed-top {
+    background-color: #820000;
+    border-radius: 0;
+}
+.navbar .button.is-primary:hover {
+    background-color: #fff;
+    color: #000 !important;
+}
+.navbar .button:hover {
+    transform: scale(1.075);
+}
+a.button.is-primary {
+    background-color: #fff;
+    color: #820000 !important;
+}
+.navbar-burger span {
+    height: 2px;
+}
+.navbar-burger:not(.is-active) span:nth-child(3) {
+    height: 2.5px;
+    top: calc(50% + 3.5px);
+}
+a.navbar-item:hover, a.navbar-burger:hover {
+    background-color: #9e0000 !important;
 }

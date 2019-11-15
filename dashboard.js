@@ -672,7 +672,7 @@ async function loadUserInfo() {
 			return loadUserInfo();
 		}
 	} else {
-		window.location.assign("https://api.benderbot.co/login_redirect");
+		//window.location.assign("https://api.benderbot.co/login_redirect");
 	}
 }
 
@@ -701,9 +701,9 @@ async function loadGuildSettings(gID) {
 		if (err && err.status >= 400 && err.status <= 418) {
 			console.error(err);
 			page.loading = false;
-			
+
 			if(err.status !== 418) page.selectedGuildID = null;
-			
+
 			page.column = null;
 			page.botNotPresent = true;
 
@@ -733,7 +733,7 @@ async function loadGuildSettings(gID) {
 			const categories = gData.channels.filter(e => e.type == 4)
 			const orderedChannels = [];
 			gData.channels.filter(e => e.parent_id == null && (e.type == 0 || e.type == 2)).sort((a, b) => a.position - b.position).forEach(c => orderedChannels.push(c)); // Push channels with no category
-			
+
 			categories.forEach(e => {
 				orderedChannels.push(e); // Push category first
 				gData.channels.filter(c => c.parent_id == e.id).sort((a, b) => a.position - b.position).forEach(b => orderedChannels.push(b)); // Push channel with category

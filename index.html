@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="has-navbar-fixed-top">
 <head>
     <title>Bender Dashboard</title>
     <meta charset="UTF-8">
@@ -7,34 +7,25 @@
     <meta name="theme-color" content="#FF0000">
     <meta name="keywords" content="Discord, Bot, Bender, Dashboard, Best, Discord Bot, benderbot">
     <meta name="og:title" content="Bender Dashboard">
-    <meta name="og:description" content="The web dashboard for Bender, to edit all its settings easily.">
-    <meta name="description" content="The web dashboard for Bender, to edit all its settings easily.">
-    <meta name="og:image" content="https://benderbot.co/Bender-large.png">
+    <meta name="og:description" content="Bender's web dashboard, for easy access to Bender's settings.">
+    <meta name="description" content="Bender's web dashboard, for easy access to Bender's settings.">
+    <meta name="og:image" content="https://benderbot.co/bender.png">
     <meta name="og:site_name" content="Bender Bot">
     <meta name="og:url" content="https://dashboard.benderbot.co">
-    <link rel="stylesheet" media="screen" href="./style.css?v=109">
-    <link rel="stylesheet" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.6.2/darkly/bulmaswatch.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.13/builds/moment-timezone-with-data.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-markdown@0.4.2/simple-markdown.min.js"></script>
-    <link rel="stylesheet" media="screen" href="https://cdn.jsdelivr.net/npm/highlightjs@9.10.0/styles/monokai-sublime.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/highlightjs@9.10.0/highlight.pack.min.js"></script>
+    <link rel="stylesheet" media="screen" href="./style.css?v=110">
+    <link rel="stylesheet" media="screen" href="./bulmaswatch.min.css">
+    <script src="./vue.min.js"></script>
+    <script src="./moment.min.js"></script>
+    <script src="./moment-timezone-with-data.min.js"></script>
+    <script src="./simple-markdown.min.js"></script>
+    <link rel="stylesheet" media="screen" href="./monokai-sublime.min.css">
+    <script src="./highlight.pack.min.js"></script>
     <script src="https://www.paypalobjects.com/js/external/connect/api.js"></script>
     <script defer src="./regex-colorizer.js"></script>
     <script defer src="./constants.js?v=11"></script>
     <script defer src="./commandList.js"></script>
     <script defer src="./dropdowns.js"></script>
     <script defer src="./dashboard.js?v=79"></script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126650650-2"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'UA-126650650-2');
-    </script>
 </head>
 <body><div id="app">
 <transition name="fade">
@@ -45,7 +36,6 @@
         <div id="mobile-header">
             <a class="b bold" href="/"><img src="./Bender.png" class="b">Bender Dashboard</a>
         </div>
-        <a id="sidenav-close" @click="sidenavOpen = false">x</a>
         <p class="menu-label">Overview</p>
         <ul class="menu-list">
             <li v-for="item in navSections[0]">
@@ -82,6 +72,57 @@
         </ul>
     </div>
 </transition>
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a role="button" @click="sidenavOpen = !sidenavOpen" :class="sidenavOpen ? 'is-active navbar-burger burger' : 'navbar-burger burger'" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <a class="navbar-item" href="/">
+            <img class="round" src="./bender.png" height="32">
+            <span class="title is-5" id="bender-label">&nbsp;Bender Dashboard</span>
+        </a>
+    </div>
+    <div class="navbar-menu">
+        <div id="guild-picker" class="navbar-item" v-show="user">
+            <div id="guilds" class="dd">
+                <div id="guilds-button" class="dd-trigger">
+                    <div id="guilds-chooser" class="button" @click="openDropdown = openDropdown === 'guild' ? null : 'guild'">
+                        <div v-if="selectedGuildID">
+                            <img v-if="getGuild(selectedGuildID).iconSrc" class="guild-icon" :src="getGuild(selectedGuildID).iconSrc">
+                            <span class="guild-name">{{ getGuild(selectedGuildID).name }}</span>
+                        </div>
+                        <div v-else>
+                            <img class="guild-icon" src="https://discordapp.com/assets/1c8a54f25d101bdc607cec7228247a9a.svg">
+                            <span>Choose a server...</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="guilds-dropdown" class="dd-content" v-show="openDropdown === 'guild'">
+                    <label v-for="guild in guilds" v-show="selectedGuildID !== guild.id" :for="'G-' + guild.id" :class="column === 'pro' || guild.permissions & 8 ? '' : 'no-perms disabled'">
+                        <input type="radio" :id="'G-' + guild.id" :value="guild.id" v-model="selectedGuildID" class="hidden">
+                        <img v-if="guild.iconSrc" class="guild-icon" :src="guild.iconSrc">
+                        <span class="guild-name">{{ guild.name }}</span>
+                    </label>
+                    <div v-if="guilds.length === 0">
+                        <span class="gray">No servers with Administrator permission.</span>
+                    </div>
+                </div>
+            </div>
+            <img id="refresh" :class="loading ? 'working' : ''" title="Refresh settings" src="./refresh.png" @click="reloadGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID)">
+            <img id="save" title="Save settings" src="./floppy_disk.png" @click="saveGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID)">
+        </div>
+        <div id="integration" class="navbar-end">
+            <img class="pfp" v-if="user && user.pfp" :src="user.pfp">
+            <span class="user-area" v-if="user">
+                <span class="user-tag"><span>{{ user.username }}</span><span class="gray">#{{ user.discriminator }}</span></span>
+                <a id="logout" href="https://api.benderbot.co/logout">Logout</a>
+            </span>
+            <a v-else class="button is-primary" href="https://api.benderbot.co/login_redirect">Login with Discord</a>
+        </div>
+    </div>
+</nav>
 <section id="header-wrapper">
     <div id="header">
         <a class="b bold" href="/"><img src="./Bender.png" class="b">Bender Dashboard</a>
