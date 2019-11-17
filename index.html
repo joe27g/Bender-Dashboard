@@ -29,13 +29,10 @@
 </head>
 <body><div id="app">
 <transition name="fade">
-    <div id="backdrop" v-show="sidenavOpen" @click="sidenavOpen = false"></div>
+    <div id="backdrop" style="display: none;" v-show="sidenavOpen" @click="sidenavOpen = false"></div>
 </transition>
 <transition name="fade-slide">
-    <div class="menu" id="sidenav" v-show="sidenavOpen">
-        <div id="mobile-header">
-            <a class="b bold" href="/"><img src="./Bender.png" class="b">Bender Dashboard</a>
-        </div>
+    <div class="menu" id="sidenav" style="display: none;" v-show="sidenavOpen">
         <p class="menu-label">Overview</p>
         <ul class="menu-list">
             <li v-for="item in navSections[0]">
@@ -86,7 +83,7 @@
         <div class="navbar-spacer"></div>
     </div>
     <div class="navbar-menu">
-        <div id="guild-picker" class="navbar-item is-expanded has-text-centered" v-show="user">
+        <div id="guild-picker" class="navbar-item is-expanded has-text-centered" style="display: none;" v-show="user">
             <div id="guilds" class="dd">
                 <div id="guilds-button" class="dd-trigger">
                     <div id="guilds-chooser" class="button" @click="openDropdown = openDropdown === 'guild' ? null : 'guild'">
@@ -117,14 +114,14 @@
     </div>
     <div id="integration" class="navbar-end">
         <img class="pfp" v-if="user && user.pfp" :src="user.pfp">
-        <span class="user-area" v-if="user">
+        <span class="user-area" style="display: none;" v-if="user" v-show="user">
             <span class="user-tag"><span>{{ user.username }}</span><span class="gray">#{{ user.discriminator }}</span></span>
             <a id="logout" href="https://api.benderbot.co/logout">Logout</a>
         </span>
         <a v-else class="button is-primary" href="https://api.benderbot.co/login_redirect">Login with Discord</a>
     </div>
 </nav>
-<section id="settings-wrapper"><div id="content-placeholder" v-show="!loading && !botNotPresent && ((!selectedGuildID && column !== 'pro') || !column)">
+<section id="settings-wrapper" style="display: none;" v-show="true"><div id="content-placeholder" v-show="!loading && !botNotPresent && ((!selectedGuildID && column !== 'pro') || !column)">
     <span>Nothing to see here...</span> <span class="gray">Choose a server to start changing settings.</span>
 </div><div id="bot-not-present" v-show="botNotPresent">
     <span>Bender isn't in this server!</span> <span class="gray">To invite it, use this link:</span> <a :href="'https://benderbot.co/invite?guild_id=' + selectedGuildID" target="_blank">https://benderbot.co/invite</a>
@@ -3945,7 +3942,7 @@
 </div></section>
 <footer class="footer has-text-centered hidden"><span class="gray">PayPal logo © PayPal, Inc. Image of Bender belongs to Matt Groening. Basically, I didn't make any images on this site :^)</span></footer>
 <div id="notif" class=""><span id="notif-text"></span></div>
-<div :class="'modal' + (modalText ? ' is-active' : '')">
+<div style="display: none;" v-show="modalText" :class="'modal' + (modalText ? ' is-active' : '')">
     <div class="modal-background" @click="modalText = ''"></div>
     <div class="modal-content">
         <div class="message is-danger is-medium">

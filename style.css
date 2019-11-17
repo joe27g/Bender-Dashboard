@@ -69,6 +69,7 @@ div.b {
 #integration {
     display: inline-block;
     margin: 6px 15px;
+    justify-content: flex-end;
 }
 #integration img {
     vertical-align: super;
@@ -78,30 +79,39 @@ div.b {
         overflow: hidden;
         display: inline-block;
         margin-bottom: -7px;
-    }
-@media screen and (min-width: 573px) and (max-width: 1060px) {
-    #guilds-button .guild-name, #integration .user-tag > span:first-child {
-        max-width: 200px;
-    }
 }
-@media screen and (min-width: 573px) and (max-width: 850px) {
+#guilds-button .guild-name, #integration .user-tag > span:first-child {
+    max-width: 200px;
+}
+@media screen and (max-width: 910px) {
     #integration .user-tag > span:first-child {
         max-width: 100px;
     }
 }
-@media screen and (max-width: 499px) {
-    #guilds-button .guild-name, #integration .user-tag > span:first-child {
-        max-width: 200px;
+@media screen and (max-width: 440px) {
+    #integration {
+        margin-left: 0px;
     }
-}
-@media screen and (max-width: 376px) {
-    #guilds-button .guild-name, #integration .user-tag > span:first-child {
-        max-width: 135px;
-    }
-}
-@media screen and (max-width: 310px) {
     #integration .user-tag > span:first-child {
-        max-width: 100px;
+        max-width: 75px;
+    }
+}
+@media screen and (max-width: 400px) {
+    #integration .user-tag > span:first-child {
+        max-width: 45px;
+    }
+}
+@media screen and (max-width: 370px) {
+    #integration .user-tag > span:first-child {
+        max-width: 75px;
+    }
+    span.user-tag .gray {
+        display: none;
+    }
+}
+@media screen and (max-width: 345px) {
+    #integration .user-tag > span:first-child {
+        max-width: 45px;
     }
 }
 img.pfp {
@@ -339,7 +349,7 @@ footer {
 
 .dd-content {
     min-height: 20px;
-    min-width: 100px;
+    width: 100%;
     position: absolute;
     background-color: #282f2f;
     border: 3px solid rgba(255, 255, 255, 0.15);
@@ -496,14 +506,14 @@ a:not([class]):not(#sidenav-close):hover {
     z-index: 11;
     top: 0;
     height: 100%;
-    padding-bottom: 20px;
+    padding-bottom: 60px;
     margin-top: 60px;
 }
 #sidenav .menu-label {
     box-shadow: 0 0 19px -3px black;
     padding: 10px;
     width: 100%;
-    background: rgba(255, 0, 0, 0.5);
+    background: #820000;
 }
 #sidenav .menu-list {
     padding: 0 10px;
@@ -1030,39 +1040,20 @@ input[type=range]:focus + .vol-tt {
     vertical-align: middle;
     margin: 2px;
 }
-
-@media screen and (max-width: 620px) {
-    #navbar {
-        flex-wrap: wrap;
-    }
-    #guild-picker {
-        display: flex;
-        width: 100%;
-        order: 3;
-    }
-    #guilds-chooser {
-        width: 100%;
-    }
-    #guilds {
-        width: 100%;
-    }
-    #refresh, #save {
-        margin: 6px 0 6px 7px;
-    }
-}
-
 .navbar-menu {
     display: flex !important;
 }
 .navbar-burger {
     display: block !important;
     color: #fff !important;
-	margin-left: 0;
+    margin-left: 0;
+    height: unset !important;
 }
 #integration a.button {
-    margin: 11px 15px;
+    margin: 5px 15px;
 }
 .navbar-brand .navbar-item {
+    padding: 0px;
     padding-left: 5px;
 }
 nav.navbar.is-fixed-top {
@@ -1095,17 +1086,26 @@ div#integration {
     display: flex;
     flex-grow: 0;
     order: 2;
+    max-height: 48px;
 }
 nav.navbar.is-fixed-top {
     display: flex;
 }
+#guilds {
+    width: 80%;
+    max-width: 700px;
+}
+#guilds-chooser {
+    width: 100%;
+}
 .navbar-menu {
+    overflow: unset !important;
     order: 1;
     flex-grow: 1;
     background-color: transparent !important;
     padding: 0 !important;
 }
-@media screen and (max-width: 769px) {
+@media screen and (max-width: 810px) {
     .navbar-menu {
         position: absolute;
         top: 60px;
@@ -1128,7 +1128,19 @@ nav.navbar.is-fixed-top {
     html.has-navbar-fixed-top {
         padding-top: 8rem !important;
     }
-    div#guild-picker {
-        padding-top: 0;
+    #guild-picker {
+        display: flex;
+        width: 100%;
+        order: 3;
+    }
+    #guilds {
+        width: 100%;
+    }
+    #refresh, #save {
+        margin: 6px 0 6px 7px;
+    }
+    #sidenav {
+        padding-bottom: 130px;
+        margin-top: 120px;
     }
 }
