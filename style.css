@@ -349,7 +349,7 @@ footer {
 
 .dd-content {
     min-height: 20px;
-    width: 100%;
+    min-width: 100%;
     position: absolute;
     background-color: #282f2f;
     border: 3px solid rgba(255, 255, 255, 0.15);
