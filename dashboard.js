@@ -541,7 +541,7 @@ var page = new Vue({
 });
 
 const cParam = new URLSearchParams(window.location.search).get('c');
-if (page.validCols.filter(c => (c.id === cParam)).length === 1) {
+if (page.validCols.filter(c => c && c.id === cParam).length === 1) {
 	page.column = cParam;
 }
 
