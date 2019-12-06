@@ -88,7 +88,19 @@ window.navSections = [
 		id: 'starboard'
 	}]
 ];
-window.validCols = ['pro', 'general', 'agreement', 'welcome', 'aliases', 'tags', 'giveaways', 'automod', 'filter', 'namefilter', 'logging', 'moderation', 'modlog', 'mutes', 'names', 'roles', 'perms', 'cperms', 'selfroles', 'cmdstatus', 'blacklist', 'music', 'starboard'];
+window.validCols = window.navSections.map(n => n.id);
+window.readOnlyCols = window.navSections.filter(n => n.ro).map(n => n.id);
+
+const gpTemplate = {}, pTemplate = {};
+for (const group in window.commandList) {
+	gpTemplate[group] = {};
+	for (const command in window.commandList[group]) {
+		pTemplate[command] = {};
+	}
+}
+window.defaultGuildSettings = {
+	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "starboard": {}, "tags": {}, "temproles": {}
+}
 
 window.permTypes = {
 	role_hier: 'Specific role and higher',

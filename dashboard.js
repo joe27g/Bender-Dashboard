@@ -1,72 +1,3 @@
-function makeRequest (opts) {
-	return new Promise(function (resolve, reject) {
-		const xhr = new XMLHttpRequest();
-		xhr.open(opts.method, opts.url);
-		xhr.onload = function () {
-			if (this.status >= 200 && this.status < 300) {
-				resolve(xhr.response || null);
-			} else {
-				reject({
-					status: this.status,
-					statusText: this.statusText,
-					responseText: this.responseText
-				});
-			}
-		};
-		xhr.onerror = function () {
-			reject({
-				status: this.status,
-				statusText: this.statusText,
-				responseText: this.responseText
-			});
-		};
-		if (opts.method == 'POST') {
-			xhr.setRequestHeader("Content-Type", "application/json");
-		}
-        if (opts.auth) {
-			xhr.setRequestHeader("Authorization", opts.auth);
-		}
-		if (opts.auth2) {
-			xhr.setRequestHeader("X-Discord-Authorization", opts.auth2);
-		}
-		xhr.send(opts.body ? JSON.stringify(opts.body) : undefined);
-	});
-}
-function showNotif (type, text, time) {
-    const status = document.getElementById('notif');
-    if (!status) return false;
-    status.className = type;
-    status.innerHTML = text;
-
-    if (time) {
-        setTimeout(() => {
-			status.className = '';
-			status.innerHTML = '';
-        }, time);
-    }
-}
-
-// lazily copied from StackOverflow tbh
-function getCookie(name) {
-    const match = document.cookie.match(RegExp('(?:^|;\\s*)' + (name).replace(/([.*+?^${}()|[\]/])/g, '\\$1') + '=([^;]*)'));
-    return match ? match[1] : null;
-}
-// not from StackOverflow :poggers:
-function setCookie(name, value, expiry) {
-	return document.cookie = `${name}=${value}; domain=.benderbot.co; path=/; expires=${new Date(Date.now() + (expiry || 1000*60*60*24*365))}`;
-}
-// also modified from StackOverflow
-/*function merge(obj, obj2) {
-    for (const prop in obj2) {
-        const val = obj2[prop];
-        if (typeof val === "object" && !Array.isArray(val) && val !== null)
-            merge(obj[prop], val);
-        else
-            obj[prop] = val;
-    }
-    return obj;
-}*/
-
 window.paypal.use( ['login'], function (login) {
     login.render ({
 		appid:       "ASalasGVCX8iXiOGrGrm9PqGuTW-4fbaPikTmZN4mWzLvhFwsA2N5rFok2FcwVLbT0GHGZQAIWeWwg-k",
@@ -78,18 +9,6 @@ window.paypal.use( ['login'], function (login) {
 		returnurl:   "https://api.benderbot.co/paypal_login"
     });
 });
-
-const gpTemplate = {}, pTemplate = {};
-for (const group in window.commandList) {
-	gpTemplate[group] = {};
-	for (const command in window.commandList[group]) {
-		pTemplate[command] = {};
-	}
-}
-
-const defaultGuildSettings = {
-	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "starboard": {}, "tags": {}, "temproles": {}
-};
 
 // eslint-disable-next-line
 var page = new Vue({
@@ -103,7 +22,7 @@ var page = new Vue({
 		modalText: '',
 		guilds: [],
 		user: null,
-		gSettings: defaultGuildSettings,
+		gSettings: window.defaultGuildSettings,
 		guildPro: false,
 		gRoles: [],
 		gChannels: [],
@@ -111,6 +30,7 @@ var page = new Vue({
 		tzs: window.tzs,
 		navSections: window.navSections,
 		validCols: window.validCols,
+		readOnlyCols: window.readOnlyCols,
 		ignorePermsTypes: window.permTypes,
 		discordPermissionNames: window.discordPermissionNames,
 		commandList: window.commandList || {},
@@ -624,8 +544,14 @@ const cParam = new URLSearchParams(window.location.search).get('c');
 if (page.validCols.filter(c => (c.id === cParam)).length === 1) {
 	page.column = cParam;
 }
-//let _blockNext = false;
 
+loadUserInfo();
+let firstPP = true;
+updatePaypalInfo();
+
+/*** Functions ***/
+
+//let _blockNext = false;
 async function loadUserInfo() {
 	if (getCookie('token')) {
 		page.loading = true;
@@ -707,7 +633,7 @@ async function loadGuildSettings(gID) {
 			page.column = null;
 			page.botNotPresent = true;
 
-			page.gSettings = defaultGuildSettings;
+			page.gSettings = window.defaultGuildSettings;
 			page.temp.multi_autorole = false;
 			page.guildPro = false;
 			page.gNames = {};
@@ -762,7 +688,7 @@ async function loadGuildSettings(gID) {
 	setTimeout(window.highlightAll, 5);
 }
 // eslint-disable-next-line
-async function saveGuildSettings(gID) {
+async function saveGuildSettings(gID, allSettings = false) {
 	if (!gID) return;
 	/*if (!page.unsaved) {
 		showNotif('success', 'No changes needed.', 2000); return;
@@ -795,9 +721,19 @@ async function saveGuildSettings(gID) {
 	}
 
 	page.loading = true;
-    showNotif('pending', 'Saving guild settings...');
+    showNotif('pending', `Saving ${allSettings ? 'guild' : page.column} settings...`);
     let err;
-	const response = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token'), body: page.gSettings}).catch(er => {
+	const reqOptions = {
+		method: 'POST',
+		url: `https://api.benderbot.co/guild/${gID}/${page.column}`,
+		auth: getCookie('token'),
+		body: getSettingsBody(page.column)
+	};
+	if (allSettings) {
+		reqOptions.url = `https://api.benderbot.co/guild/${gID}`;
+		reqOptions.body = page.gSettings;
+	}
+	const response = await makeRequest(reqOptions).catch(er => {
 		err = er;
 		console.error(er);
 	});
@@ -807,16 +743,94 @@ async function saveGuildSettings(gID) {
 		page.modalText = err.responseText;
 		showNotif('', '');
 	} else if (err) {
-		showNotif('error', `Failed to save guild settings.\n${err.status} ${err.statusText}`, 6000);
-	} else if (response === null) { // response was a 204
+		showNotif('error', `Failed to save ${allSettings ? 'guild' : page.column} settings.\n${err.status} ${err.statusText}`, 6000);
+	} else if (response === null) { // response code was a 204
 		showNotif('pending', 'Saved - No changes were needed.', 5000);
 	} else {
-        showNotif('success', 'Saved guild settings!', 4000);
+        showNotif('success', `Saved ${allSettings ? 'guild' : page.column} settings!`, 4000);
 		//page.unsaved = false;
     }
 }
 
-let firstPP = true;
+// get an object to send when saving guild settings based on the column
+function getSettingsBody(column) {
+	let obj = {};
+	const g = page.gSettings;
+	switch (column) {
+		case 'general':
+			obj.prefix = g.prefix;
+			obj.autorole = g.autorole;
+			obj.tzRegion = g.tzRegion;
+			obj.tz = g.tz;
+			obj.config = {
+				permMsgs: g.config.permMsgs,
+				disabledMsgs: g.config.disabledMsgs,
+				replyDM: g.config.replyDM
+			};
+			break;
+		case 'welcome':
+			obj.memberLog = g.memberLog;
+			break;
+		case 'selfroles':
+			obj.joinables = g.joinables;
+			break;
+		case 'moderation':
+			obj.mutes = {role: g.mutes.role};
+			obj.muteTime = g.muteTime;
+			obj.muteTimeUnits = g.muteTimeUnits;
+			obj.config = {
+				muteDM: g.config.muteDM,
+				unmuteDM: g.config.unmuteDM,
+				kickDM: g.config.kickDM,
+				banDM: g.config.banDM
+			}
+			break;
+		case 'filter':
+			obj.filter = g.filter;
+			obj.ignore = {
+				filter: g.ignore.filter,
+				filterChans: g.ignore.filterChans
+			}
+			break;
+		case 'namefilter':
+			obj.namefilter = g.namefilter;
+			obj.ignore = {
+				names: g.ignore.names
+			}
+			break;
+		case 'cmdstatus':
+			obj.commandStatus = g.commandStatus;
+			obj.groupStatus = g.groupStatus;
+			break;
+		case 'automod':
+			obj.automod = g.automod;
+			for (const s of ['invites', 'mentions', 'spam', 'selfbots']) {
+				obj.ignore[s] = g.ignore[s];
+				obj.ignore[s+'Chans'] = g.ignore[s+'Chans'];
+			}
+			obj.ignore.names = g.ignore.names;
+			break;
+		case 'perms':
+			obj.perms = g.perms;
+			obj.gperms = g.gperms;
+			break;
+		case 'agreement':
+		case 'logging':
+		case 'tags':
+		case 'aliases':
+		case 'cperms':
+		case 'blacklist':
+		case 'music':
+		case 'starboard':
+			obj[column] = g[column];
+			break;
+		default:
+			obj = null;
+			break;
+	}
+	return obj;
+}
+
 async function updatePaypalInfo() {
     if (getCookie('paypal_token')) {
 		page.loading = true;
@@ -870,8 +884,74 @@ async function updatePaypalInfo() {
     }
 }
 
-loadUserInfo();
-updatePaypalInfo();
+function makeRequest (opts) {
+	return new Promise(function (resolve, reject) {
+		const xhr = new XMLHttpRequest();
+		xhr.open(opts.method, opts.url);
+		xhr.onload = function () {
+			if (this.status >= 200 && this.status < 300) {
+				resolve(xhr.response || null);
+			} else {
+				reject({
+					status: this.status,
+					statusText: this.statusText,
+					responseText: this.responseText
+				});
+			}
+		};
+		xhr.onerror = function () {
+			reject({
+				status: this.status,
+				statusText: this.statusText,
+				responseText: this.responseText
+			});
+		};
+		if (opts.method == 'POST') {
+			xhr.setRequestHeader("Content-Type", "application/json");
+		}
+        if (opts.auth) {
+			xhr.setRequestHeader("Authorization", opts.auth);
+		}
+		if (opts.auth2) {
+			xhr.setRequestHeader("X-Discord-Authorization", opts.auth2);
+		}
+		xhr.send(opts.body ? JSON.stringify(opts.body) : undefined);
+	});
+}
+function showNotif (type, text, time) {
+    const status = document.getElementById('notif');
+    if (!status) return false;
+    status.className = type;
+    status.innerHTML = text;
+
+    if (time) {
+        setTimeout(() => {
+			status.className = '';
+			status.innerHTML = '';
+        }, time);
+    }
+}
+
+// lazily copied from StackOverflow tbh
+function getCookie(name) {
+    const match = document.cookie.match(RegExp('(?:^|;\\s*)' + (name).replace(/([.*+?^${}()|[\]/])/g, '\\$1') + '=([^;]*)'));
+    return match ? match[1] : null;
+}
+// not from StackOverflow :poggers:
+function setCookie(name, value, expiry) {
+	return document.cookie = `${name}=${value}; domain=.benderbot.co; path=/; expires=${new Date(Date.now() + (expiry || 1000*60*60*24*365))}`;
+}
+// also modified from StackOverflow
+/*function merge(obj, obj2) {
+    for (const prop in obj2) {
+        const val = obj2[prop];
+        if (typeof val === "object" && !Array.isArray(val) && val !== null)
+            merge(obj[prop], val);
+        else
+            obj[prop] = val;
+    }
+    return obj;
+}*/
 
 /* more shit from StackOverflow
 function compareObj(obj1, obj2) {

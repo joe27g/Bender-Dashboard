@@ -25,7 +25,7 @@
     <script defer src="./constants.js?v=11"></script>
     <script defer src="./commandList.js"></script>
     <script defer src="./dropdowns.js"></script>
-    <script defer src="./dashboard.js?v=79"></script>
+    <script defer src="./dashboard.js?v=80"></script>
 </head>
 <body><div id="app">
 <transition name="fade">
@@ -109,7 +109,7 @@
                 </div>
             </div>
             <img id="refresh" :class="loading ? 'working' : ''" title="Refresh settings" src="./refresh.png" @click="reloadGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID)">
-            <img id="save" title="Save settings" src="./floppy_disk.png" @click="saveGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID)">
+            <img id="save" title="Save settings (Shift+click to save all settings)" src="./floppy_disk.png" @click.shift="saveGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID, true)" @click.exact="saveGSettings(column === 'pro' ? 'PAYPAL' : selectedGuildID)">
         </div>
     </div>
     <div id="integration" class="navbar-end">
