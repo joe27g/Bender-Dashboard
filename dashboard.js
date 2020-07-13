@@ -6,7 +6,7 @@ window.paypal.use( ['login'], function (login) {
 		locale:      "en-us",
 		buttonType:  "CWP",
 		buttonSize:  "sm",
-		returnurl:   "https://api.benderbot.co/paypal_login"
+		returnurl:   "https://apiv3.benderbot.co/paypal_login"
     });
 });
 
@@ -556,7 +556,7 @@ async function loadUserInfo() {
 	if (getCookie('token')) {
 		page.loading = true;
 		showNotif('pending', 'Fetching user info...');
-		let userinfo = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/userinfo', auth: getCookie('token')}).catch(console.error);
+		let userinfo = await makeRequest({method: 'GET', url: 'https://apiv3.benderbot.co/userinfo', auth: getCookie('token')}).catch(console.error);
 		if (userinfo)
 			userinfo = JSON.parse(userinfo);
 		//console.log(userinfo);
@@ -575,10 +575,10 @@ async function loadUserInfo() {
 		}
 	} else if (getCookie('refresh_token')) {
 		page.loading = true;
-		let data = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/refresh', auth: getCookie('refresh_token')}).catch(err => {
+		let data = await makeRequest({method: 'POST', url: 'https://apiv3.benderbot.co/refresh', auth: getCookie('refresh_token')}).catch(err => {
 			console.error(err);
 			if (err && err.status === 401) {
-				window.location.assign("https://api.benderbot.co/login_redirect");
+				window.location.assign("https://apiv3.benderbot.co/login_redirect");
 				return;
 			}
 		});
@@ -598,7 +598,7 @@ async function loadUserInfo() {
 			return loadUserInfo();
 		}
 	} else {
-		window.location.assign("https://api.benderbot.co/login_redirect");
+		window.location.assign("https://apiv3.benderbot.co/login_redirect");
 	}
 }
 
@@ -623,7 +623,7 @@ async function loadGuildSettings(gID) {
 		page.loading = true;
 		showNotif('pending', 'Fetching guild settings...');
 		let err;
-		let gData = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/guild/' + gID, auth: getCookie('token')}).catch(e => err = e);
+		let gData = await makeRequest({method: 'GET', url: 'https://apiv3.benderbot.co/guild/' + gID, auth: getCookie('token')}).catch(e => err = e);
 		if (err && err.status >= 400 && err.status <= 418) {
 			console.error(err);
 			page.loading = false;
@@ -706,7 +706,7 @@ async function saveGuildSettings(gID, allSettings = false) {
 		//console.log(temp);
 		showNotif('pending', 'Saving Bender Pro settings...');
 		let err;
-		await makeRequest({method: 'POST', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token'), auth2: getCookie('token'), body: temp}).catch(er => {
+		await makeRequest({method: 'POST', url: 'https://apiv3.benderbot.co/paypal_info', auth: getCookie('paypal_token'), auth2: getCookie('token'), body: temp}).catch(er => {
 			err = er;
 			console.error(er);
 		});
@@ -725,12 +725,12 @@ async function saveGuildSettings(gID, allSettings = false) {
     let err;
 	const reqOptions = {
 		method: 'POST',
-		url: `https://api.benderbot.co/guild/${gID}/${page.column}`,
+		url: `https://apiv3.benderbot.co/guild/${gID}/${page.column}`,
 		auth: getCookie('token'),
 		body: getSettingsBody(page.column)
 	};
 	if (allSettings) {
-		reqOptions.url = `https://api.benderbot.co/guild/${gID}`;
+		reqOptions.url = `https://apiv3.benderbot.co/guild/${gID}`;
 		reqOptions.body = page.gSettings;
 	}
 	const response = await makeRequest(reqOptions).catch(er => {
@@ -836,7 +836,7 @@ async function updatePaypalInfo() {
 		page.loading = true;
 		if (!firstPP)
 			showNotif('pending', 'Fetching PayPal info...');
-        const data = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('paypal_token')}).catch(console.error);
+        const data = await makeRequest({method: 'GET', url: 'https://apiv3.benderbot.co/paypal_info', auth: getCookie('paypal_token')}).catch(console.error);
 		page.loading = false;
         if (data) {
 			if (!firstPP)
@@ -849,7 +849,7 @@ async function updatePaypalInfo() {
         }
     } else if (getCookie('pp_refresh_token')) {
 		page.loading = true;
-        let data = await makeRequest({method: 'POST', url: 'https://api.benderbot.co/refresh_paypal', auth: getCookie('pp_refresh_token')}).catch(console.error);
+        let data = await makeRequest({method: 'POST', url: 'https://apiv3.benderbot.co/refresh_paypal', auth: getCookie('pp_refresh_token')}).catch(console.error);
 		if (typeof data === 'string') {
 			try {
 				data = JSON.parse(data);
@@ -867,7 +867,7 @@ async function updatePaypalInfo() {
 		page.loading = true;
 		if (!firstPP)
 			showNotif('pending', 'Attempting to fetch PayPal info via Discord info (for gifted subs)...');
-        const data = await makeRequest({method: 'GET', url: 'https://api.benderbot.co/paypal_info', auth: getCookie('token')}).catch(console.error);
+        const data = await makeRequest({method: 'GET', url: 'https://apiv3.benderbot.co/paypal_info', auth: getCookie('token')}).catch(console.error);
 		page.loading = false;
         if (data) {
 			if (!firstPP)

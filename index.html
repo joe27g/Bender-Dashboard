@@ -11,7 +11,7 @@
     <meta name="description" content="Bender's web dashboard, for easy access to Bender's settings.">
     <meta name="og:image" content="https://benderbot.co/bender.png">
     <meta name="og:site_name" content="Bender Bot">
-    <meta name="og:url" content="https://dashboard.benderbot.co">
+    <meta name="og:url" content="https://dashboardv3.benderbot.co">
     <link rel="stylesheet" media="screen" href="./style.css?v=114">
     <link rel="stylesheet" media="screen" href="./bulmaswatch.min.css">
     <script src="./vue.min.js"></script>
@@ -116,15 +116,15 @@
         <img class="pfp" v-if="user && user.pfp" :src="user.pfp">
         <span class="user-area" style="display: none;" v-if="user" v-show="user">
             <span class="user-tag"><span>{{ user.username }}</span><span class="gray">#{{ user.discriminator }}</span></span>
-            <a id="logout" href="https://api.benderbot.co/logout">Logout</a>
+            <a id="logout" href="https://apiv3.benderbot.co/logout">Logout</a>
         </span>
-        <a v-else class="button is-primary" href="https://api.benderbot.co/login_redirect">Login with Discord</a>
+        <a v-else class="button is-primary" href="https://apiv3.benderbot.co/login_redirect">Login with Discord</a>
     </div>
 </nav>
 <section id="settings-wrapper" style="display: none;" v-show="true"><div id="content-placeholder" v-show="!loading && !botNotPresent && ((!selectedGuildID && column !== 'pro') || !column)">
     <span>Nothing to see here...</span> <span class="gray">Choose a server to start changing settings.</span>
 </div><div id="bot-not-present" v-show="botNotPresent">
-    <span>Bender isn't in this server!</span> <span class="gray">To invite it, use this link:</span> <a :href="'https://benderbot.co/invite?guild_id=' + selectedGuildID" target="_blank">https://benderbot.co/invite</a>
+    <span>Bender isn't in this server!</span> <span class="gray">To invite it, use this link:</span> <a :href="'https://benderbot.co/beta_invite?guild_id=' + selectedGuildID" target="_blank">https://benderbot.co/beta_invite</a>
 </div><div id="loading" v-show="loading">
     <img src="https://cdn.discordapp.com/emojis/461731014646169601.gif?v=1"><br><span>Loading...</span>
 </div><div id="pro" v-show="column === 'pro' && !loading">
@@ -166,7 +166,7 @@
     </div>
     <div id="paypalLogin" v-show="!paypalInfo || !paypalInfo.id"></div>
     <br>
-    <a v-show="paypalInfo && paypalInfo.id" href="https://api.benderbot.co/paypal_logout">Logout of PayPal</a>
+    <a v-show="paypalInfo && paypalInfo.id" href="https://apiv3.benderbot.co/paypal_logout">Logout of PayPal</a>
 </div><div id="general" v-if="selectedGuildID && column === 'general' && !loading">
     <div class="header">
         <span class="bold">General Settings</span>
