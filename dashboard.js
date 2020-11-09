@@ -435,7 +435,7 @@ var page = new Vue({
 			str = str.replace(/&lt;#(\d{17,20})&gt;/g, (match, p1) => {
 				for (const i in gc) {
 					if (gc[i].id === p1) {
-						return `<a target="_blank" href="https://discordapp.com/channels/${g}/${p1}" class="mention">#${gc[i].name}</a>`;
+						return `<a target="_blank" href="https://discord.com/channels/${g}/${p1}" class="mention">#${gc[i].name}</a>`;
 					}
 				}
 				return '<span class="mention">#deleted-channel</span>';
