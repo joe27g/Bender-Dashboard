@@ -81,9 +81,6 @@ window.navSections = [
 		name: 'Blacklist',
 		id: 'blacklist'
 	}, {
-		name: 'Music',
-		id: 'music'
-	}, {
 		name: 'Starboard',
 		id: 'starboard'
 	}]
@@ -99,7 +96,7 @@ for (const group in window.commandList) {
 	}
 }
 window.defaultGuildSettings = {
-	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "music": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "starboard": {}, "tags": {}, "temproles": {}
+	"agreement": {}, "aliases": {}, "automod": {"ignore": {}}, "commandStatus": {}, "config": {}, "cperms": {}, "filter": {}, "gamenews": {}, "giveaways": {}, "gperms": gpTemplate, "groupStatus": {}, "ignore": {'invites': {}, 'selfbots': {}, 'spam': {}, 'filter': {}, 'mentions': {}, 'names': {}}, "joinables": {}, "logging": {}, "memberLog": {}, "modlog": {}, "mutes": {}, "namefilter": {}, "nicknames": {}, "perms": pTemplate, "starboard": {}, "tags": {}, "temproles": {}
 }
 
 window.permTypes = {
@@ -136,6 +133,5 @@ window.discordPermissionNames = {
 	MANAGE_NICKNAMES: 'Manage Nicknames',
 	MANAGE_ROLES: 'Manage Roles',
 	MANAGE_WEBHOOKS: 'Manage Webhooks',
-	MANAGE_EMOJIS: 'Manage Emojis',
-	DJ: 'Having a role named "DJ"' // not actually a discord perm, but same usage
+	MANAGE_EMOJIS: 'Manage Emojis'
 };

@@ -820,7 +820,6 @@ function getSettingsBody(column) {
 		case 'aliases':
 		case 'cperms':
 		case 'blacklist':
-		case 'music':
 		case 'starboard':
 			obj[column] = g[column];
 			break;

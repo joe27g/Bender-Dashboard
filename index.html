@@ -3823,50 +3823,6 @@
             </tr>
         </tbody></table>
     </div>
-</div><div id="music" v-if="selectedGuildID && column === 'music' && !loading">
-    <div class="header">
-        <span class="bold">Music</span>
-        <hr>
-    </div>
-    <div id="volume" :class="'setting slider-wrap' + (guildPro ? '' : ' disabled')">
-        <span class="title is-5">Volume</span>
-        <span class="info">The default volume at which music will play.</span>
-		<input type="range" min="0" max="1000" step="5" v-model="gSettings.music.volume">
-		<span class="vol-tt" :style="'left:calc((100% - 20px) * ' + (gSettings.music.volume / 1000) + ' - 15px)'">{{ gSettings.music.volume }}%</span>
-        <div class="tick">0%</div>
-        <div class="graytick"></div>
-        <div class="tick">100%</div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="tick">500%</div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="graytick"></div>
-        <div class="tick">1000%</div>
-    </div>
-    <div  :class="'setting' + (guildPro ? '' : ' disabled')">
-        <span class="key">Autoplay</span>
-        <label class="switch small">
-            <input type="checkbox" v-model="gSettings.music.autoplay">
-            <span class="slider round"></span>
-        </label>
-        <br>
-        <span class="info">Play related songs after the music queue ends.</span>
-    </div>
-    <div class="setting" v-show="!guildPro">
-        <span>To change volume or enable autoplay, please purchase <a href="https://benderbot.co/pro" target="_blank">Bender Pro</a> and <a @click="column = 'pro'">enable it</a> for this server.</span>
-    </div>
 </div><div id="starboard" v-if="selectedGuildID && column === 'starboard' && !loading">
     <div class="header">
         <span class="bold">Starboard</span>
