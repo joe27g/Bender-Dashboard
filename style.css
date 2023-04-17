@@ -1147,7 +1147,7 @@ nav.navbar.is-fixed-top {
     margin: 10% auto;
     max-width: 50%;
     animation: pulse-shadow 4s ease-in-out infinite;
-    background: #820000;
+    background-color: #820000 !important;
     font-weight: bold;
 }
 @media screen and (max-width: 768px) {
