@@ -1143,3 +1143,20 @@ nav.navbar.is-fixed-top {
         margin-top: 120px;
     }
 }
+.centered-warning {
+    margin: 10% auto;
+    max-width: 50%;
+    animation: pulse-shadow 4s ease-in-out infinite;
+    background: #820000;
+    font-weight: bold;
+}
+@media screen and (max-width: 768px) {
+	  .centered-warning {
+        max-width: 100%;
+    }
+}
+@keyframes pulse-shadow {
+    0%   { box-shadow: 0 0 12px #820000; }
+    50%  { box-shadow: 0 0 12px #fb0; }
+    100% { box-shadow: 0 0 12px #820000; }
+}
