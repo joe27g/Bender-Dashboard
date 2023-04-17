@@ -123,6 +123,9 @@
 </nav>
 <section id="settings-wrapper" style="display: none;" v-show="true"><div id="content-placeholder" v-show="!loading && !botNotPresent && ((!selectedGuildID && column !== 'pro') || !column)">
     <span>Nothing to see here...</span> <span class="gray">Choose a server to start changing settings.</span>
+    <div class="box centered-warning">
+        <span>NOTE: This dashboard is incomplete and not actively maintained. Its main purpose at the moment is to allow <a @click="column = 'pro'">Bender Pro</a> users to link their PayPal accounts. For any other configuration, you may need to use commands instead. If you have any questions, please visit the <a href="https://support.benderbot.co" target="_blank">support server</a>.</span>
+    </div>
 </div><div id="bot-not-present" v-show="botNotPresent">
     <span>Bender isn't in this server!</span> <span class="gray">To invite it, use this link:</span> <a :href="'https://benderbot.co/invite?guild_id=' + selectedGuildID" target="_blank">https://benderbot.co/invite</a>
 </div><div id="loading" v-show="loading">
@@ -3730,7 +3733,7 @@
         </div>
         <div class="column">
             <span class="key">Add user/channel/role by ID:</span>
-            <input type="text" v-model="temp.bl_item" placeholder="17-18 digit ID" style="min-width: 170px;">
+            <input type="text" v-model="temp.bl_item" placeholder="17-19 digit ID" style="min-width: 170px;">
             <button class="button add" @click="add('bl_item')" :disabled="!temp.bl_item || temp.bl_item.length < 17 || temp.bl_item.length > 20 || temp.bl_item.match(/\D/) || (gSettings.blacklist && gSettings.blacklist.indexOf(temp.bl_item) !== -1)">
                 <img class="add" src="https://cdn.discordapp.com/emojis/418199165948919829.png?v=1"> <span>Add</span>
             </button>
